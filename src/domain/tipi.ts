@@ -34,6 +34,17 @@ export interface Lista {
   voci: Voce[]
 }
 
+/**
+ * Una lista dell'archivio vista dall'elenco (F11): quanto basta a riconoscerla
+ * e a sapere com'è andata, senza tirare su tutte le voci.
+ */
+export interface SintesiLista {
+  id: string
+  creataIl: string
+  quanteVoci: number
+  quanteComprate: number
+}
+
 /** Memoria della rotazione tra un ciclo e l'altro. */
 export interface Rotazione {
   categoria: IdCategoria | 'verdura' | 'frutta'

@@ -4,7 +4,15 @@
 // refresh della pagina.
 
 import type { Database, SqlJsStatic } from 'sql.js'
-import type { Elemento, IdCategoria, IdReparto, Lista, Rotazione, Voce } from '../domain/tipi'
+import type {
+  Elemento,
+  IdCategoria,
+  IdReparto,
+  Lista,
+  Rotazione,
+  SintesiLista,
+  Voce,
+} from '../domain/tipi'
 import { MIGRAZIONE_ROTAZIONI, SCHEMA } from './schema'
 import type { Persistenza, Storage } from './tipi'
 
@@ -38,20 +46,35 @@ export class StorageSqlite implements Storage {
   ) {}
 
   async leggiListaCorrente(): Promise<Lista | null> {
-    const righe = interroga(
-      this.db,
+    return this.lista(
       "SELECT id, creata_il, stato FROM liste WHERE stato = 'corrente' ORDER BY creata_il DESC LIMIT 1",
     )
-    const riga = righe[0]
-    if (!riga) return null
+  }
 
-    const id = riga.id as string
-    return {
-      id,
+  async leggiLista(id: string): Promise<Lista | null> {
+    return this.lista('SELECT id, creata_il, stato FROM liste WHERE id = ?', [id])
+  }
+
+  /**
+   * L'elenco dell'archivio, dalla spesa più recente alla più vecchia. Conta le
+   * voci con una query di aggregazione: per l'elenco non serve caricarle (F11).
+   */
+  async leggiArchivio(): Promise<SintesiLista[]> {
+    return interroga(
+      this.db,
+      `SELECT liste.id, liste.creata_il,
+              COUNT(voci.id) AS quante,
+              COALESCE(SUM(voci.comprata), 0) AS quante_comprate
+       FROM liste LEFT JOIN voci ON voci.lista_id = liste.id
+       WHERE liste.stato = 'archiviata'
+       GROUP BY liste.id
+       ORDER BY liste.creata_il DESC`,
+    ).map((riga) => ({
+      id: riga.id as string,
       creataIl: riga.creata_il as string,
-      stato: 'corrente',
-      voci: this.leggiVoci(id),
-    }
+      quanteVoci: riga.quante as number,
+      quanteComprate: riga.quante_comprate as number,
+    }))
   }
 
   /**
@@ -125,6 +148,20 @@ export class StorageSqlite implements Storage {
   /** Chiude il database e libera la memoria del WASM. */
   chiudi(): void {
     this.db.close()
+  }
+
+  /** La lista trovata dalla query, con le sue voci; `null` se la query non pesca niente. */
+  private lista(sql: string, parametri: unknown[] = []): Lista | null {
+    const riga = interroga(this.db, sql, parametri)[0]
+    if (!riga) return null
+
+    const id = riga.id as string
+    return {
+      id,
+      creataIl: riga.creata_il as string,
+      stato: riga.stato as Lista['stato'],
+      voci: this.leggiVoci(id),
+    }
   }
 
   private leggiVoci(listaId: string): Voce[] {

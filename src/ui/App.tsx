@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './tema.css'
 import './App.css'
+import { Archivio } from './Archivio'
 import { ListaSpesa } from './ListaSpesa'
 import { PianoSettimanale } from './PianoSettimanale'
 
@@ -8,6 +9,7 @@ import { PianoSettimanale } from './PianoSettimanale'
 const schermate = [
   { id: 'lista', etichetta: 'Lista', sottotitolo: 'Lista della spesa' },
   { id: 'piano', etichetta: 'Piano', sottotitolo: 'Piano settimanale' },
+  { id: 'archivio', etichetta: 'Archivio', sottotitolo: 'Spese passate' },
 ] as const
 
 type IdSchermata = (typeof schermate)[number]['id']
@@ -38,7 +40,9 @@ export function App() {
         </nav>
       </div>
       <main className="app__contenuto">
-        {schermata === 'lista' ? <ListaSpesa /> : <PianoSettimanale />}
+        {schermata === 'lista' && <ListaSpesa />}
+        {schermata === 'piano' && <PianoSettimanale />}
+        {schermata === 'archivio' && <Archivio />}
       </main>
     </div>
   )

@@ -110,10 +110,11 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 - [x] Mostra la **categoria** del giorno, non la tipologia
 - [x] Barra in alto per passare tra *Lista* e *Piano*
 
-## Step 12 — Archivio
+## Step 12 — Archivio ✅
 
-- [ ] Elenco delle liste passate, in sola lettura
-- [ ] Apertura di una lista archiviata
+- [x] Elenco delle liste passate, in sola lettura
+- [x] Apertura di una lista archiviata
+- [x] Terza scheda *Archivio* nella barra in alto
 
 ## Step 13 — Supabase
 

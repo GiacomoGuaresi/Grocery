@@ -22,13 +22,16 @@ Grocery/
     │   └── index.ts     apertura dello storage dell'app (WASM + IndexedDB)
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
-        ├── App.tsx      layout: header fisso + area contenuto
+        ├── App.tsx      layout: header fisso, barra delle schermate, contenuto
         ├── useLista.ts  la lista corrente, letta e salvata sullo storage
+        ├── useArchivio.ts     le liste passate, in sola lettura
         ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
         ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
         ├── GiaPresi.tsx       sezione ripiegata in fondo, per de-spuntare
         ├── AggiungiVoce.tsx   aggiunta rapida con autocompletamento
         ├── GeneraLista.tsx    l'azione "Genera lista" e la sua conferma
+        ├── PianoSettimanale.tsx  la tabella delle cene, in consultazione
+        ├── Archivio.tsx       le spese passate e una di esse aperta
         └── Voce.tsx           una voce, con gli elementi se è raggruppata
 ```
 
@@ -105,6 +108,12 @@ diversi — evitando quelle del ciclo prima, che arrivano dalle `rotazioni` salv
 tornano aggiornate da salvare (R3). La sorgente del caso è un parametro (`caso`), così
 i test la sostituiscono con un generatore a seme e restano riproducibili.
 
+`archivio.ts` è la parte di dominio delle liste passate: solo formattazione, perché
+una lista archiviata non ha più transizioni di stato. `etichettaData()` scrive la
+data per esteso ("7 settembre 2026"), `riepilogo()` dice com'è andata quella spesa in
+una riga ("12 voci · 10 prese") e `sintesi()` conta le voci di una lista già
+caricata, così l'elenco e la lista aperta dicono le stesse cose.
+
 `ciclo.ts` sta intorno all'algoritmo: `vociDaRiportare()` dice cosa è rimasto da
 prendere e `nuovoCiclo()` mette insieme lista nuova, rotazioni da salvare e lista
 precedente da archiviare, portando avanti le voci non spuntate se lo si è chiesto
@@ -112,7 +121,8 @@ precedente da archiviare, portando avanti le voci non spuntate se lo si è chies
 
 ## `src/storage`
 Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
-`leggiListaCorrente()`, `salvaLista()`, `leggiRotazioni()`, `salvaRotazioni()`. Il
+`leggiListaCorrente()`, `salvaLista()`, `leggiArchivio()`, `leggiLista(id)`,
+`leggiRotazioni()`, `salvaRotazioni()`. Il
 resto dell'app conosce solo questa: l'implementazione Supabase arriverà accanto a
 quella SQLite senza toccare né il dominio né la UI.
 
@@ -133,6 +143,11 @@ correnti passano ad archiviata, perché ce n'è sempre una sola. `export()` di s
 riapre la connessione, quindi il `PRAGMA foreign_keys` va rimesso a ogni
 transazione: senza, i `CASCADE` smettono di scattare dopo il primo salvataggio.
 
+L'archivio si legge da lì: `leggiArchivio()` elenca le liste `archiviata` dalla più
+recente alla più vecchia contando le voci con un'aggregazione — per l'elenco non
+serve caricarle — e `leggiLista(id)` tira su una lista qualsiasi per intero, come
+`leggiListaCorrente()`, che ormai è la stessa lettura con una `WHERE` diversa.
+
 La `Persistenza` è la porta che dice dove finiscono quei byte:
 `PersistenzaIndexedDB` li tiene in un unico record di IndexedDB — è ciò che fa
 sopravvivere la lista al refresh — e `PersistenzaMemoria` non li fa sopravvivere a
@@ -143,8 +158,9 @@ esecuzione: carica il WASM di SQLite e apre lo storage una volta sola.
 riletta identica a quella salvata, l'ordine di voci ed elementi, i campi opzionali
 che restano assenti, il salvataggio che aggiorna invece di duplicare, le voci tolte
 che spariscono con i loro elementi, l'unica lista corrente, le rotazioni sostituite
-e non accumulate. Il refresh si simula riaprendo il database sulla stessa
-`Persistenza`.
+e non accumulate, l'archivio che elenca le liste passate ma non quella corrente,
+nell'ordine giusto e con i conteggi giusti, e la lista archiviata riletta identica a
+com'era. Il refresh si simula riaprendo il database sulla stessa `Persistenza`.
 
 ## `src/ui`
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
@@ -169,6 +185,14 @@ non ne resta nessuno. In fondo alla lista sta la sezione ripiegata "Già presi",
 conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
 de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
 quel percorso ormai è alle spalle.
+
+La barra in alto tiene le tre schermate: *Lista*, *Piano* e *Archivio*.
+
+`useArchivio.ts` legge le spese passate e ne apre una su richiesta: sono due
+letture separate, perché l'elenco non ha bisogno delle voci. La schermata mostra una
+riga per spesa — data per esteso e riepilogo — e aprendone una rivede le sue voci
+per reparto, barrate quelle che erano finite nel carrello. Non c'è niente da toccare
+oltre alla riga che apre e a quella che riporta indietro: quel ciclo è chiuso (F11).
 
 Il layout è una colonna larga al massimo 560px, centrata: sul telefono occupa tutto,
 sul desktop resta stretta come sul telefono.

@@ -109,6 +109,68 @@ describe('lettura e scrittura della lista', () => {
   })
 })
 
+describe('archivio', () => {
+  /** Due generazioni di seguito: la prima lista finisce archiviata (F11). */
+  async function conDueSpese() {
+    const { storage } = await apri()
+    await storage.salvaLista(lista)
+    const nuova: Lista = { ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' }
+    await storage.salvaLista(nuova)
+    return storage
+  }
+
+  it('su un database senza liste passate e vuoto', async () => {
+    const { storage } = await apri()
+    await storage.salvaLista(lista)
+    expect(await storage.leggiArchivio()).toEqual([])
+  })
+
+  it('elenca le liste archiviate, non quella corrente', async () => {
+    const storage = await conDueSpese()
+    expect(await storage.leggiArchivio()).toEqual([
+      {
+        id: 'lista-1',
+        creataIl: '2026-09-07T08:00:00.000Z',
+        quanteVoci: 3,
+        quanteComprate: 1,
+      },
+    ])
+  })
+
+  it('mette per prima la spesa più recente', async () => {
+    const { storage } = await apri()
+    for (const [id, creataIl] of [
+      ['lista-1', '2026-08-10T08:00:00.000Z'],
+      ['lista-2', '2026-08-24T08:00:00.000Z'],
+      ['lista-3', '2026-09-07T08:00:00.000Z'],
+    ]) {
+      await storage.salvaLista({ ...lista, id, creataIl })
+    }
+    expect((await storage.leggiArchivio()).map((s) => s.id)).toEqual(['lista-2', 'lista-1'])
+  })
+
+  it('una lista archiviata si riapre intera, com era', async () => {
+    const storage = await conDueSpese()
+    expect(await storage.leggiLista('lista-1')).toEqual({ ...lista, stato: 'archiviata' })
+  })
+
+  it('per un id che non esiste non restituisce niente', async () => {
+    const storage = await conDueSpese()
+    expect(await storage.leggiLista('lista-mai-vista')).toBeNull()
+  })
+
+  it('riaprendo il database l archivio e ancora li', async () => {
+    const persistenza = new PersistenzaMemoria()
+    const prima = await apri(persistenza)
+    await prima.storage.salvaLista(lista)
+    await prima.storage.salvaLista({ ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' })
+
+    const dopo = await apri(persistenza)
+    expect((await dopo.storage.leggiArchivio()).map((s) => s.id)).toEqual(['lista-1'])
+    expect((await dopo.storage.leggiLista('lista-1'))?.voci).toHaveLength(3)
+  })
+})
+
 describe('rotazioni', () => {
   const rotazioni: Rotazione[] = [
     { categoria: 'pesce', ultimi: ['orata', 'branzino', 'cozze', 'polpo'] },
