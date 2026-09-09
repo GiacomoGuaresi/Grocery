@@ -72,24 +72,24 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 - [x] Rinomina delle sole voci manuali in "Altro"
 - [x] Nessuna modifica del reparto, in nessun caso
 
-## Step 8 — Algoritmo di generazione
+## Step 8 — Algoritmo di generazione ✅
 
 Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 
-- [ ] Selezione di stagione: verdura e frutta del mese corrente
-- [ ] Rotazione deterministica con memoria (`ultimoIndice` per categoria)
-- [ ] Copertura del ciclo: 2 carne rossa, 2 formaggio, 4 pesce, 2 uova, 2 carne bianca, 2 affettati
-- [ ] Varietà dentro il ciclo: tipologie diverse tra loro nella stessa categoria
-- [ ] 4 verdure e 4 frutti diversi per ciclo
-- [ ] Test: due cicli consecutivi non ripropongono le stesse tipologie
-- [ ] Test: a gennaio non escono pomodori
+- [x] Selezione di stagione: verdura e frutta del mese corrente
+- [x] Rotazione deterministica con memoria (`ultimoIndice` per categoria)
+- [x] Copertura del ciclo: 2 carne rossa, 2 formaggio, 4 pesce, 2 uova, 2 carne bianca, 2 affettati
+- [x] Varietà dentro il ciclo: tipologie diverse tra loro nella stessa categoria
+- [x] 4 verdure e 4 frutti diversi per ciclo
+- [x] Test: due cicli consecutivi non ripropongono le stesse tipologie
+- [x] Test: a gennaio non escono pomodori
 
-## Step 9 — Generazione dall'interfaccia
+## Step 9 — Generazione dall'interfaccia ✅
 
-- [ ] Azione "Genera lista" con conferma
-- [ ] Se ci sono voci non spuntate, chiede se portarle nella nuova lista
-- [ ] La lista precedente viene archiviata
-- [ ] Nessuna rigenerazione in place
+- [x] Azione "Genera lista" con conferma
+- [x] Se ci sono voci non spuntate, chiede se portarle nella nuova lista
+- [x] La lista precedente viene archiviata
+- [x] Nessuna rigenerazione in place
 
 ## Step 10 — Dropdown delle alternative
 

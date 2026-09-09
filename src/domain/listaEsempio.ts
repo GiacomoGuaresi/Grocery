@@ -1,6 +1,7 @@
-// Lista di esempio usata finché non c'è l'algoritmo di generazione (Step 8)
-// né la persistenza (Step 5): serve a vedere la schermata piena.
-// Contenuto: un ciclo di due settimane come lo descrive doc/02-routine-alimentare.md.
+// Lista di esempio: un ciclo di due settimane come lo descrive
+// doc/02-routine-alimentare.md. Da quando l'app genera la lista da sola
+// (Step 9) resta come banco di prova dei test, che così lavorano su una
+// lista realistica e sempre uguale.
 
 import type { Lista } from './tipi'
 

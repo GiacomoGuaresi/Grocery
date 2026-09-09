@@ -1,0 +1,65 @@
+/* L'azione "Genera lista" e la sua conferma, in fondo alla schermata.
+   La conferma prende posto nel flusso invece di coprire la lista: si legge
+   cosa si sta per archiviare prima di decidere. */
+.genera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.genera--conferma {
+  align-items: stretch;
+  padding: var(--spazio);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema-scura);
+}
+
+.genera__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.genera__testo {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.genera__rimaste {
+  max-height: 30vh;
+  margin: 0;
+  padding-left: 20px;
+  overflow-y: auto;
+  font-size: var(--testo-piccolo);
+}
+
+.genera__scelte {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.genera__annulla {
+  min-height: var(--tocco);
+  border: none;
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Fuori dalla schermata vuota il bottone non deve rubare l'occhio alla spesa. */
+.bottone--discreto {
+  background: var(--panna);
+  color: var(--inchiostro);
+  border: 1px solid var(--bordo);
+  font-weight: 500;
+}
+
+.bottone--discreto:active {
+  background: var(--crema-scura);
+}

@@ -1,8 +1,10 @@
 import { aggiungiVoce } from '../domain/aggiunta'
+import { vociDaRiportare } from '../domain/ciclo'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { alternaElemento, despuntaVoce, spuntaVoce } from '../domain/spunta'
 import { AggiungiVoce } from './AggiungiVoce'
+import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
 import { useLista } from './useLista'
@@ -11,12 +13,12 @@ import './ListaSpesa.css'
 /**
  * Schermata principale: la lista della spesa, raggruppata per reparto, con la
  * spunta e la sezione "Già presi" in fondo. In fondo, sempre raggiungibile,
- * il campo di aggiunta rapida. La lista arriva dallo storage e ogni modifica
- * ci torna: quello che si tocca resta anche dopo un refresh. La generazione
- * arriva allo Step 9 (doc/12-piano-sviluppo.md).
+ * il campo di aggiunta rapida e l'azione che apre il ciclo nuovo. La lista
+ * arriva dallo storage e ogni modifica ci torna: quello che si tocca resta
+ * anche dopo un refresh.
  */
 export function ListaSpesa() {
-  const { stato, modifica } = useLista()
+  const { stato, modifica, genera } = useLista()
 
   if (stato.fase === 'caricamento') return <Caricamento />
   if (stato.fase === 'errore') return <Errore />
@@ -27,7 +29,7 @@ export function ListaSpesa() {
   if (lista.voci.length === 0) {
     return (
       <div className="lista">
-        <ListaVuota />
+        <ListaVuota onGenera={genera} />
         <AggiungiVoce onAggiungi={aggiungi} />
       </div>
     )
@@ -74,6 +76,7 @@ export function ListaSpesa() {
         onRinomina={rinomina}
       />
       <AggiungiVoce onAggiungi={aggiungi} />
+      <GeneraLista rimaste={vociDaRiportare(lista)} onGenera={genera} />
     </div>
   )
 }
@@ -102,7 +105,7 @@ function TuttoPreso() {
   )
 }
 
-function ListaVuota() {
+function ListaVuota({ onGenera }: { onGenera: (portaAvanti: boolean) => void }) {
   return (
     <section className="lista-vuota">
       <p className="lista-vuota__icona" aria-hidden="true">
@@ -113,9 +116,7 @@ function ListaVuota() {
         Genera la lista del prossimo ciclo di due settimane, oppure aggiungi le
         cose a mano.
       </p>
-      <button className="bottone" type="button" disabled>
-        Genera lista
-      </button>
+      <GeneraLista rimaste={[]} onGenera={onGenera} variante="principale" />
     </section>
   )
 }
