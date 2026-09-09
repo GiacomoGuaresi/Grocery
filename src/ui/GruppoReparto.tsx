@@ -6,10 +6,12 @@ interface Props {
   gruppo: Gruppo
   onAlterna: (id: string) => void
   onAlternaElemento: (id: string, nome: string) => void
+  onElimina: (id: string) => void
+  onRinomina: (id: string, nome: string) => void
 }
 
 /** Un reparto della lista, col suo titolo e le sue voci. */
-export function GruppoReparto({ gruppo, onAlterna, onAlternaElemento }: Props) {
+export function GruppoReparto({ gruppo, onAlterna, onAlternaElemento, onElimina, onRinomina }: Props) {
   return (
     <section className="reparto" aria-labelledby={`reparto-${gruppo.id}`}>
       <h2 className="reparto__titolo" id={`reparto-${gruppo.id}`}>
@@ -22,6 +24,8 @@ export function GruppoReparto({ gruppo, onAlterna, onAlternaElemento }: Props) {
             voce={voce}
             onAlterna={onAlterna}
             onAlternaElemento={onAlternaElemento}
+            onElimina={onElimina}
+            onRinomina={onRinomina}
           />
         ))}
       </ul>

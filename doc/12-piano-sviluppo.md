@@ -58,19 +58,19 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 - [x] La lista sopravvive al refresh della pagina
 - [x] Test dell'implementazione contro l'interfaccia
 
-## Step 6 — Inserimento manuale
+## Step 6 — Inserimento manuale ✅
 
-- [ ] Campo di aggiunta sempre raggiungibile dalla schermata lista
-- [ ] Autocompletamento case-insensitive su `prodotti.json`
-- [ ] Prodotto riconosciuto → reparto assegnato in automatico
-- [ ] Prodotto nuovo → reparto `altro`
-- [ ] Test: riconoscimento con accenti, maiuscole, spazi
+- [x] Campo di aggiunta sempre raggiungibile dalla schermata lista
+- [x] Autocompletamento case-insensitive su `prodotti.json`
+- [x] Prodotto riconosciuto → reparto assegnato in automatico
+- [x] Prodotto nuovo → reparto `altro`
+- [x] Test: riconoscimento con accenti, maiuscole, spazi
 
-## Step 7 — Eliminazione e rinomina
+## Step 7 — Eliminazione e rinomina ✅
 
-- [ ] Eliminazione di qualsiasi voce
-- [ ] Rinomina delle sole voci manuali in "Altro"
-- [ ] Nessuna modifica del reparto, in nessun caso
+- [x] Eliminazione di qualsiasi voce
+- [x] Rinomina delle sole voci manuali in "Altro"
+- [x] Nessuna modifica del reparto, in nessun caso
 
 ## Step 8 — Algoritmo di generazione
 

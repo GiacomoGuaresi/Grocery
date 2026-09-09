@@ -1,0 +1,90 @@
+/* Barra di aggiunta rapida, incollata in fondo allo schermo: si raggiunge col
+   pollice mentre si spinge il carrello. I suggerimenti crescono verso l'alto,
+   sopra il campo, per non finire sotto la tastiera del telefono. */
+.aggiungi {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-top: 24px;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--panna);
+}
+
+.aggiungi__proposte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema);
+}
+
+.aggiungi__proposta {
+  display: block;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.aggiungi__proposta:active {
+  background: var(--crema-scura);
+}
+
+.aggiungi__riga {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0 12px;
+  border-top: 1px solid var(--bordo);
+}
+
+.aggiungi__campo {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tocco);
+  padding: 0 14px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  /* Sotto i 16px iOS zooma da solo appena si tocca il campo. */
+  font-size: var(--testo-base);
+}
+
+.aggiungi__campo:focus {
+  outline: 2px solid var(--salvia);
+  outline-offset: -1px;
+}
+
+.aggiungi__bottone {
+  flex: none;
+  min-height: var(--tocco);
+  padding: 0 20px;
+  border: none;
+  border-radius: var(--raggio);
+  background: var(--salvia);
+  color: var(--panna);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aggiungi__bottone:active {
+  background: var(--salvia-scura);
+}
+
+.aggiungi__bottone:disabled {
+  background: var(--crema-scura);
+  color: var(--inchiostro-tenue);
+  cursor: default;
+}

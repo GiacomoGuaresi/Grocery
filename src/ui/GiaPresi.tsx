@@ -7,6 +7,8 @@ interface Props {
   voci: VoceLista[]
   onAlterna: (id: string) => void
   onAlternaElemento: (id: string, nome: string) => void
+  onElimina: (id: string) => void
+  onRinomina: (id: string, nome: string) => void
 }
 
 /**
@@ -14,7 +16,7 @@ interface Props {
  * Serve a rivedere e a de-spuntare quando si tocca per sbaglio.
  * Non è raggruppata per reparto: quel percorso ormai è alle spalle.
  */
-export function GiaPresi({ voci, onAlterna, onAlternaElemento }: Props) {
+export function GiaPresi({ voci, onAlterna, onAlternaElemento, onElimina, onRinomina }: Props) {
   const [aperta, setAperta] = useState(false)
 
   if (voci.length === 0) return null
@@ -39,6 +41,8 @@ export function GiaPresi({ voci, onAlterna, onAlternaElemento }: Props) {
             voce={voce}
             onAlterna={onAlterna}
             onAlternaElemento={onAlternaElemento}
+            onElimina={onElimina}
+            onRinomina={onRinomina}
           />
         ))}
       </ul>

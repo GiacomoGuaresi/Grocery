@@ -1,5 +1,8 @@
+import { aggiungiVoce } from '../domain/aggiunta'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
+import { eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { alternaElemento, despuntaVoce, spuntaVoce } from '../domain/spunta'
+import { AggiungiVoce } from './AggiungiVoce'
 import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
 import { useLista } from './useLista'
@@ -7,9 +10,10 @@ import './ListaSpesa.css'
 
 /**
  * Schermata principale: la lista della spesa, raggruppata per reparto, con la
- * spunta e la sezione "Già presi" in fondo. La lista arriva dallo storage e
- * ogni spunta ci torna: quello che si tocca resta anche dopo un refresh. La
- * generazione arriva allo Step 9 (doc/12-piano-sviluppo.md).
+ * spunta e la sezione "Già presi" in fondo. In fondo, sempre raggiungibile,
+ * il campo di aggiunta rapida. La lista arriva dallo storage e ogni modifica
+ * ci torna: quello che si tocca resta anche dopo un refresh. La generazione
+ * arriva allo Step 9 (doc/12-piano-sviluppo.md).
  */
 export function ListaSpesa() {
   const { stato, modifica } = useLista()
@@ -18,7 +22,16 @@ export function ListaSpesa() {
   if (stato.fase === 'errore') return <Errore />
 
   const { lista } = stato
-  if (lista.voci.length === 0) return <ListaVuota />
+  const aggiungi = (nome: string) => modifica((corrente) => aggiungiVoce(corrente, nome))
+
+  if (lista.voci.length === 0) {
+    return (
+      <div className="lista">
+        <ListaVuota />
+        <AggiungiVoce onAggiungi={aggiungi} />
+      </div>
+    )
+  }
 
   const attive = raggruppaPerReparto(vociAttive(lista))
   const comprate = vociComprate(lista)
@@ -32,6 +45,11 @@ export function ListaSpesa() {
   const alternaUnElemento = (id: string, nome: string) =>
     modifica((corrente) => alternaElemento(corrente, id, nome))
 
+  const elimina = (id: string) => modifica((corrente) => eliminaVoce(corrente, id))
+
+  const rinomina = (id: string, nome: string) =>
+    modifica((corrente) => rinominaVoce(corrente, id, nome))
+
   return (
     <div className="lista">
       {attive.length > 0 ? (
@@ -41,6 +59,8 @@ export function ListaSpesa() {
             gruppo={gruppo}
             onAlterna={alterna}
             onAlternaElemento={alternaUnElemento}
+            onElimina={elimina}
+            onRinomina={rinomina}
           />
         ))
       ) : (
@@ -50,7 +70,10 @@ export function ListaSpesa() {
         voci={comprate}
         onAlterna={alterna}
         onAlternaElemento={alternaUnElemento}
+        onElimina={elimina}
+        onRinomina={rinomina}
       />
+      <AggiungiVoce onAggiungi={aggiungi} />
     </div>
   )
 }
