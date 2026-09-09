@@ -1,0 +1,14 @@
+{
+  "$commento": "Reparti del supermercato nell'ordine del percorso in corsia. L'ordine e' fissato qui e non e' modificabile dall'app.",
+  "reparti": [
+    { "id": "ortofrutta", "nome": "Ortofrutta" },
+    { "id": "macelleria", "nome": "Macelleria" },
+    { "id": "pescheria", "nome": "Pescheria" },
+    { "id": "salumi_formaggi", "nome": "Salumi e formaggi" },
+    { "id": "latticini_uova", "nome": "Latticini e uova" },
+    { "id": "dispensa", "nome": "Dispensa" },
+    { "id": "surgelati", "nome": "Surgelati" },
+    { "id": "casa_igiene", "nome": "Casa e igiene" },
+    { "id": "altro", "nome": "Altro" }
+  ]
+}

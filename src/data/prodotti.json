@@ -1,0 +1,337 @@
+{
+  "$commento": "Catalogo per l'autocompletamento dell'inserimento manuale: mappa prodotto -> reparto. Elenco ridotto di base, da espandere nel tempo con un commit. Non impara dai prodotti digitati a mano: quelli finiscono nel reparto 'altro'.",
+  "prodotti": [
+    {
+      "nome": "pasta",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "riso",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "farina",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "pane in cassetta",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "fette biscottate",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "biscotti",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "cereali",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "marmellata",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "miele",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "crema di nocciole",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "zucchero",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "sale",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "olio extravergine",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "olio di semi",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "aceto",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "pepe",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "spezie",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "dado",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "passata di pomodoro",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "pomodori pelati",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "tonno in scatola",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "mais",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "legumi in scatola",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "caffe",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "te",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "tisane",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "acqua",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "succhi",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "vino",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "birra",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "cioccolato",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "patatine",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "crackers",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "taralli",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "frutta secca",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "latte",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "yogurt",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "panna da cucina",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "burro",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "parmigiano",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "grana",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "uova",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "formaggio spalmabile",
+      "reparto": "latticini_uova"
+    },
+    {
+      "nome": "verdure surgelate",
+      "reparto": "surgelati"
+    },
+    {
+      "nome": "patatine surgelate",
+      "reparto": "surgelati"
+    },
+    {
+      "nome": "pizza surgelata",
+      "reparto": "surgelati"
+    },
+    {
+      "nome": "gelato",
+      "reparto": "surgelati"
+    },
+    {
+      "nome": "pesce surgelato",
+      "reparto": "surgelati"
+    },
+    {
+      "nome": "detersivo piatti",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "detersivo lavastoviglie",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "pastiglie lavastoviglie",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "brillantante",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "sale per lavastoviglie",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "detersivo lavatrice",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "ammorbidente",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "candeggina",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "sgrassatore",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "detergente pavimenti",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "anticalcare",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "spugne",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "panni",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "guanti",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "sacchi pattumiera",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "carta casa",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "carta igienica",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "fazzoletti",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "tovaglioli",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "pellicola",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "alluminio",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "carta forno",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "sapone mani",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "bagnoschiuma",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "shampoo",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "balsamo",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "dentifricio",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "spazzolino",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "filo interdentale",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "deodorante",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "rasoi",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "schiuma da barba",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "crema corpo",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "salviette",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "cotton fioc",
+      "reparto": "casa_igiene"
+    }
+  ]
+}

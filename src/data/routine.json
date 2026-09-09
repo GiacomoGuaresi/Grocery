@@ -1,0 +1,17 @@
+{
+  "$commento": "Fonte proteica per giorno della settimana. Ogni cena e' fonte proteica + contorno + pane; il pane e' comprato a parte e non entra in lista.",
+  "giorni": [
+    { "giorno": 1, "nome": "lunedi",   "categoria": "carne_rossa" },
+    { "giorno": 2, "nome": "martedi",  "categoria": "formaggio" },
+    { "giorno": 3, "nome": "mercoledi","categoria": "pesce" },
+    { "giorno": 4, "nome": "giovedi",  "categoria": "uova" },
+    { "giorno": 5, "nome": "venerdi",  "categoria": "carne_bianca" },
+    { "giorno": 6, "nome": "sabato",   "categoria": "pesce" },
+    { "giorno": 7, "nome": "domenica", "categoria": "affettati" }
+  ],
+  "gruppiFissi": {
+    "$commento": "Voci raggruppate non legate a un giorno specifico: N tipi diversi per ciclo, scelti tra quelli di stagione.",
+    "verdura": { "tipiPerCiclo": 4, "reparto": "ortofrutta" },
+    "frutta":  { "tipiPerCiclo": 4, "reparto": "ortofrutta" }
+  }
+}
