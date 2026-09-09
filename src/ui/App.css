@@ -1,0 +1,43 @@
+/* Layout mobile-first: header fisso in alto, contenuto scorrevole sotto.
+   Su schermi larghi la colonna resta stretta, come sul telefono. */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 560px;
+  margin: 0 auto;
+  background: var(--panna);
+  border-inline: 1px solid var(--bordo);
+}
+
+.app__intestazione {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: calc(var(--spazio) + env(safe-area-inset-top)) var(--spazio) var(--spazio);
+  background: var(--crema-scura);
+  border-bottom: 1px solid var(--bordo);
+}
+
+.app__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.app__sottotitolo {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.app__contenuto {
+  flex: 1;
+  padding: var(--spazio);
+  padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
+}

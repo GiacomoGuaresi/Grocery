@@ -1,0 +1,50 @@
+/* Palette pastello a tema culinario: crema, salvia, zucca, pomodoro spento.
+   Solo tema chiaro, come da doc/08-ui-ux.md. */
+:root {
+  --crema: #fdf8f0;
+  --crema-scura: #f5ece0;
+  --panna: #fffdf9;
+  --salvia: #a8c3a0;
+  --salvia-scura: #6f8f6a;
+  --zucca: #f0b67f;
+  --pomodoro: #d98878;
+  --inchiostro: #3d3733;
+  --inchiostro-tenue: #8a7f77;
+  --bordo: #e8dccc;
+
+  --raggio: 14px;
+  --spazio: 16px;
+  /* Altezza minima di ogni elemento toccabile: si usa in piedi, con una mano. */
+  --tocco: 56px;
+
+  --testo-base: 18px;
+  --testo-grande: 22px;
+  --testo-piccolo: 15px;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--crema);
+  color: var(--inchiostro);
+  font-family: 'Avenir Next', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: var(--testo-base);
+  line-height: 1.45;
+  /* Evita che un doppio tap ingrandisca la pagina mentre si spuntano le voci. */
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root {
+  min-height: 100%;
+}

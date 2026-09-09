@@ -16,5 +16,6 @@
 | 09 | [Roadmap](09-roadmap.md) | MVP e sviluppi futuri |
 | 10 | [Decisioni](10-decisioni.md) | Registro delle scelte fatte |
 | 11 | [Struttura del progetto](11-struttura-progetto.md) | Cartelle, file di dati, cosa c'è già |
+| 12 | [Piano di sviluppo](12-piano-sviluppo.md) | Gli step, con le checkbox da spuntare |
 
 Le domande ancora aperte vivono in [../Q&A.md](../Q&A.md).

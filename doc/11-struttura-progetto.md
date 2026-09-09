@@ -4,14 +4,19 @@
 Grocery/
 ├── doc/                 documentazione (questi file)
 ├── Q&A.md               domande aperte in corso
+├── index.html           entry point di Vite
 ├── package.json         React + TypeScript + Vite + Vitest
-├── vite.config.ts       base: '/Grocery/' per GitHub Pages
+├── vite.config.ts       base: '/Grocery/' per GitHub Pages + config Vitest
 ├── tsconfig.json
 └── src/
+    ├── main.tsx         monta React su #root
     ├── data/            configurazioni statiche in JSON (vedi 05)
     ├── domain/          modello dati e algoritmo di generazione
     ├── storage/         interfaccia di persistenza (SQLite in dev, Supabase in prod)
     └── ui/              componenti e schermate
+        ├── tema.css     palette pastello, tipografia, misure dei tocchi
+        ├── App.tsx      layout: header fisso + area contenuto
+        └── ListaSpesa.tsx  schermata principale (per ora solo stato vuoto)
 ```
 
 ## `src/data` — dati statici
@@ -41,3 +46,12 @@ anche aprendolo da solo.
 
 L'algoritmo di generazione ([03](03-algoritmo-generazione.md)) e i suoi test sono il
 prossimo passo.
+
+## `src/ui`
+Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
+zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemento
+toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
+stesso. Nessuna libreria di stili.
+
+Il layout è una colonna larga al massimo 560px, centrata: sul telefono occupa tutto,
+sul desktop resta stretta come sul telefono.

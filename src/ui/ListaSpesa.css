@@ -1,0 +1,52 @@
+/* Schermata principale. Per ora mostra solo lo stato vuoto: le voci
+   arrivano allo Step 3 del piano di sviluppo. */
+.lista-vuota {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  padding: var(--spazio);
+  text-align: center;
+}
+
+.lista-vuota__icona {
+  font-size: 56px;
+  line-height: 1;
+}
+
+.lista-vuota__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.lista-vuota__testo {
+  margin: 0;
+  max-width: 32ch;
+  color: var(--inchiostro-tenue);
+}
+
+.bottone {
+  min-height: var(--tocco);
+  padding: 0 28px;
+  margin-top: 8px;
+  border: none;
+  border-radius: var(--raggio);
+  background: var(--salvia);
+  color: var(--panna);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bottone:active {
+  background: var(--salvia-scura);
+}
+
+.bottone:disabled {
+  background: var(--crema-scura);
+  color: var(--inchiostro-tenue);
+  cursor: default;
+}
