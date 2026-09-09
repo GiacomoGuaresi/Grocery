@@ -1,33 +1,99 @@
-/* Una voce della lista: riga ampia, comoda da toccare in corsia (Step 4). */
+/* Una voce della lista: riga ampia, comoda da toccare in corsia. */
 .voce {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 6px;
-  min-height: var(--tocco);
-  padding: 12px var(--spazio);
+  padding: 6px var(--spazio) 12px;
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--panna);
+}
+
+/* Tutta la riga è il bersaglio del tocco: si usa in piedi, con una mano. */
+.voce__riga {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .voce__nome {
   font-weight: 500;
 }
 
+.voce__segno {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--salvia);
+  border-radius: 8px;
+}
+
+/* Nei già presi il segno è pieno, con la spunta. */
+.voce__riga[aria-pressed='true'] .voce__segno {
+  position: relative;
+  border-color: var(--salvia-scura);
+  background: var(--salvia-scura);
+}
+
+.voce__riga[aria-pressed='true'] .voce__segno::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 7px;
+  width: 6px;
+  height: 12px;
+  border: solid var(--panna);
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.voce__riga[aria-pressed='true'] .voce__nome {
+  color: var(--inchiostro-tenue);
+  text-decoration: line-through;
+}
+
+.voce__riga:active .voce__segno {
+  background: var(--crema-scura);
+}
+
 /* Gli elementi di Frutta e Verdura: rientrati sotto il nome della voce. */
 .voce__elementi {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 8px;
+  gap: 8px;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 38px;
   list-style: none;
 }
 
 .voce__elemento {
-  padding: 4px 12px;
+  min-height: 40px;
+  padding: 4px 16px;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: var(--crema-scura);
+  color: inherit;
+  font: inherit;
   font-size: var(--testo-piccolo);
+  cursor: pointer;
+}
+
+.voce__elemento[aria-pressed='true'] {
+  border-color: var(--bordo);
+  background: none;
+  color: var(--inchiostro-tenue);
+  text-decoration: line-through;
+}
+
+.voce__elemento:active {
+  border-color: var(--salvia);
 }

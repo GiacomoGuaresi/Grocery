@@ -1,0 +1,61 @@
+/* Sezione ripiegata in fondo alla lista, staccata da quello che resta da prendere. */
+.gia-presi {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--bordo);
+}
+
+.gia-presi__intestazione {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  cursor: pointer;
+}
+
+.gia-presi__titolo {
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.gia-presi__quanti {
+  min-width: 26px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--crema-scura);
+  font-size: var(--testo-piccolo);
+  text-align: center;
+}
+
+/* Triangolino che ruota quando la sezione si apre. */
+.gia-presi__freccia {
+  width: 0;
+  height: 0;
+  border-left: 7px solid currentColor;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  transition: transform 120ms ease-out;
+}
+
+.gia-presi__intestazione[aria-expanded='true'] .gia-presi__freccia {
+  transform: rotate(90deg);
+}
+
+.gia-presi__voci {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

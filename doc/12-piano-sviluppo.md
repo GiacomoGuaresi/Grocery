@@ -42,13 +42,13 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 - [x] Reparti vuoti non mostrati
 - [x] Voci raggruppate *Frutta* e *Verdura* rese con i loro elementi
 
-## Step 4 — Spunta
+## Step 4 — Spunta ✅
 
-- [ ] Tap su una voce = comprata, la voce sparisce dalla lista attiva
-- [ ] Spunta dei **singoli elementi** dentro Frutta e Verdura
-- [ ] Sezione ripiegata "Già presi" in fondo
-- [ ] De-spunta di una voce dalla sezione "Già presi"
-- [ ] Test sulle transizioni di stato
+- [x] Tap su una voce = comprata, la voce sparisce dalla lista attiva
+- [x] Spunta dei **singoli elementi** dentro Frutta e Verdura
+- [x] Sezione ripiegata "Già presi" in fondo
+- [x] De-spunta di una voce dalla sezione "Già presi"
+- [x] Test sulle transizioni di stato
 
 ## Step 5 — Persistenza locale (SQLite)
 

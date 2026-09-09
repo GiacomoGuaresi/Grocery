@@ -16,8 +16,9 @@ Grocery/
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
         ├── App.tsx      layout: header fisso + area contenuto
-        ├── ListaSpesa.tsx     schermata principale (lista in sola lettura)
+        ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
         ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
+        ├── GiaPresi.tsx       sezione ripiegata in fondo, per de-spuntare
         └── Voce.tsx           una voce, con gli elementi se è raggruppata
 ```
 
@@ -60,12 +61,26 @@ stagionalità usa solo mesi da 1 a 12.
 
 `lista.ts` lavora sulla lista corrente: `raggruppaPerReparto(voci)` divide le voci per
 reparto nell'ordine del percorso in corsia scartando i reparti vuoti, `vociAttive(lista)`
-tiene solo quelle non ancora comprate. `listaEsempio.ts` è una lista di settembre usata
-finché non ci sono generazione e persistenza: serve a vedere la schermata piena.
+tiene solo quelle non ancora comprate e `vociComprate(lista)` solo quelle già prese.
+`listaEsempio.ts` è una lista di settembre usata finché non ci sono generazione e
+persistenza: serve a vedere la schermata piena.
 
 `lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
 delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
 esistenti, Frutta e Verdura con 4 elementi di stagione).
+
+`spunta.ts` raccoglie le transizioni di stato della spunta, tutte pure: ogni funzione
+restituisce una lista nuova e lascia intatta quella di partenza. `spuntaVoce()` e
+`despuntaVoce()` spostano una voce tra lista attiva e "Già presi", trascinandosi
+dietro tutti i suoi elementi se è raggruppata; `alternaElemento()` spunta un singolo
+elemento di Frutta o Verdura e marca la voce comprata solo quando sono presi tutti,
+riportandola tra le attive appena se ne de-spunta uno. `elementiAttivi()` dà gli
+elementi ancora da prendere.
+
+`spunta.test.ts` copre le transizioni: la voce che sparisce dalla lista attiva,
+l'immutabilità della lista di partenza, l'idempotenza, il passaggio della voce
+raggruppata a comprata all'ultimo elemento e il ritorno indietro, e l'invariante per
+cui attive e già presi coprono sempre tutte le voci senza doppioni.
 
 L'algoritmo di generazione ([03](03-algoritmo-generazione.md)) e i suoi test sono il
 prossimo passo.
@@ -78,7 +93,15 @@ stesso. Nessuna libreria di stili.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
 voci, ognuna una riga alta almeno `--tocco`. Le voci raggruppate (Frutta, Verdura)
-elencano i propri elementi come pastiglie sotto il nome.
+elencano i propri elementi come pastiglie sotto il nome, ognuna toccabile per conto
+suo.
+
+Toccare una voce la segna comprata e la fa sparire dalla lista attiva; nelle voci
+raggruppate sparisce il singolo elemento spuntato, e la voce intera se ne va quando
+non ne resta nessuno. In fondo alla lista sta la sezione ripiegata "Già presi", col
+conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
+de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
+quel percorso ormai è alle spalle.
 
 Il layout è una colonna larga al massimo 560px, centrata: sul telefono occupa tutto,
 sul desktop resta stretta come sul telefono.

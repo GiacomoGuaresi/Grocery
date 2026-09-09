@@ -6,6 +6,14 @@
   gap: 24px;
 }
 
+/* Quando non resta niente da prendere, sopra la sezione "Già presi". */
+.lista__tutto-preso {
+  margin: 0;
+  padding: 32px var(--spazio);
+  color: var(--inchiostro-tenue);
+  text-align: center;
+}
+
 .lista-vuota {
   display: flex;
   flex-direction: column;

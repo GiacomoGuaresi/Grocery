@@ -32,7 +32,12 @@ export function raggruppaPerReparto(voci: Voce[]): GruppoReparto[] {
     }))
 }
 
-/** Le voci ancora da comprare: quelle spuntate finiscono in "Già presi" (Step 4). */
+/** Le voci ancora da comprare: quelle spuntate finiscono in "Già presi". */
 export function vociAttive(lista: Lista): Voce[] {
   return lista.voci.filter((voce) => !voce.comprata)
+}
+
+/** Le voci già prese, nell'ordine in cui stanno nella lista. */
+export function vociComprate(lista: Lista): Voce[] {
+  return lista.voci.filter((voce) => voce.comprata)
 }
