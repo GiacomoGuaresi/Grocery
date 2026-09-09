@@ -1,0 +1,18 @@
+/* Un reparto: titolo discreto e sotto le sue voci, senza cornice. */
+.reparto__titolo {
+  margin: 0 0 8px;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--salvia-scura);
+}
+
+.reparto__voci {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

@@ -1,0 +1,33 @@
+/* Una voce della lista: riga ampia, comoda da toccare in corsia (Step 4). */
+.voce {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-height: var(--tocco);
+  padding: 12px var(--spazio);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--panna);
+}
+
+.voce__nome {
+  font-weight: 500;
+}
+
+/* Gli elementi di Frutta e Verdura: rientrati sotto il nome della voce. */
+.voce__elementi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.voce__elemento {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--crema-scura);
+  font-size: var(--testo-piccolo);
+}

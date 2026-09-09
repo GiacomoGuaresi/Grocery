@@ -11,12 +11,14 @@ Grocery/
 └── src/
     ├── main.tsx         monta React su #root
     ├── data/            configurazioni statiche in JSON (vedi 05)
-    ├── domain/          modello dati e algoritmo di generazione
+    ├── domain/          modello dati, dati statici tipizzati, algoritmo di generazione
     ├── storage/         interfaccia di persistenza (SQLite in dev, Supabase in prod)
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
         ├── App.tsx      layout: header fisso + area contenuto
-        └── ListaSpesa.tsx  schermata principale (per ora solo stato vuoto)
+        ├── ListaSpesa.tsx     schermata principale (lista in sola lettura)
+        ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
+        └── Voce.tsx           una voce, con gli elementi se è raggruppata
 ```
 
 ## `src/data` — dati statici
@@ -44,6 +46,27 @@ anche aprendolo da solo.
 `tipi.ts` contiene il modello dati di [06](06-modello-dati.md): `Lista`, `Voce`,
 `Elemento`, `Rotazione`.
 
+`dati.ts` è l'unico punto in cui i JSON di `src/data` vengono importati: li tipizza e
+li espone come `reparti`, `categorie`, `giorniRoutine`, `gruppiFissi`,
+`stagionalita`, `prodotti`, più le funzioni `reparto()`, `categoria()`,
+`ordineReparto()` e `diStagione(gruppo, mese)`. Il resto del codice passa da qui e
+non tocca mai la forma grezza dei file.
+
+`dati.test.ts` verifica la coerenza dei dati statici: i reparti citati dal catalogo,
+dai prodotti e dai gruppi fissi esistono in `reparti.json`, le categorie della
+routine esistono nel catalogo, la routine copre i sette giorni, i nomi dentro una
+categoria non si ripetono, ogni mese ha almeno 4 verdure e 4 frutti di stagione e la
+stagionalità usa solo mesi da 1 a 12.
+
+`lista.ts` lavora sulla lista corrente: `raggruppaPerReparto(voci)` divide le voci per
+reparto nell'ordine del percorso in corsia scartando i reparti vuoti, `vociAttive(lista)`
+tiene solo quelle non ancora comprate. `listaEsempio.ts` è una lista di settembre usata
+finché non ci sono generazione e persistenza: serve a vedere la schermata piena.
+
+`lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
+delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
+esistenti, Frutta e Verdura con 4 elementi di stagione).
+
 L'algoritmo di generazione ([03](03-algoritmo-generazione.md)) e i suoi test sono il
 prossimo passo.
 
@@ -52,6 +75,10 @@ Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salv
 zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemento
 toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
 stesso. Nessuna libreria di stili.
+
+La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
+voci, ognuna una riga alta almeno `--tocco`. Le voci raggruppate (Frutta, Verdura)
+elencano i propri elementi come pastiglie sotto il nome.
 
 Il layout è una colonna larga al massimo 560px, centrata: sul telefono occupa tutto,
 sul desktop resta stretta come sul telefono.

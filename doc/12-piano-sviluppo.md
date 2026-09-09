@@ -26,21 +26,21 @@ Una pagina bianca ma vera, con la sua identità.
 - [x] Font e dimensioni pensate per l'uso in corsia (testo grande, tap ampi)
 - [x] Schermata segnaposto "Lista della spesa" vuota
 
-## Step 2 — Caricamento e validazione dei dati statici
+## Step 2 — Caricamento e validazione dei dati statici ✅
 
 Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 
-- [ ] Modulo che carica e tipizza i cinque JSON
-- [ ] Test: ogni `reparto` citato nel catalogo esiste in `reparti.json`
-- [ ] Test: ogni categoria della routine esiste nel catalogo
-- [ ] Test: ogni mese ha almeno 4 verdure e 4 frutti di stagione
+- [x] Modulo che carica e tipizza i cinque JSON
+- [x] Test: ogni `reparto` citato nel catalogo esiste in `reparti.json`
+- [x] Test: ogni categoria della routine esiste nel catalogo
+- [x] Test: ogni mese ha almeno 4 verdure e 4 frutti di stagione
 
-## Step 3 — Lista corrente (sola lettura)
+## Step 3 — Lista corrente (sola lettura) ✅
 
-- [ ] Stato in memoria con una lista di esempio
-- [ ] Voci raggruppate per reparto, nell'ordine di corsia
-- [ ] Reparti vuoti non mostrati
-- [ ] Voci raggruppate *Frutta* e *Verdura* rese con i loro elementi
+- [x] Stato in memoria con una lista di esempio
+- [x] Voci raggruppate per reparto, nell'ordine di corsia
+- [x] Reparti vuoti non mostrati
+- [x] Voci raggruppate *Frutta* e *Verdura* rese con i loro elementi
 
 ## Step 4 — Spunta
 

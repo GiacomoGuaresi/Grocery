@@ -1,5 +1,11 @@
-/* Schermata principale. Per ora mostra solo lo stato vuoto: le voci
-   arrivano allo Step 3 del piano di sviluppo. */
+/* Schermata principale: i gruppi per reparto uno sotto l'altro, oppure lo
+   stato vuoto quando non c'è nessuna lista. */
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .lista-vuota {
   display: flex;
   flex-direction: column;
