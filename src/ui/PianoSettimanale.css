@@ -1,0 +1,76 @@
+/* Tabella dei pasti in sola lettura: una riga per giorno, il giorno corrente
+   in evidenza. Niente da toccare, quindi righe più basse delle voci di lista. */
+.piano {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.piano__titolo {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--salvia-scura);
+}
+
+.piano__giorni {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.piano__giorno {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px var(--spazio);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--panna);
+}
+
+.piano__giorno--oggi {
+  border-color: var(--salvia-scura);
+  background: var(--crema-scura);
+}
+
+.piano__nome {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--inchiostro-tenue);
+  text-transform: capitalize;
+}
+
+.piano__giorno--oggi .piano__nome {
+  color: var(--inchiostro);
+  font-weight: 600;
+}
+
+.piano__oggi {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--salvia);
+  color: var(--panna);
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.piano__categoria {
+  font-weight: 600;
+  text-align: right;
+}
+
+.piano__nota {
+  margin: 0;
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+}

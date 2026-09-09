@@ -103,11 +103,12 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 - [x] Il reparto segue la tipologia scelta: è un dato del catalogo (pesce fresco →
       pescheria, bastoncini → surgelati)
 
-## Step 11 — Piano settimanale
+## Step 11 — Piano settimanale ✅
 
-- [ ] Vista con la tabella dei pasti
-- [ ] Giorno corrente evidenziato
-- [ ] Mostra la **categoria** del giorno, non la tipologia
+- [x] Vista con la tabella dei pasti
+- [x] Giorno corrente evidenziato
+- [x] Mostra la **categoria** del giorno, non la tipologia
+- [x] Barra in alto per passare tra *Lista* e *Piano*
 
 ## Step 12 — Archivio
 

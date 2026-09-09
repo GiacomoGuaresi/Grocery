@@ -11,10 +11,14 @@
   border-inline: 1px solid var(--bordo);
 }
 
-.app__intestazione {
+/* Intestazione e barra delle schermate restano in alto insieme. */
+.app__testata {
   position: sticky;
   top: 0;
   z-index: 1;
+}
+
+.app__intestazione {
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -40,4 +44,28 @@
   flex: 1;
   padding: var(--spazio);
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
+}
+
+/* Barra delle schermate, sotto l'intestazione: due sole voci, tap ampi. */
+.app__navigazione {
+  display: flex;
+  background: var(--crema-scura);
+  border-bottom: 1px solid var(--bordo);
+}
+
+.app__scheda {
+  flex: 1;
+  min-height: var(--tocco);
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.app__scheda--attiva {
+  border-bottom-color: var(--salvia-scura);
+  color: var(--inchiostro);
 }
