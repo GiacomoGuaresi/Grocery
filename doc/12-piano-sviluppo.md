@@ -50,13 +50,13 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 - [x] De-spunta di una voce dalla sezione "Già presi"
 - [x] Test sulle transizioni di stato
 
-## Step 5 — Persistenza locale (SQLite)
+## Step 5 — Persistenza locale (SQLite) ✅
 
-- [ ] Interfaccia `Storage` (leggi lista, salva lista, leggi/salva rotazioni)
-- [ ] Implementazione con `sql.js` (SQLite in WASM), database su IndexedDB
-- [ ] Schema SQL delle tabelle `liste`, `voci`, `elementi`, `rotazioni`
-- [ ] La lista sopravvive al refresh della pagina
-- [ ] Test dell'implementazione contro l'interfaccia
+- [x] Interfaccia `Storage` (leggi lista, salva lista, leggi/salva rotazioni)
+- [x] Implementazione con `sql.js` (SQLite in WASM), database su IndexedDB
+- [x] Schema SQL delle tabelle `liste`, `voci`, `elementi`, `rotazioni`
+- [x] La lista sopravvive al refresh della pagina
+- [x] Test dell'implementazione contro l'interfaccia
 
 ## Step 6 — Inserimento manuale
 

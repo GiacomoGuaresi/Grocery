@@ -64,3 +64,11 @@
   color: var(--inchiostro-tenue);
   cursor: default;
 }
+
+/* Caricamento dallo storage ed errore di apertura del database. */
+.lista__messaggio {
+  margin: 0;
+  padding: 48px var(--spazio);
+  color: var(--inchiostro-tenue);
+  text-align: center;
+}

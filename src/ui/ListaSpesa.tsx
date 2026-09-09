@@ -1,35 +1,36 @@
-import { useState } from 'react'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
-import { listaEsempio } from '../domain/listaEsempio'
 import { alternaElemento, despuntaVoce, spuntaVoce } from '../domain/spunta'
-import type { Lista } from '../domain/tipi'
 import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
+import { useLista } from './useLista'
 import './ListaSpesa.css'
 
 /**
  * Schermata principale: la lista della spesa, raggruppata per reparto, con la
- * spunta e la sezione "Già presi" in fondo. La lista parte da un esempio tenuto
- * in memoria: la persistenza arriva allo Step 5 e la generazione allo Step 9
- * (doc/12-piano-sviluppo.md).
+ * spunta e la sezione "Già presi" in fondo. La lista arriva dallo storage e
+ * ogni spunta ci torna: quello che si tocca resta anche dopo un refresh. La
+ * generazione arriva allo Step 9 (doc/12-piano-sviluppo.md).
  */
 export function ListaSpesa() {
-  const [lista, setLista] = useState<Lista | null>(listaEsempio)
+  const { stato, modifica } = useLista()
 
-  if (!lista || lista.voci.length === 0) return <ListaVuota />
+  if (stato.fase === 'caricamento') return <Caricamento />
+  if (stato.fase === 'errore') return <Errore />
+
+  const { lista } = stato
+  if (lista.voci.length === 0) return <ListaVuota />
 
   const attive = raggruppaPerReparto(vociAttive(lista))
   const comprate = vociComprate(lista)
 
   const alterna = (id: string) =>
-    setLista((corrente) => {
-      if (!corrente) return corrente
+    modifica((corrente) => {
       const voce = corrente.voci.find((v) => v.id === id)
       return voce?.comprata ? despuntaVoce(corrente, id) : spuntaVoce(corrente, id)
     })
 
   const alternaUnElemento = (id: string, nome: string) =>
-    setLista((corrente) => (corrente ? alternaElemento(corrente, id, nome) : corrente))
+    modifica((corrente) => alternaElemento(corrente, id, nome))
 
   return (
     <div className="lista">
@@ -51,6 +52,22 @@ export function ListaSpesa() {
         onAlternaElemento={alternaUnElemento}
       />
     </div>
+  )
+}
+
+function Caricamento() {
+  return (
+    <p className="lista__messaggio" role="status">
+      Apro la lista…
+    </p>
+  )
+}
+
+function Errore() {
+  return (
+    <p className="lista__messaggio" role="alert">
+      Non riesco ad aprire la lista salvata su questo dispositivo.
+    </p>
   )
 }
 

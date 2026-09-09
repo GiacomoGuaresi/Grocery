@@ -10,12 +10,20 @@ Grocery/
 ├── tsconfig.json
 └── src/
     ├── main.tsx         monta React su #root
+    ├── vite-env.d.ts    tipi di Vite (import di asset, es. il WASM di SQLite)
     ├── data/            configurazioni statiche in JSON (vedi 05)
     ├── domain/          modello dati, dati statici tipizzati, algoritmo di generazione
     ├── storage/         interfaccia di persistenza (SQLite in dev, Supabase in prod)
+    │   ├── tipi.ts      l'interfaccia `Storage` e la porta `Persistenza`
+    │   ├── schema.ts    lo schema SQL di liste, voci, elementi, rotazioni
+    │   ├── sqlite.ts    implementazione su sql.js
+    │   ├── indexeddb.ts il blob del database dentro IndexedDB
+    │   ├── memoria.ts   persistenza volatile, per i test
+    │   └── index.ts     apertura dello storage dell'app (WASM + IndexedDB)
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
         ├── App.tsx      layout: header fisso + area contenuto
+        ├── useLista.ts  la lista corrente, letta e salvata sullo storage
         ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
         ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
         ├── GiaPresi.tsx       sezione ripiegata in fondo, per de-spuntare
@@ -62,8 +70,8 @@ stagionalità usa solo mesi da 1 a 12.
 `lista.ts` lavora sulla lista corrente: `raggruppaPerReparto(voci)` divide le voci per
 reparto nell'ordine del percorso in corsia scartando i reparti vuoti, `vociAttive(lista)`
 tiene solo quelle non ancora comprate e `vociComprate(lista)` solo quelle già prese.
-`listaEsempio.ts` è una lista di settembre usata finché non ci sono generazione e
-persistenza: serve a vedere la schermata piena.
+`listaEsempio.ts` è una lista di settembre usata finché non c'è la generazione: è
+quella con cui viene inizializzato il database alla prima apertura.
 
 `lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
 delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
@@ -85,11 +93,50 @@ cui attive e già presi coprono sempre tutte le voci senza doppioni.
 L'algoritmo di generazione ([03](03-algoritmo-generazione.md)) e i suoi test sono il
 prossimo passo.
 
+## `src/storage`
+Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
+`leggiListaCorrente()`, `salvaLista()`, `leggiRotazioni()`, `salvaRotazioni()`. Il
+resto dell'app conosce solo questa: l'implementazione Supabase arriverà accanto a
+quella SQLite senza toccare né il dominio né la UI.
+
+`schema.ts` tiene lo schema SQL delle quattro tabelle di
+[06](06-modello-dati.md) — `liste`, `voci`, `elementi`, `rotazioni` — scritto in SQL
+standard perché regga anche su Postgres. Le voci e gli elementi portano una
+`posizione`, così l'ordine della lista è quello con cui è stata salvata, e le
+`alternative` viaggiano come JSON in una colonna di testo.
+
+`sqlite.ts` implementa `Storage` su `sql.js`: il database sta in memoria e dopo ogni
+scrittura viene esportato in un blob e affidato alla `Persistenza`. Ogni salvataggio
+riscrive la lista per intero dentro una transazione, così quello che sparisce
+dall'oggetto sparisce anche dal database; salvando una lista `corrente` le altre
+correnti passano ad archiviata, perché ce n'è sempre una sola. `export()` di sql.js
+riapre la connessione, quindi il `PRAGMA foreign_keys` va rimesso a ogni
+transazione: senza, i `CASCADE` smettono di scattare dopo il primo salvataggio.
+
+La `Persistenza` è la porta che dice dove finiscono quei byte:
+`PersistenzaIndexedDB` li tiene in un unico record di IndexedDB — è ciò che fa
+sopravvivere la lista al refresh — e `PersistenzaMemoria` non li fa sopravvivere a
+niente, ed è quella dei test. `index.ts` mette insieme i pezzi per l'app in
+esecuzione: carica il WASM di SQLite e apre lo storage una volta sola.
+
+`sqlite.test.ts` lavora contro l'interfaccia, non contro i dettagli: la lista
+riletta identica a quella salvata, l'ordine di voci ed elementi, i campi opzionali
+che restano assenti, il salvataggio che aggiorna invece di duplicare, le voci tolte
+che spariscono con i loro elementi, l'unica lista corrente, le rotazioni sostituite
+e non accumulate. Il refresh si simula riaprendo il database sulla stessa
+`Persistenza`.
+
 ## `src/ui`
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
 zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemento
 toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
 stesso. Nessuna libreria di stili.
+
+La lista corrente arriva dallo storage: `useLista.ts` la legge all'apertura, mostra
+"Apro la lista…" finché non c'è e alla prima apertura salva la lista di esempio, che
+da lì in poi è la lista corrente vera. Ogni spunta va prima nello stato React —
+l'interfaccia risponde subito — e poi in coda verso il database, in modo che i tocchi
+rapidi arrivino nell'ordine in cui sono stati fatti.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
 voci, ognuna una riga alta almeno `--tocco`. Le voci raggruppate (Frutta, Verdura)
