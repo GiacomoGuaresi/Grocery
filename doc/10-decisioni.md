@@ -9,7 +9,9 @@
 | 2026-09-09 | Il **pane** è comprato a parte e congelato: fuori dalla lista | deciso |
 | 2026-09-09 | Contorni: solo verdura, al massimo patate. **Mai legumi** | deciso |
 | 2026-09-09 | Nessun vincolo alimentare (allergie/intolleranze) | deciso |
-| 2026-09-09 | Rotazione **deterministica**, con memoria persistita tra i cicli | deciso |
+| 2026-09-09 | ~~Rotazione **deterministica**, con memoria persistita tra i cicli~~ | superata |
+| 2026-09-09 | Tipologie scelte **a caso**, non a giro fisso sul catalogo: a rotazione ciclica capitava sempre lo **stesso animale con tagli diversi** | deciso |
+| 2026-09-09 | La memoria tra i cicli diventa l'elenco delle **tipologie dell'ultimo ciclo**, escluse dalla pesca successiva | deciso |
 | 2026-09-09 | Sostituzione delle proposte tramite **dropdown di alternative**, non "rigenera" | deciso |
 | 2026-09-09 | **Nessuna quantità né grammatura** mostrata; possibile sviluppo futuro | deciso |
 | 2026-09-09 | Nessuna lista di prodotti base ricorrenti, nessun prodotto manuale ricorrente | deciso |

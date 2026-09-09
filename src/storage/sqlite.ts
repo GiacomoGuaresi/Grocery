@@ -5,7 +5,7 @@
 
 import type { Database, SqlJsStatic } from 'sql.js'
 import type { Elemento, IdCategoria, IdReparto, Lista, Rotazione, Voce } from '../domain/tipi'
-import { SCHEMA } from './schema'
+import { MIGRAZIONE_ROTAZIONI, SCHEMA } from './schema'
 import type { Persistenza, Storage } from './tipi'
 
 /**
@@ -19,8 +19,16 @@ export async function apriStorageSqlite(
   const salvato = await persistenza.carica()
   const db = salvato ? new SQL.Database(salvato) : new SQL.Database()
   db.run('PRAGMA foreign_keys = ON')
+  if (rotazioniDaMigrare(db)) db.run(MIGRAZIONE_ROTAZIONI)
   db.run(SCHEMA)
   return new StorageSqlite(db, persistenza)
+}
+
+/** Vero se il database porta ancora la tabella `rotazioni` a indici. */
+function rotazioniDaMigrare(db: Database): boolean {
+  return interroga(db, "PRAGMA table_info('rotazioni')").some(
+    (colonna) => colonna.name === 'ultimo_indice',
+  )
 }
 
 export class StorageSqlite implements Storage {
@@ -93,10 +101,10 @@ export class StorageSqlite implements Storage {
   }
 
   async leggiRotazioni(): Promise<Rotazione[]> {
-    return interroga(this.db, 'SELECT categoria, ultimo_indice FROM rotazioni ORDER BY categoria').map(
+    return interroga(this.db, 'SELECT categoria, ultimi FROM rotazioni ORDER BY categoria').map(
       (riga) => ({
         categoria: riga.categoria as Rotazione['categoria'],
-        ultimoIndice: riga.ultimo_indice as number,
+        ultimi: JSON.parse(riga.ultimi as string) as string[],
       }),
     )
   }
@@ -105,9 +113,9 @@ export class StorageSqlite implements Storage {
     this.inTransazione(() => {
       this.db.run('DELETE FROM rotazioni')
       for (const rotazione of rotazioni) {
-        this.db.run('INSERT INTO rotazioni (categoria, ultimo_indice) VALUES (?, ?)', [
+        this.db.run('INSERT INTO rotazioni (categoria, ultimi) VALUES (?, ?)', [
           rotazione.categoria,
-          rotazione.ultimoIndice,
+          JSON.stringify(rotazione.ultimi),
         ])
       }
     })

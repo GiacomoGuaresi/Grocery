@@ -77,11 +77,14 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 
 - [x] Selezione di stagione: verdura e frutta del mese corrente
-- [x] Rotazione deterministica con memoria (`ultimoIndice` per categoria)
+- [x] ~~Rotazione deterministica con memoria (`ultimoIndice` per categoria)~~
+- [x] Scelta **casuale** con memoria (`ultimi` per categoria): a giro fisso usciva
+      sempre lo stesso animale con tagli diversi
 - [x] Copertura del ciclo: 2 carne rossa, 2 formaggio, 4 pesce, 2 uova, 2 carne bianca, 2 affettati
 - [x] Varietà dentro il ciclo: tipologie diverse tra loro nella stessa categoria
 - [x] 4 verdure e 4 frutti diversi per ciclo
 - [x] Test: due cicli consecutivi non ripropongono le stesse tipologie
+- [x] Test: la pesca gira su tutto il catalogo, non su un angolo solo
 - [x] Test: a gennaio non escono pomodori
 
 ## Step 9 — Generazione dall'interfaccia ✅

@@ -1,5 +1,5 @@
 {
-  "$commento": "Tipologie per categoria, in ordine di rotazione (l'ordine e' indifferente: non ci sono preferenze). Ogni voce porta il reparto in cui si trova.",
+  "$commento": "Tipologie per categoria: si pescano a caso, quindi l'ordine e' indifferente. Ogni voce porta il reparto in cui si trova.",
   "categorie": {
     "carne_rossa": {
       "etichetta": "Carne rossa",

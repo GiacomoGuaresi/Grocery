@@ -111,9 +111,9 @@ describe('lettura e scrittura della lista', () => {
 
 describe('rotazioni', () => {
   const rotazioni: Rotazione[] = [
-    { categoria: 'pesce', ultimoIndice: 7 },
-    { categoria: 'carne_rossa', ultimoIndice: 2 },
-    { categoria: 'frutta', ultimoIndice: 11 },
+    { categoria: 'pesce', ultimi: ['orata', 'branzino', 'cozze', 'polpo'] },
+    { categoria: 'carne_rossa', ultimi: ['salsiccia', 'ossobuco di vitello'] },
+    { categoria: 'frutta', ultimi: ['mele', 'pere', 'uva', 'fichi'] },
   ]
 
   it('parte vuota', async () => {
@@ -132,8 +132,23 @@ describe('rotazioni', () => {
   it('sostituisce la memoria precedente invece di accumularla', async () => {
     const { storage } = await apri()
     await storage.salvaRotazioni(rotazioni)
-    await storage.salvaRotazioni([{ categoria: 'pesce', ultimoIndice: 8 }])
-    expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'pesce', ultimoIndice: 8 }])
+    await storage.salvaRotazioni([{ categoria: 'pesce', ultimi: ['sgombro'] }])
+    expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'pesce', ultimi: ['sgombro'] }])
+  })
+
+  it('un database con la vecchia memoria a indici si riapre lo stesso', async () => {
+    const vecchio = new SQL.Database()
+    vecchio.run('CREATE TABLE rotazioni (categoria TEXT PRIMARY KEY, ultimo_indice INTEGER NOT NULL)')
+    vecchio.run("INSERT INTO rotazioni (categoria, ultimo_indice) VALUES ('pesce', 3)")
+    const persistenza = new PersistenzaMemoria()
+    await persistenza.salva(vecchio.export())
+    vecchio.close()
+
+    // La memoria vecchia si butta: si ricostruisce alla prima generazione.
+    const { storage } = await apri(persistenza)
+    expect(await storage.leggiRotazioni()).toEqual([])
+    await storage.salvaRotazioni([{ categoria: 'pesce', ultimi: ['sgombro'] }])
+    expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'pesce', ultimi: ['sgombro'] }])
   })
 })
 
@@ -142,13 +157,13 @@ describe('sopravvivenza al refresh', () => {
     const persistenza = new PersistenzaMemoria()
     const prima = await apri(persistenza)
     await prima.storage.salvaLista(lista)
-    await prima.storage.salvaRotazioni([{ categoria: 'uova', ultimoIndice: 1 }])
+    await prima.storage.salvaRotazioni([{ categoria: 'uova', ultimi: [] }])
 
     // Stessa persistenza, database ricostruito da zero: è ciò che succede
     // dopo un refresh della pagina.
     const dopo = await apri(persistenza)
     expect(await dopo.storage.leggiListaCorrente()).toEqual(lista)
-    expect(await dopo.storage.leggiRotazioni()).toEqual([{ categoria: 'uova', ultimoIndice: 1 }])
+    expect(await dopo.storage.leggiRotazioni()).toEqual([{ categoria: 'uova', ultimi: [] }])
   })
 
   it('senza niente di salvato riparte da un database vuoto', async () => {

@@ -27,6 +27,8 @@ Grocery/
         ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
         ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
         ├── GiaPresi.tsx       sezione ripiegata in fondo, per de-spuntare
+        ├── AggiungiVoce.tsx   aggiunta rapida con autocompletamento
+        ├── GeneraLista.tsx    l'azione "Genera lista" e la sua conferma
         └── Voce.tsx           una voce, con gli elementi se è raggruppata
 ```
 
@@ -70,8 +72,8 @@ stagionalità usa solo mesi da 1 a 12.
 `lista.ts` lavora sulla lista corrente: `raggruppaPerReparto(voci)` divide le voci per
 reparto nell'ordine del percorso in corsia scartando i reparti vuoti, `vociAttive(lista)`
 tiene solo quelle non ancora comprate e `vociComprate(lista)` solo quelle già prese.
-`listaEsempio.ts` è una lista di settembre usata finché non c'è la generazione: è
-quella con cui viene inizializzato il database alla prima apertura.
+`listaEsempio.ts` è una lista di settembre: da quando l'app genera da sé resta come
+banco di prova dei test.
 
 `lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
 delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
@@ -90,8 +92,23 @@ l'immutabilità della lista di partenza, l'idempotenza, il passaggio della voce
 raggruppata a comprata all'ultimo elemento e il ritorno indietro, e l'invariante per
 cui attive e già presi coprono sempre tutte le voci senza doppioni.
 
-L'algoritmo di generazione ([03](03-algoritmo-generazione.md)) e i suoi test sono il
-prossimo passo.
+`aggiunta.ts` regge l'inserimento manuale: `normalizza()` mette i nomi in una forma
+confrontabile (minuscolo, senza accenti né spazi di troppo), `suggerimenti()` propone
+i prodotti del catalogo mentre si scrive e `aggiungiVoce()` crea la voce, col reparto
+del prodotto riconosciuto o in "Altro". `modifica.ts` tiene eliminazione e rinomina:
+solo le voci manuali in "Altro" si rinominano, e il reparto non cambia mai.
+
+`generazione.ts` è l'algoritmo di [03](03-algoritmo-generazione.md): da routine,
+cataloghi e stagionalità escono le voci del ciclo. Le tipologie si **pescano a caso**
+(R2) — a scorrere il catalogo in ordine usciva sempre lo stesso animale con tagli
+diversi — evitando quelle del ciclo prima, che arrivano dalle `rotazioni` salvate e
+tornano aggiornate da salvare (R3). La sorgente del caso è un parametro (`caso`), così
+i test la sostituiscono con un generatore a seme e restano riproducibili.
+
+`ciclo.ts` sta intorno all'algoritmo: `vociDaRiportare()` dice cosa è rimasto da
+prendere e `nuovoCiclo()` mette insieme lista nuova, rotazioni da salvare e lista
+precedente da archiviare, portando avanti le voci non spuntate se lo si è chiesto
+(R6). Niente rigenerazione in place: la lista di prima non viene toccata.
 
 ## `src/storage`
 Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
@@ -101,7 +118,10 @@ quella SQLite senza toccare né il dominio né la UI.
 
 `schema.ts` tiene lo schema SQL delle quattro tabelle di
 [06](06-modello-dati.md) — `liste`, `voci`, `elementi`, `rotazioni` — scritto in SQL
-standard perché regga anche su Postgres. Le voci e gli elementi portano una
+standard perché regga anche su Postgres. In `rotazioni` la memoria è l'elenco delle
+tipologie dell'ultimo ciclo (JSON in una colonna di testo); i database di sviluppo
+creati quando era una posizione nel catalogo si migrano buttando la tabella, che si
+ricostruisce alla prima generazione. Le voci e gli elementi portano una
 `posizione`, così l'ordine della lista è quello con cui è stata salvata, e le
 `alternative` viaggiano come JSON in una colonna di testo.
 

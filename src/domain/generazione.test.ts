@@ -3,6 +3,22 @@ import { categorie, stagionalita } from './dati'
 import { generaLista, meseDi, occorrenzePerCiclo } from './generazione'
 import type { IdCategoria, Lista, Voce } from './tipi'
 
+/**
+ * Una sorgente del caso riproducibile (mulberry32): stesso seme, stessa
+ * sequenza. Serve a testare un algoritmo che per scelta non è deterministico
+ * (doc/03, R2) senza che i test diventino ballerini.
+ */
+function caso(seme: number): () => number {
+  let stato = seme >>> 0
+  return () => {
+    stato = (stato + 0x6d2b79f5) >>> 0
+    let t = stato
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 /** Il 15 del mese: una data qualsiasi dentro il mese, senza sorprese di fuso. */
 function ilQuindici(mese: number): Date {
   return new Date(2026, mese - 1, 15)
@@ -97,33 +113,50 @@ describe('generaLista — varietà dentro il ciclo', () => {
   })
 })
 
-describe('generaLista — rotazione deterministica', () => {
-  it('a parità di data e rotazioni esce sempre la stessa lista', () => {
-    const prima = generaLista({ data: ilQuindici(3), id: 'x' })
-    const seconda = generaLista({ data: ilQuindici(3), id: 'x' })
+describe('generaLista — scelta casuale', () => {
+  it('a parità di seme esce sempre la stessa lista', () => {
+    const prima = generaLista({ data: ilQuindici(3), id: 'x', caso: caso(7) })
+    const seconda = generaLista({ data: ilQuindici(3), id: 'x', caso: caso(7) })
     expect(seconda.lista).toEqual(prima.lista)
     expect(seconda.rotazioni).toEqual(prima.rotazioni)
   })
 
-  it('senza memoria si parte dall’inizio del catalogo', () => {
-    const { lista } = generaLista({ data: ilQuindici(3) })
+  it('non segue l’ordine del catalogo: semi diversi, liste diverse', () => {
     const carne = categorie.find((c) => c.id === 'carne_rossa')!
-    expect(nomi(vociDi(lista, 'carne_rossa'))).toEqual([carne.tipi[0].nome, carne.tipi[1].nome])
+    const primi = [carne.tipi[0].nome, carne.tipi[1].nome]
+    const uscite = [1, 2, 3, 4, 5].map((seme) =>
+      nomi(vociDi(generaLista({ data: ilQuindici(3), caso: caso(seme) }).lista, 'carne_rossa')),
+    )
+
+    expect(new Set(uscite.map((u) => u.join('|'))).size).toBeGreaterThan(1)
+    expect(uscite.every((u) => u.join('|') === primi.join('|'))).toBe(false)
   })
 
-  it('salva la posizione raggiunta in ogni catalogo', () => {
-    const { rotazioni } = generaLista({ data: ilQuindici(3) })
-    const perCategoria = Object.fromEntries(
-      rotazioni.map((r) => [r.categoria, r.ultimoIndice]),
-    )
-    expect(perCategoria.carne_rossa).toBe(1)
-    expect(perCategoria.pesce).toBe(3)
-    expect(perCategoria.uova).toBe(-1)
+  it('gira su tutto il catalogo, non su un angolo solo', () => {
+    // Il motivo del cambio (doc/10): a giro fisso capitavano cicli interi
+    // sullo stesso animale, cambiando solo il taglio.
+    const scelte = new Set<string>()
+    for (let seme = 1; seme <= 20; seme++) {
+      const { lista } = generaLista({ data: ilQuindici(6), caso: caso(seme) })
+      for (const nome of nomi(vociDi(lista, 'carne_rossa'))) scelte.add(nome)
+    }
+    expect(scelte.size).toBeGreaterThan(15)
+  })
+
+  it('salva le tipologie proposte, che sono quelle della lista', () => {
+    const { lista, rotazioni } = generaLista({ data: ilQuindici(3), caso: caso(9) })
+    const perCategoria = Object.fromEntries(rotazioni.map((r) => [r.categoria, r.ultimi]))
+
+    expect(perCategoria.carne_rossa).toEqual(nomi(vociDi(lista, 'carne_rossa')))
+    expect(perCategoria.pesce).toEqual(nomi(vociDi(lista, 'pesce')))
+    expect(perCategoria.verdura).toEqual(elementi(lista, 'verdura'))
+    // Le uova non ruotano: non c'è niente da ricordare.
+    expect(perCategoria.uova).toEqual([])
   })
 
   it('due cicli consecutivi non ripropongono le stesse tipologie', () => {
-    const primo = generaLista({ data: ilQuindici(6) })
-    const secondo = generaLista({ data: ilQuindici(6), rotazioni: primo.rotazioni })
+    const primo = generaLista({ data: ilQuindici(6), caso: caso(11) })
+    const secondo = generaLista({ data: ilQuindici(6), rotazioni: primo.rotazioni, caso: caso(12) })
 
     for (const categoria of ['carne_rossa', 'carne_bianca', 'pesce', 'formaggio', 'affettati'] as IdCategoria[]) {
       const prime = new Set(nomi(vociDi(primo.lista, categoria)))
@@ -133,25 +166,38 @@ describe('generaLista — rotazione deterministica', () => {
     }
   })
 
-  it('due cicli consecutivi non ripropongono verdura e frutta', () => {
-    const primo = generaLista({ data: ilQuindici(6) })
-    const secondo = generaLista({ data: ilQuindici(6), rotazioni: primo.rotazioni })
+  it('due cicli consecutivi non ripropongono verdura e frutta, in nessun mese', () => {
+    for (let mese = 1; mese <= 12; mese++) {
+      const primo = generaLista({ data: ilQuindici(mese), caso: caso(mese) })
+      const secondo = generaLista({
+        data: ilQuindici(mese),
+        rotazioni: primo.rotazioni,
+        caso: caso(mese + 100),
+      })
 
-    for (const gruppo of ['verdura', 'frutta'] as const) {
-      const prima = new Set(elementi(primo.lista, gruppo))
-      for (const nome of elementi(secondo.lista, gruppo)) {
-        expect(prima).not.toContain(nome)
+      for (const gruppo of ['verdura', 'frutta'] as const) {
+        const prima = new Set(elementi(primo.lista, gruppo))
+        for (const nome of elementi(secondo.lista, gruppo)) {
+          expect(prima).not.toContain(nome)
+        }
       }
     }
   })
 
-  it('il catalogo riparte dall’inizio quando finisce', () => {
-    const carne = categorie.find((c) => c.id === 'carne_rossa')!
+  it('se il mese non offre abbastanza tipi si ripescano quelli del ciclo prima', () => {
+    // Memoria che copre tutta la frutta: non resta niente di nuovo da pescare,
+    // ma la voce esce lo stesso con i suoi 4 tipi di stagione.
+    const tuttaLaFrutta = Object.keys(stagionalita.frutta)
     const { lista } = generaLista({
-      data: ilQuindici(6),
-      rotazioni: [{ categoria: 'carne_rossa', ultimoIndice: carne.tipi.length - 1 }],
+      data: ilQuindici(3),
+      rotazioni: [{ categoria: 'frutta', ultimi: tuttaLaFrutta }],
+      caso: caso(3),
     })
-    expect(nomi(vociDi(lista, 'carne_rossa'))).toEqual([carne.tipi[0].nome, carne.tipi[1].nome])
+
+    expect(new Set(elementi(lista, 'frutta')).size).toBe(4)
+    for (const nome of elementi(lista, 'frutta')) {
+      expect(stagionalita.frutta[nome]).toContain(3)
+    }
   })
 })
 
@@ -172,9 +218,14 @@ describe('generaLista — stagionalità', () => {
     }
   })
 
-  it('la rotazione continua anche cambiando mese', () => {
-    const giugno = generaLista({ data: ilQuindici(6) })
-    const luglio = generaLista({ data: ilQuindici(7), rotazioni: giugno.rotazioni })
-    expect(elementi(luglio.lista, 'frutta')).not.toEqual(elementi(giugno.lista, 'frutta'))
+  it('la memoria vale anche cambiando mese', () => {
+    const giugno = generaLista({ data: ilQuindici(6), caso: caso(21) })
+    const luglio = generaLista({
+      data: ilQuindici(7),
+      rotazioni: giugno.rotazioni,
+      caso: caso(22),
+    })
+    const prima = new Set(elementi(giugno.lista, 'frutta'))
+    for (const nome of elementi(luglio.lista, 'frutta')) expect(prima).not.toContain(nome)
   })
 })

@@ -75,7 +75,7 @@ successiva.
 - **Performance**: caricamento pressoché istantaneo, bundle minimo.
 - **Privacy**: pochi dati, non sensibili, visibili solo ai due utenti.
 - **Qualità**: test automatici richiesti, in particolare sull'algoritmo di
-  generazione (rotazione, varietà nel ciclo, stagionalità).
+  generazione (pesca casuale, memoria del ciclo prima, varietà nel ciclo, stagionalità).
 
 ## Deploy
 Un solo ambiente: **produzione** su GitHub Pages, deploy automatico dal branch

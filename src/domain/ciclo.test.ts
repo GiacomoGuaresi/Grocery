@@ -4,6 +4,26 @@ import type { Lista, Voce } from './tipi'
 
 const ilQuindiciDiGiugno = new Date(2026, 5, 15)
 
+/**
+ * La generazione pesca a caso (doc/03, R2): con un seme fisso due chiamate
+ * danno la stessa lista, ed è quello che serve per confrontarle qui.
+ */
+function caso(seme: number): () => number {
+  let stato = seme >>> 0
+  return () => {
+    stato = (stato + 0x6d2b79f5) >>> 0
+    let t = stato
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+/** Le opzioni di un ciclo generato sempre uguale, per poterlo confrontare. */
+function stessaGenerazione() {
+  return { data: ilQuindiciDiGiugno, caso: caso(42) }
+}
+
 function lista(voci: Voce[]): Lista {
   return { id: 'precedente', creataIl: '2026-06-01T08:00:00.000Z', stato: 'corrente', voci }
 }
@@ -96,12 +116,12 @@ describe('nuovoCiclo', () => {
   })
 
   it('non raddoppia quello che il nuovo ciclo propone già', () => {
-    const senzaRiporto = nuovoCiclo({ data: ilQuindiciDiGiugno }).lista
+    const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
     const primaVoce = senzaRiporto.voci.find((voce) => !voce.elementi)!
     const doppione: Voce = { ...primaVoce, id: 'doppione', nome: primaVoce.nome.toUpperCase() }
 
     const ciclo = nuovoCiclo({
-      data: ilQuindiciDiGiugno,
+      ...stessaGenerazione(),
       precedente: lista([doppione]),
       portaAvanti: true,
     })
@@ -110,7 +130,7 @@ describe('nuovoCiclo', () => {
   })
 
   it('i tipi rimasti di verdura entrano nella voce raggruppata, senza crearne un\'altra', () => {
-    const senzaRiporto = nuovoCiclo({ data: ilQuindiciDiGiugno }).lista
+    const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
     const verdura: Voce = {
       id: 'verdura',
       nome: 'Verdura',
@@ -124,7 +144,7 @@ describe('nuovoCiclo', () => {
     }
 
     const ciclo = nuovoCiclo({
-      data: ilQuindiciDiGiugno,
+      ...stessaGenerazione(),
       precedente: lista([verdura]),
       portaAvanti: true,
     })
@@ -148,12 +168,12 @@ describe('nuovoCiclo', () => {
   })
 
   it('una voce riportata non ruba l\'id a una voce del ciclo nuovo', () => {
-    const senzaRiporto = nuovoCiclo({ data: ilQuindiciDiGiugno }).lista
+    const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
     const occupato = senzaRiporto.voci.find((voce) => !voce.elementi)!.id
     const vecchia: Voce = { ...caffe, id: occupato }
 
     const ciclo = nuovoCiclo({
-      data: ilQuindiciDiGiugno,
+      ...stessaGenerazione(),
       precedente: lista([vecchia]),
       portaAvanti: true,
     })

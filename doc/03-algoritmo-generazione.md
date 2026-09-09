@@ -1,6 +1,7 @@
 # 03 — Algoritmo di generazione
 
-Algoritmo **semplice e deterministico**. Nessuna IA, nessuna componente casuale.
+Algoritmo **semplice**, senza nessuna IA. La scelta delle tipologie è **casuale**:
+è l'unica componente non deterministica, e c'è per un motivo preciso (R2).
 
 ## Input
 - La **routine alimentare** ([02](02-routine-alimentare.md)): quale fonte proteica
@@ -8,8 +9,8 @@ Algoritmo **semplice e deterministico**. Nessuna IA, nessuna componente casuale.
 - I **cataloghi** di tipologie per categoria ([05](05-dati-statici.md)). L'ordine è
   indifferente: non ci sono preferenze da anticipare.
 - La **tabella di stagionalità** di verdura e frutta ([05](05-dati-statici.md)).
-- Lo **storico delle rotazioni**: per ogni categoria, l'ultima posizione usata,
-  persistita sul DB.
+- Lo **storico delle rotazioni**: per ogni categoria, le tipologie proposte
+  nell'ultimo ciclo, persistite sul DB.
 - La **data di generazione** (per determinare il mese → stagionalità).
 
 ## Output
@@ -22,15 +23,23 @@ raggruppata per **reparto**.
 Per ogni categoria si generano tante voci quante sono le occorrenze nel ciclo:
 carne rossa ×2, formaggio ×2, pesce ×4, uova ×2, carne bianca ×2, affettati ×2.
 
-### R2 — Rotazione deterministica
-Ogni categoria ha una lista ordinata di tipologie. L'algoritmo avanza di una
-posizione a ogni estrazione, ripartendo dall'inizio a fine lista (round-robin).
+### R2 — Scelta casuale
+Ogni tipologia della categoria si pesca **a caso**, con la stessa probabilità delle
+altre. Non si scorre il catalogo in ordine.
 
-    carne rossa: manzo -> maiale -> vitello -> manzo -> ...
+Prima era un giro fisso sul catalogo (round-robin) e si è rivelato sbagliato nell'uso
+reale: i cataloghi sono ordinati per animale, e a scorrerli in ordine capitavano cicli
+interi sullo **stesso animale con tagli diversi** — tredici tagli di manzo di fila
+prima di arrivare al maiale. Pescando a caso da tutto il catalogo la varietà si vede
+davvero.
+
+    carne rossa: ossobuco di vitello -> salsiccia -> roast beef -> ...
 
 ### R3 — Memoria tra i cicli
-La posizione raggiunta in ogni catalogo viene **salvata sul DB** e ripresa alla
-generazione successiva, così le liste consecutive non ripropongono le stesse cose.
+Le tipologie proposte vengono **salvate sul DB** e alla generazione successiva sono
+**escluse dalla pesca**: due cicli di fila non ripropongono le stesse cose. Se il
+catalogo del mese è troppo corto per farne a meno — può capitare alla frutta — quelle
+del ciclo prima tornano pescabili, ma solo dopo tutte le altre.
 
 ### R4 — Varietà dentro il ciclo
 Le occorrenze della stessa categoria nello stesso ciclo devono essere **tipologie
@@ -42,15 +51,15 @@ diverse tra loro**:
 Le **uova** sono l'eccezione: unica tipologia, nessuna rotazione.
 
 ### R5 — Contorni di stagione
-I contorni sono verdure — **patate incluse**, mai legumi — scelte **a rotazione tra
-quelle di stagione** nel mese di generazione.
+I contorni sono verdure — **patate incluse**, mai legumi — scelte **a caso tra quelle
+di stagione** nel mese di generazione.
 
 Non serve un contorno diverso per ogni cena: se ne propongono **4 per ciclo**,
 diverse tra loro, destinate a ripetersi lungo i giorni delle due settimane.
 
 ### R5b — Frutta di stagione
 Stessa logica: **4 tipi di frutta di stagione** per ciclo, diversi tra loro, scelti a
-rotazione. La frutta copre un consumo di **2 porzioni al giorno**.
+caso. La frutta copre un consumo di **2 porzioni al giorno**.
 
 ### R5c — Nessuna divisione tra le settimane
 Frutta e verdura si comprano **tutte insieme** in un'unica spesa. L'algoritmo
@@ -76,7 +85,7 @@ vengono così trasferiti.
 ### R7 — Alternative
 Ogni voce generata espone una **dropdown** con le altre tipologie disponibili della
 sua categoria, così da poterla sostituire prima o durante la spesa. La sostituzione
-non altera lo stato della rotazione salvata.
+non altera la memoria salvata.
 
 È l'unico modo per "modificare" una voce generata: gli alimenti sono dati statici del
 catalogo, non si rinominano.

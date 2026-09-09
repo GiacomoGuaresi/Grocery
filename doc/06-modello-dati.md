@@ -51,8 +51,8 @@ Memoria della rotazione tra un ciclo e l'altro (R3).
 
 | Campo | Tipo | Note |
 |---|---|---|
-| `categoria` | string | `carne_rossa`, `pesce`, `formaggio`, ... |
-| `ultimo_indice` | int | Posizione raggiunta nel catalogo |
+| `categoria` | string | `carne_rossa`, `pesce`, `formaggio`, ... (più `verdura` e `frutta`) |
+| `ultimi` | string[] | Le tipologie proposte nell'ultimo ciclo, da evitare in quello nuovo |
 
 ---
 

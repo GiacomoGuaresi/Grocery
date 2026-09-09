@@ -9,13 +9,13 @@ Posizione prevista: `src/data/*.json`.
 | File | Contenuto |
 |---|---|
 | `routine.json` | Fonte proteica per giorno della settimana |
-| `catalogo.json` | Tipologie per categoria, in ordine di rotazione, con il relativo reparto |
+| `catalogo.json` | Tipologie per categoria, con il relativo reparto |
 | `stagionalita.json` | Verdura e frutta per mese (Nord Italia) |
 | `reparti.json` | Reparti del supermercato e loro ordine in corsia |
 | `prodotti.json` | Catalogo `prodotto → reparto` per l'autocompletamento manuale |
 
-L'**ordine** degli elenchi di rotazione è indifferente: non ci sono preferenze da
-mettere in cima.
+L'**ordine** degli elenchi è indifferente: le tipologie si pescano a caso
+([03](03-algoritmo-generazione.md), R2), non c'è niente da mettere in cima.
 
 ---
 
@@ -105,7 +105,7 @@ Solo **verdure**, incluse le **patate** (che entrano nella rotazione come le alt
 
 L'algoritmo propone **4 verdure diverse per ciclo di acquisti**, da usare come
 contorno lungo tutti i giorni delle due settimane: non un contorno diverso per ogni
-cena, ma quattro verdure che si ripetono. Sono scelte a rotazione tra quelle **di
+cena, ma quattro verdure che si ripetono. Sono scelte a caso tra quelle **di
 stagione** nel mese di generazione; le patate sono disponibili tutto l'anno.
 
 Si comprano **tutte insieme** in un'unica spesa: nessuna divisione tra prima e
@@ -115,7 +115,7 @@ seconda settimana.
 
 La frutta **entra nella lista**: si consuma **2 volte al giorno**, ogni giorno.
 Come per le verdure, l'algoritmo propone **4 tipi di frutta per ciclo**, scelti a
-rotazione tra quelli **di stagione**.
+caso tra quelli **di stagione**.
 
 Si compra **in un'unica volta**, senza divisione tra prima e seconda settimana:
 l'app suggerisce solo *quali tipi* comprare, non le quantità né quando. Se serve

@@ -33,7 +33,7 @@ GitHub e pensato anche come pezzo di **portfolio**, quindi in futuro esisterà u
 
 ## Non-obiettivi
 - Non è un'app di meal planning completa né un tracker di spesa/budget.
-- **Niente IA**: la generazione è un algoritmo deterministico.
+- **Niente IA**: la generazione è un algoritmo semplice, che pesca a caso dai cataloghi.
 - Nessuna registrazione pubblica di nuovi utenti.
 - Non gestisce **quantità né grammature**: dice solo *cosa* comprare, le quantità si
   decidono in corsia. Le grammature indicative sono un possibile sviluppo futuro.

@@ -2,6 +2,14 @@
 // È scritto in SQL standard perché lo stesso schema deve reggere su Postgres
 // quando arriverà Supabase (Step 13).
 
+/**
+ * La memoria della rotazione era una posizione nel catalogo; da quando la
+ * scelta è casuale (doc/03, R2) è l'elenco delle tipologie dell'ultimo ciclo.
+ * Sui database già creati in sviluppo la tabella vecchia si butta: è memoria
+ * di comodo, si ricostruisce alla prima generazione.
+ */
+export const MIGRAZIONE_ROTAZIONI = `DROP TABLE IF EXISTS rotazioni;`
+
 export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS liste (
   id         TEXT PRIMARY KEY,
@@ -33,8 +41,8 @@ CREATE TABLE IF NOT EXISTS elementi (
 );
 
 CREATE TABLE IF NOT EXISTS rotazioni (
-  categoria      TEXT PRIMARY KEY,
-  ultimo_indice  INTEGER NOT NULL
+  categoria  TEXT PRIMARY KEY,
+  ultimi     TEXT NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS liste_stato ON liste(stato);

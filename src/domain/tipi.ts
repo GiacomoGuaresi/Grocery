@@ -37,5 +37,6 @@ export interface Lista {
 /** Memoria della rotazione tra un ciclo e l'altro. */
 export interface Rotazione {
   categoria: IdCategoria | 'verdura' | 'frutta'
-  ultimoIndice: number
+  /** Le tipologie proposte nell'ultimo ciclo: si evitano in quello nuovo (R3). */
+  ultimi: string[]
 }

@@ -2,9 +2,11 @@
 // Solo logica, nessuna UI: dalla routine, dai cataloghi e dalla stagionalità
 // escono le voci di un ciclo di due settimane (doc/03-algoritmo-generazione.md).
 //
-// Tutto è deterministico: a parità di data e di rotazioni in ingresso esce
-// sempre la stessa lista. L'unica memoria è `ultimoIndice`, una posizione per
-// catalogo, che l'algoritmo restituisce aggiornata perché venga salvata (R3).
+// La scelta è **casuale**, non a giro fisso sul catalogo: scorrendo il catalogo
+// in ordine capitavano cicli interi sullo stesso animale, cambiando solo il
+// taglio (R2). L'unica memoria è l'elenco delle tipologie proposte l'ultima
+// volta, che l'algoritmo restituisce aggiornato perché venga salvato: quelle si
+// evitano al giro dopo (R3).
 
 import {
   categorie,
@@ -22,10 +24,12 @@ export type ChiaveRotazione = IdCategoria | GruppoFisso
 export interface OpzioniGenerazione {
   /** Determina il mese, e quindi la stagionalità. Default: adesso. */
   data?: Date
-  /** La memoria dei cicli precedenti. Assente = si parte dall'inizio dei cataloghi. */
+  /** La memoria del ciclo precedente. Assente = si pesca da tutto il catalogo. */
   rotazioni?: Rotazione[]
   /** Id della lista prodotta. Default: derivato dalla data. */
   id?: string
+  /** La sorgente del caso, sostituibile nei test. Default: `Math.random`. */
+  caso?: () => number
 }
 
 export interface Generazione {
@@ -52,46 +56,60 @@ export function occorrenzePerCiclo(): Map<IdCategoria, number> {
   return occorrenze
 }
 
-/** La posizione salvata per questo catalogo, o -1 se non si è mai generato. */
-function ultimoIndice(rotazioni: Rotazione[], chiave: ChiaveRotazione): number {
-  return rotazioni.find((r) => r.categoria === chiave)?.ultimoIndice ?? -1
+/** Le tipologie proposte l'ultima volta per questo catalogo, da evitare adesso. */
+function ultimi(rotazioni: Rotazione[], chiave: ChiaveRotazione): Set<string> {
+  return new Set(rotazioni.find((r) => r.categoria === chiave)?.ultimi ?? [])
+}
+
+/** Mescola una copia dell'elenco (Fisher-Yates), lasciando intatto l'originale. */
+function mescola<T>(elenco: T[], caso: () => number): T[] {
+  const mescolato = [...elenco]
+  for (let i = mescolato.length - 1; i > 0; i--) {
+    const j = Math.floor(caso() * (i + 1))
+    ;[mescolato[i], mescolato[j]] = [mescolato[j], mescolato[i]]
+  }
+  return mescolato
 }
 
 /**
- * Avanza nel catalogo di `quanti` passi a partire dalla posizione salvata,
- * girando in tondo e saltando le posizioni non ammesse (R2). Finché le voci
- * ammesse sono più di quante ne servono le estrazioni sono tutte diverse tra
- * loro (R4); quando sono meno — le uova, che hanno una sola tipologia — il
- * giro ricomincia e la stessa voce si ripete.
+ * Pesca a caso `quanti` elementi dai candidati, senza ripetizioni (R4). Quello
+ * che era uscito l'ultima volta passa in coda: si ripesca solo se il catalogo
+ * di stagione è troppo corto per farne a meno (R3). Se i candidati sono meno
+ * delle voci da riempire — le uova, che hanno una sola tipologia — si ricomincia
+ * da capo e la stessa voce si ripete.
  */
-function ruota<T>(
-  elenco: T[],
-  precedente: number,
+function pesca<T>(
+  candidati: T[],
   quanti: number,
-  ammesso: (voce: T) => boolean = () => true,
-): { scelti: T[]; indice: number } {
-  const posizioni = elenco.map((_, i) => i).filter((i) => ammesso(elenco[i]))
-  if (posizioni.length === 0) return { scelti: [], indice: precedente }
-
-  const scelti: T[] = []
-  let indice = precedente
-  for (let passo = 0; passo < quanti; passo++) {
-    indice = posizioni.find((posizione) => posizione > indice) ?? posizioni[0]
-    scelti.push(elenco[indice])
-  }
-  return { scelti, indice }
+  nome: (voce: T) => string,
+  daEvitare: Set<string>,
+  caso: () => number,
+): T[] {
+  if (candidati.length === 0) return []
+  const urna = [
+    ...mescola(
+      candidati.filter((voce) => !daEvitare.has(nome(voce))),
+      caso,
+    ),
+    ...mescola(
+      candidati.filter((voce) => daEvitare.has(nome(voce))),
+      caso,
+    ),
+  ]
+  return Array.from({ length: quanti }, (_, i) => urna[i % urna.length])
 }
 
-/** Le voci di una categoria per il ciclo, con la posizione raggiunta nel catalogo. */
+/** Le voci di una categoria per il ciclo, con le tipologie da ricordare. */
 function vociCategoria(
   id: IdCategoria,
   quante: number,
-  precedente: number,
-): { voci: Voce[]; indice: number } {
+  daEvitare: Set<string>,
+  caso: () => number,
+): { voci: Voce[]; ultimi: string[] } {
   const catalogo = categorie.find((c) => c.id === id)
-  if (!catalogo) return { voci: [], indice: precedente }
+  if (!catalogo) return { voci: [], ultimi: [] }
 
-  const { scelti, indice } = ruota(catalogo.tipi, precedente, quante)
+  const scelti = pesca(catalogo.tipi, quante, (tipo) => tipo.nome, daEvitare, caso)
   const voci = scelti.map((tipo, posizione) => ({
     id: `${id}-${posizione + 1}`,
     nome: tipo.nome,
@@ -100,27 +118,26 @@ function vociCategoria(
     origine: 'generata' as const,
     comprata: false,
   }))
-  // Le categorie fisse non ruotano: la posizione salvata resta com'era (R8).
-  return { voci, indice: catalogo.fisso ? precedente : indice }
+  // Le categorie fisse hanno una tipologia sola: non c'è niente da evitare (R8).
+  return { voci, ultimi: catalogo.fisso ? [] : scelti.map((tipo) => tipo.nome) }
 }
 
 /**
  * La voce raggruppata di verdura o frutta: `tipiPerCiclo` tipi di stagione,
- * diversi tra loro, scelti a rotazione (R5, R5b, R5d). La posizione è tenuta
- * sul catalogo intero, non sui soli tipi del mese: così la rotazione prosegue
- * anche quando si cambia mese e la stagionalità sotto cambia.
+ * diversi tra loro, pescati a caso tra quelli del mese (R5, R5b, R5d).
  */
 function voceGruppo(
   gruppo: GruppoFisso,
   mese: Mese,
-  precedente: number,
-): { voce: Voce | null; indice: number } {
-  const catalogo = Object.keys(stagionalita[gruppo])
-  const { tipiPerCiclo, reparto } = gruppiFissi[gruppo]
-  const { scelti, indice } = ruota(catalogo, precedente, tipiPerCiclo, (nome) =>
+  daEvitare: Set<string>,
+  caso: () => number,
+): { voce: Voce | null; ultimi: string[] } {
+  const diStagione = Object.keys(stagionalita[gruppo]).filter((nome) =>
     stagionalita[gruppo][nome].includes(mese),
   )
-  if (scelti.length === 0) return { voce: null, indice: precedente }
+  const { tipiPerCiclo, reparto } = gruppiFissi[gruppo]
+  const scelti = pesca(diStagione, tipiPerCiclo, (nome) => nome, daEvitare, caso)
+  if (scelti.length === 0) return { voce: null, ultimi: [] }
 
   const elementi: Elemento[] = scelti.map((nome) => ({ nome, comprato: false }))
   return {
@@ -132,7 +149,7 @@ function voceGruppo(
       comprata: false,
       elementi,
     },
-    indice,
+    ultimi: scelti,
   }
 }
 
@@ -144,24 +161,29 @@ function voceGruppo(
 export function generaLista(opzioni: OpzioniGenerazione = {}): Generazione {
   const data = opzioni.data ?? new Date()
   const rotazioniPrecedenti = opzioni.rotazioni ?? []
+  const caso = opzioni.caso ?? Math.random
   const mese = meseDi(data)
 
   const voci: Voce[] = []
   const rotazioni: Rotazione[] = []
 
   for (const gruppo of ['verdura', 'frutta'] as GruppoFisso[]) {
-    const { voce, indice } = voceGruppo(gruppo, mese, ultimoIndice(rotazioniPrecedenti, gruppo))
-    if (voce) voci.push(voce)
-    rotazioni.push({ categoria: gruppo, ultimoIndice: indice })
+    const scelta = voceGruppo(gruppo, mese, ultimi(rotazioniPrecedenti, gruppo), caso)
+    if (scelta.voce) voci.push(scelta.voce)
+    rotazioni.push({ categoria: gruppo, ultimi: scelta.ultimi })
   }
 
   const occorrenze = occorrenzePerCiclo()
   for (const catalogo of categorie) {
     const quante = occorrenze.get(catalogo.id) ?? 0
-    const precedente = ultimoIndice(rotazioniPrecedenti, catalogo.id)
-    const { voci: vociDellaCategoria, indice } = vociCategoria(catalogo.id, quante, precedente)
-    voci.push(...vociDellaCategoria)
-    rotazioni.push({ categoria: catalogo.id, ultimoIndice: indice })
+    const scelta = vociCategoria(
+      catalogo.id,
+      quante,
+      ultimi(rotazioniPrecedenti, catalogo.id),
+      caso,
+    )
+    voci.push(...scelta.voci)
+    rotazioni.push({ categoria: catalogo.id, ultimi: scelta.ultimi })
   }
 
   return {
