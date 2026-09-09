@@ -94,11 +94,14 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 - [x] La lista precedente viene archiviata
 - [x] Nessuna rigenerazione in place
 
-## Step 10 — Dropdown delle alternative
+## Step 10 — Dropdown delle alternative ✅
 
-- [ ] Dropdown su ogni voce generata, con le altre tipologie della categoria
-- [ ] Dropdown sugli elementi di Frutta e Verdura, con le alternative **di stagione**
-- [ ] La sostituzione non altera lo stato della rotazione salvata
+- [x] Dropdown su ogni voce generata, con le altre tipologie della categoria
+- [x] Dropdown sugli elementi di Frutta e Verdura, con le alternative **di stagione**
+- [x] La sostituzione non altera lo stato della rotazione salvata
+- [x] Le alternative non ripropongono quello che è già in lista
+- [x] Il reparto segue la tipologia scelta: è un dato del catalogo (pesce fresco →
+      pescheria, bastoncini → surgelati)
 
 ## Step 11 — Piano settimanale
 

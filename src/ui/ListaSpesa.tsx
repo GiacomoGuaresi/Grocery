@@ -1,8 +1,15 @@
 import { aggiungiVoce } from '../domain/aggiunta'
+import {
+  alternativeElemento,
+  alternativeVoce,
+  sostituisciElemento,
+  sostituisciVoce,
+} from '../domain/alternative'
 import { vociDaRiportare } from '../domain/ciclo'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { alternaElemento, despuntaVoce, spuntaVoce } from '../domain/spunta'
+import type { Voce as VoceLista } from '../domain/tipi'
 import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
@@ -52,6 +59,19 @@ export function ListaSpesa() {
   const rinomina = (id: string, nome: string) =>
     modifica((corrente) => rinominaVoce(corrente, id, nome))
 
+  // Le alternative si calcolano sulla lista di adesso: quello che è già dentro
+  // non viene riproposto, e per frutta e verdura conta il mese corrente (F6).
+  const sostituisci = (id: string, nome: string) =>
+    modifica((corrente) => sostituisciVoce(corrente, id, nome))
+
+  const sostituisciUnElemento = (id: string, nome: string, nuovo: string) =>
+    modifica((corrente) => sostituisciElemento(corrente, id, nome, nuovo))
+
+  const alternative = (voce: VoceLista) => alternativeVoce(lista, voce)
+
+  const alternativeDi = (voce: VoceLista, nome: string) =>
+    alternativeElemento(lista, voce, nome)
+
   return (
     <div className="lista">
       {attive.length > 0 ? (
@@ -63,6 +83,10 @@ export function ListaSpesa() {
             onAlternaElemento={alternaUnElemento}
             onElimina={elimina}
             onRinomina={rinomina}
+            onSostituisci={sostituisci}
+            onSostituisciElemento={sostituisciUnElemento}
+            alternative={alternative}
+            alternativeElemento={alternativeDi}
           />
         ))
       ) : (
@@ -74,6 +98,10 @@ export function ListaSpesa() {
         onAlternaElemento={alternaUnElemento}
         onElimina={elimina}
         onRinomina={rinomina}
+        onSostituisci={sostituisci}
+        onSostituisciElemento={sostituisciUnElemento}
+        alternative={alternative}
+        alternativeElemento={alternativeDi}
       />
       <AggiungiVoce onAggiungi={aggiungi} />
       <GeneraLista rimaste={vociDaRiportare(lista)} onGenera={genera} />

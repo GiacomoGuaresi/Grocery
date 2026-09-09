@@ -172,3 +172,40 @@
   color: inherit;
   font: inherit;
 }
+
+/* La dropdown delle alternative: un select di sistema, vestito come i bottoni
+   delle azioni. Sul telefono apre la ruota nativa (F6). */
+.voce__alternative {
+  max-width: 100%;
+  min-height: 44px;
+  padding: 4px 14px;
+  border: 1px solid var(--bordo);
+  border-radius: 999px;
+  background: var(--crema);
+  color: inherit;
+  font: inherit;
+  font-size: var(--testo-piccolo);
+  cursor: pointer;
+}
+
+.voce__alternative:active {
+  background: var(--crema-scura);
+}
+
+/* Ogni tipo di Frutta e Verdura ha la sua, accanto alla spunta: solo il segno. */
+.voce__elemento-riga {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.voce__alternative--compatta {
+  width: 40px;
+  min-height: 40px;
+  padding: 0;
+  border-color: transparent;
+  background: none;
+  color: var(--inchiostro-tenue);
+  text-align: center;
+  text-align-last: center;
+}
