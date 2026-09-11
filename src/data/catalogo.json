@@ -393,139 +393,139 @@
       "tipi": [
         {
           "nome": "mozzarella",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "mozzarella di bufala",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "burrata",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "stracciatella",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "stracchino",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "crescenza",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "robiola",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "squacquerone",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "ricotta",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "primo sale",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "caprino",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "casatella",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "quartirolo",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "tomino",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "feta",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "formaggio spalmabile",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "scamorza",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "scamorza affumicata",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "provola",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "provolone",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "asiago",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "fontina",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "montasio",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "raschera",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "caciotta",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "pecorino",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "emmental",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "edamer",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "groviera",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "gorgonzola dolce",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "gorgonzola piccante",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "taleggio",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "brie",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         },
         {
           "nome": "camembert",
-          "reparto": "salumi_formaggi"
+          "reparto": "latticini_uova"
         }
       ]
     },
@@ -534,91 +534,91 @@
       "tipi": [
         {
           "nome": "prosciutto crudo",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "prosciutto crudo di Parma",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "prosciutto di San Daniele",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "prosciutto cotto",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "prosciutto cotto alle erbe",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "bresaola",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "speck",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "mortadella",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "salame Milano",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "salame Napoli",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "salame felino",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "spianata",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "coppa",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "capocollo",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "pancetta",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "lonzino",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "culatello",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "strolghino",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "porchetta",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "tacchino arrosto",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "petto di pollo arrosto",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         },
         {
           "nome": "fesa di tacchino affumicata",
-          "reparto": "salumi_formaggi"
+          "reparto": "salumi"
         }
       ]
     },

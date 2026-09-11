@@ -93,7 +93,7 @@ export const listaEsempio: Lista = {
     {
       id: 'formaggio-1',
       nome: 'mozzarella di bufala',
-      reparto: 'salumi_formaggi',
+      reparto: 'latticini_uova',
       categoria: 'formaggio',
       origine: 'generata',
       comprata: false,
@@ -101,7 +101,7 @@ export const listaEsempio: Lista = {
     {
       id: 'formaggio-2',
       nome: 'stracchino',
-      reparto: 'salumi_formaggi',
+      reparto: 'latticini_uova',
       categoria: 'formaggio',
       origine: 'generata',
       comprata: false,
@@ -109,7 +109,7 @@ export const listaEsempio: Lista = {
     {
       id: 'affettati-1',
       nome: 'prosciutto crudo',
-      reparto: 'salumi_formaggi',
+      reparto: 'salumi',
       categoria: 'affettati',
       origine: 'generata',
       comprata: false,
@@ -117,7 +117,7 @@ export const listaEsempio: Lista = {
     {
       id: 'affettati-2',
       nome: 'bresaola',
-      reparto: 'salumi_formaggi',
+      reparto: 'salumi',
       categoria: 'affettati',
       origine: 'generata',
       comprata: false,

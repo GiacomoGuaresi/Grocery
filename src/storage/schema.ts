@@ -26,6 +26,18 @@ UPDATE voci SET reparto = CASE
 END
 WHERE reparto = 'surgelati';`
 
+/**
+ * Fino al 2026-09-11 formaggi e affettati stavano insieme in "Salumi e
+ * formaggi": ora i formaggi stanno coi latticini e il reparto resta ai salumi.
+ * Come sopra, le voci salvate si spostano all'apertura. Rieseguirla non cambia niente.
+ */
+export const MIGRAZIONE_FORMAGGI = `
+UPDATE voci SET reparto = CASE
+  WHEN categoria = 'formaggio' THEN 'latticini_uova'
+  ELSE 'salumi'
+END
+WHERE reparto = 'salumi_formaggi';`
+
 // Fino al 2026-09-11 c'era anche una tabella `elementi`, coi tipi di frutta e
 // verdura dentro un'unica voce: ora ogni tipo è una voce a sé. I database che
 // ce l'hanno ancora si migrano all'apertura (StorageSqlite.migraElementi).

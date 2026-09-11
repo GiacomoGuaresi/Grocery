@@ -1,7 +1,7 @@
 // Modello dati — vedi doc/06-modello-dati.md
 
 export type IdReparto =
-  | 'ortofrutta' | 'macelleria' | 'pescheria' | 'salumi_formaggi'
+  | 'ortofrutta' | 'macelleria' | 'pescheria' | 'salumi'
   | 'latticini_uova' | 'dispensa' | 'casa_igiene' | 'altro'
 
 export type IdCategoria =

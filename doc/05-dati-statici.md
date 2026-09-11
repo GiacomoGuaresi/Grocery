@@ -23,16 +23,17 @@ L'**ordine** degli elenchi è indifferente: le tipologie si pescano a caso
 1. **Ortofrutta**
 2. **Macelleria**
 3. **Pescheria** — pesce fresco e surgelato
-4. **Salumi e formaggi** — banco frigo, **preconfezionati** (non il banco gastronomia)
-5. **Latticini e uova**
+4. **Salumi** — banco frigo, **preconfezionati** (non il banco gastronomia)
+5. **Latticini, formaggi e uova**
 6. **Dispensa**
 7. **Casa e igiene**
 8. **Altro** — prodotti manuali non presenti in `prodotti.json`
 
 Ordine **fissato nel JSON**, non riordinabile dall'app.
 
-Formaggi e affettati si comprano **preconfezionati**, quindi finiscono nel reparto
-*Salumi e formaggi*, non a un banco servito.
+Formaggi e affettati si comprano **preconfezionati**, non a un banco servito. Gli
+affettati stanno in *Salumi*; i formaggi stanno coi latticini, in *Latticini,
+formaggi e uova*.
 
 **Non c'è un reparto Surgelati**: ogni surgelato sta nel reparto del prodotto
 corrispondente. Il pesce si compra sia fresco sia surgelato, e sta sempre in
@@ -74,7 +75,7 @@ salmone affumicato
 Molluschi e crostacei: gamberi · gamberoni · mazzancolle · calamari · totani ·
 seppie · polpo · moscardini · cozze · vongole · capesante
 
-### Formaggio — reparto: Salumi e formaggi
+### Formaggio — reparto: Latticini, formaggi e uova
 Freschi: mozzarella · mozzarella di bufala · burrata · stracciatella · stracchino ·
 crescenza · robiola · squacquerone · ricotta · primo sale · caprino · casatella ·
 quartirolo · tomino · feta · formaggio spalmabile
@@ -86,14 +87,14 @@ groviera
 Erborinati e a pasta molle: gorgonzola dolce · gorgonzola piccante · taleggio ·
 brie · camembert
 
-### Affettati — reparto: Salumi e formaggi
+### Affettati — reparto: Salumi
 Prosciutto crudo · prosciutto crudo di Parma · prosciutto di San Daniele ·
 prosciutto cotto · prosciutto cotto alle erbe · bresaola · speck · mortadella ·
 salame Milano · salame Napoli · salame felino · spianata · coppa · capocollo ·
 pancetta · lonzino · culatello · strolghino · porchetta · tacchino arrosto ·
 petto di pollo arrosto · fesa di tacchino affumicata
 
-### Uova — reparto: Latticini e uova
+### Uova — reparto: Latticini, formaggi e uova
 Voce fissa, nessuna rotazione.
 
 ---
@@ -256,7 +257,7 @@ tonno in scatola · mais · legumi in scatola · caffè · tè · tisane · acqu
 vino · birra · cioccolato · patatine · crackers · taralli · frutta secca ·
 pizza surgelata
 
-### Latticini e uova
+### Latticini, formaggi e uova
 latte · yogurt · panna da cucina · burro · parmigiano · grana · uova ·
 formaggio spalmabile · gelato
 

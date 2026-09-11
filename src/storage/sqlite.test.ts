@@ -241,6 +241,27 @@ describe('liste salvate col reparto Surgelati', () => {
   })
 })
 
+describe('liste salvate col reparto Salumi e formaggi', () => {
+  it('si riaprono coi formaggi nei latticini e gli affettati nei salumi', async () => {
+    const vecchio = new SQL.Database()
+    vecchio.run(SCHEMA)
+    vecchio.run(`INSERT INTO liste VALUES ('adesso', '2026-09-07T08:00:00.000Z', 'corrente')`)
+    vecchio.run(`INSERT INTO voci (lista_id, id, posizione, nome, reparto, categoria, origine, comprata) VALUES
+      ('adesso', 'formaggio-1', 0, 'stracchino', 'salumi_formaggi', 'formaggio', 'generata', 0),
+      ('adesso', 'affettati-1', 1, 'bresaola', 'salumi_formaggi', 'affettati', 'generata', 1)`)
+    const persistenza = new PersistenzaMemoria()
+    await persistenza.salva(vecchio.export())
+    vecchio.close()
+
+    const { storage } = await apri(persistenza)
+    const reparti = (await storage.leggiListaCorrente())?.voci.map((v) => [v.nome, v.reparto])
+    expect(reparti).toEqual([
+      ['stracchino', 'latticini_uova'],
+      ['bresaola', 'salumi'],
+    ])
+  })
+})
+
 describe('rotazioni', () => {
   const rotazioni: Rotazione[] = [
     { categoria: 'pesce', ultimi: ['orata', 'branzino', 'cozze', 'polpo'] },

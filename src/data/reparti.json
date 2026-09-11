@@ -4,8 +4,8 @@
     { "id": "ortofrutta", "nome": "Ortofrutta" },
     { "id": "macelleria", "nome": "Macelleria" },
     { "id": "pescheria", "nome": "Pescheria" },
-    { "id": "salumi_formaggi", "nome": "Salumi e formaggi" },
-    { "id": "latticini_uova", "nome": "Latticini e uova" },
+    { "id": "salumi", "nome": "Salumi" },
+    { "id": "latticini_uova", "nome": "Latticini, formaggi e uova" },
     { "id": "dispensa", "nome": "Dispensa" },
     { "id": "casa_igiene", "nome": "Casa e igiene" },
     { "id": "altro", "nome": "Altro" }
