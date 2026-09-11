@@ -2,15 +2,15 @@
 .gia-presi {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 8px;
+  gap: 6px;
+  padding-top: 6px;
   border-top: 1px solid var(--bordo);
 }
 
 .gia-presi__intestazione {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   min-height: var(--tocco);
   padding: 0;
@@ -29,8 +29,8 @@
 }
 
 .gia-presi__quanti {
-  min-width: 26px;
-  padding: 1px 8px;
+  min-width: 21px;
+  padding: 1px 6px;
   border-radius: 999px;
   background: var(--crema-scura);
   font-size: var(--testo-piccolo);
@@ -41,9 +41,9 @@
 .gia-presi__freccia {
   width: 0;
   height: 0;
-  border-left: 7px solid currentColor;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  border-left: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
   transition: transform 120ms ease-out;
 }
 
@@ -54,7 +54,6 @@
 .gia-presi__voci {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;

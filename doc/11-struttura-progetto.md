@@ -22,7 +22,8 @@ Grocery/
     │   └── index.ts     apertura dello storage dell'app (WASM + IndexedDB)
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
-        ├── App.tsx      layout: header fisso, barra delle schermate, contenuto
+        ├── App.tsx      layout: header fisso col bottone del menu, contenuto
+        ├── MenuLaterale.tsx   menu a scomparsa con sezioni e azioni
         ├── useLista.ts  la lista corrente, letta e salvata sullo storage
         ├── useArchivio.ts     le liste passate, in sola lettura
         ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
@@ -32,7 +33,8 @@ Grocery/
         ├── GeneraLista.tsx    l'azione "Genera lista" e la sua conferma
         ├── PianoSettimanale.tsx  la tabella delle cene, in consultazione
         ├── Archivio.tsx       le spese passate e una di esse aperta
-        └── Voce.tsx           una voce, con gli elementi se è raggruppata
+        ├── Voce.tsx           una voce, con gli elementi se è raggruppata
+        └── AzioniVoce.tsx     il popup con le azioni di una voce
 ```
 
 ## `src/data` — dati statici
@@ -175,7 +177,7 @@ l'interfaccia risponde subito — e poi in coda verso il database, in modo che i
 rapidi arrivino nell'ordine in cui sono stati fatti.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
-voci, ognuna una riga alta almeno `--tocco`. Le voci raggruppate (Frutta, Verdura)
+voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Le voci raggruppate (Frutta, Verdura)
 elencano i propri elementi come pastiglie sotto il nome, ognuna toccabile per conto
 suo.
 
@@ -186,7 +188,10 @@ conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
 de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
 quel percorso ormai è alle spalle.
 
-La barra in alto tiene le tre schermate: *Lista*, *Piano* e *Archivio*.
+Il menu laterale a scomparsa, aperto dal bottone ☰ dell'intestazione, tiene le tre
+sezioni *Lista*, *Piano* e *Archivio* e, sotto, l'azione *Genera lista*. Per questo
+`useLista` sta in `App.tsx` e non dentro la schermata della lista: la conferma della
+generazione ha bisogno della lista corrente anche quando si è altrove.
 
 `useArchivio.ts` legge le spese passate e ne apre una su richiesta: sono due
 letture separate, perché l'elenco non ha bisogno delle voci. La schermata mostra una
@@ -194,5 +199,5 @@ riga per spesa — data per esteso e riepilogo — e aprendone una rivede le sue
 per reparto, barrate quelle che erano finite nel carrello. Non c'è niente da toccare
 oltre alla riga che apre e a quella che riporta indietro: quel ciclo è chiuso (F11).
 
-Il layout è una colonna larga al massimo 560px, centrata: sul telefono occupa tutto,
+Il layout è una colonna larga al massimo 448px, centrata: sul telefono occupa tutto,
 sul desktop resta stretta come sul telefono.

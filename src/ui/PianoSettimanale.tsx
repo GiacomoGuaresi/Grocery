@@ -24,10 +24,7 @@ export function PianoSettimanale() {
               className={`piano__giorno${eOggi ? ' piano__giorno--oggi' : ''}`}
               aria-current={eOggi ? 'date' : undefined}
             >
-              <span className="piano__nome">
-                {giorno.etichetta}
-                {eOggi && <span className="piano__oggi">oggi</span>}
-              </span>
+              <span className="piano__nome">{giorno.etichetta}</span>
               <span className="piano__categoria">{giorno.etichettaCategoria}</span>
             </li>
           )

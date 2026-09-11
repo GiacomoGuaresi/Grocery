@@ -1,11 +1,11 @@
-/* L'azione "Genera lista" e la sua conferma, in fondo alla schermata.
-   La conferma prende posto nel flusso invece di coprire la lista: si legge
-   cosa si sta per archiviare prima di decidere. */
+/* L'azione "Genera lista" e la sua conferma: nella lista vuota, oppure a
+   schermo intero quando ci si arriva dal menu laterale. Si legge cosa si sta
+   per archiviare prima di decidere. */
 .genera {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .genera--conferma {
@@ -31,7 +31,7 @@
 .genera__rimaste {
   max-height: 30vh;
   margin: 0;
-  padding-left: 20px;
+  padding-left: 16px;
   overflow-y: auto;
   font-size: var(--testo-piccolo);
 }
@@ -39,8 +39,8 @@
 .genera__scelte {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 4px;
+  gap: 6px;
+  margin-top: 3px;
 }
 
 .genera__annulla {
@@ -52,7 +52,7 @@
   cursor: pointer;
 }
 
-/* Fuori dalla schermata vuota il bottone non deve rubare l'occhio alla spesa. */
+/* La scelta secondaria della conferma: non ruba l'occhio a quella principale. */
 .bottone--discreto {
   background: var(--panna);
   color: var(--inchiostro);

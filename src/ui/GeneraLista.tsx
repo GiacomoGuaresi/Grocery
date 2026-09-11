@@ -7,41 +7,52 @@ interface Props {
   rimaste: Voce[]
   /** Genera il nuovo ciclo, portando avanti o no le voci rimaste. */
   onGenera: (portaAvanti: boolean) => void
-  /** Nella schermata vuota il bottone è l'azione principale. */
-  variante?: 'principale' | 'discreta'
 }
 
 /**
- * L'azione che apre il ciclo nuovo di due settimane (doc/08-ui-ux.md, §3).
- * Sempre dietro conferma, perché archivia la lista corrente: quella di prima
- * non si tocca più, non esiste un "rigenera".
+ * Il bottone "Genera lista" della schermata vuota, dove è l'azione principale.
+ * Con una lista in corso ci si arriva invece dal menu laterale, che apre
+ * direttamente la conferma.
+ */
+export function GeneraLista({ rimaste, onGenera }: Props) {
+  const [conferma, setConferma] = useState(false)
+
+  if (conferma) {
+    return (
+      <ConfermaGenera
+        rimaste={rimaste}
+        onGenera={(portaAvanti) => {
+          setConferma(false)
+          onGenera(portaAvanti)
+        }}
+        onAnnulla={() => setConferma(false)}
+      />
+    )
+  }
+
+  return (
+    <div className="genera">
+      <button className="bottone" type="button" onClick={() => setConferma(true)}>
+        Genera lista
+      </button>
+    </div>
+  )
+}
+
+/**
+ * La conferma che apre il ciclo nuovo di due settimane (doc/08-ui-ux.md, §3).
+ * C'è sempre, perché archivia la lista corrente: quella di prima non si tocca
+ * più, non esiste un "rigenera".
  *
  * Se è rimasto qualcosa da prendere la conferma diventa una domanda: portarlo
  * nella lista nuova oppure no. È così che quello che si è aggiunto a mano tra
  * una spesa e l'altra arriva alla spesa dopo (F1, R6).
  */
-export function GeneraLista({ rimaste, onGenera, variante = 'discreta' }: Props) {
-  const [conferma, setConferma] = useState(false)
-
-  const genera = (portaAvanti: boolean) => {
-    setConferma(false)
-    onGenera(portaAvanti)
-  }
-
-  if (!conferma) {
-    return (
-      <div className="genera">
-        <button
-          className={variante === 'principale' ? 'bottone' : 'bottone bottone--discreto'}
-          type="button"
-          onClick={() => setConferma(true)}
-        >
-          Genera lista
-        </button>
-      </div>
-    )
-  }
-
+export function ConfermaGenera({
+  rimaste,
+  onGenera,
+  onAnnulla,
+}: Props & { onAnnulla: () => void }) {
   return (
     <section className="genera genera--conferma" role="dialog" aria-label="Genera una nuova lista">
       <h2 className="genera__titolo">Genero una lista nuova?</h2>
@@ -72,23 +83,23 @@ export function GeneraLista({ rimaste, onGenera, variante = 'discreta' }: Props)
       <div className="genera__scelte">
         {rimaste.length > 0 ? (
           <>
-            <button className="bottone" type="button" onClick={() => genera(true)}>
+            <button className="bottone" type="button" onClick={() => onGenera(true)}>
               Sì, portale avanti
             </button>
             <button
               className="bottone bottone--discreto"
               type="button"
-              onClick={() => genera(false)}
+              onClick={() => onGenera(false)}
             >
               No, lista pulita
             </button>
           </>
         ) : (
-          <button className="bottone" type="button" onClick={() => genera(false)}>
+          <button className="bottone" type="button" onClick={() => onGenera(false)}>
             Genera
           </button>
         )}
-        <button className="genera__annulla" type="button" onClick={() => setConferma(false)}>
+        <button className="genera__annulla" type="button" onClick={onAnnulla}>
           Annulla
         </button>
       </div>

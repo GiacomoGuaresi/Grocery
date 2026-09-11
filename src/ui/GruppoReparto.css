@@ -1,6 +1,6 @@
 /* Un reparto: titolo discreto e sotto le sue voci, senza cornice. */
 .reparto__titolo {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   font-size: var(--testo-piccolo);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -8,10 +8,10 @@
   color: var(--salvia-scura);
 }
 
+/* Le voci sono righe attaccate: il reparto diventa un unico blocco. */
 .reparto__voci {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;

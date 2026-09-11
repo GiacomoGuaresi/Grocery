@@ -116,6 +116,17 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 - [x] Apertura di una lista archiviata
 - [x] Terza scheda *Archivio* nella barra in alto
 
+## Step 12b — Menu laterale e densità ✅
+
+- [x] Menu laterale a scomparsa al posto della barra in alto: *Lista*, *Piano*,
+      *Archivio* e l'azione *Genera lista*
+- [x] "Genera lista" dal menu apre direttamente la conferma
+- [x] Interfaccia in scala 0.8 (i campi di testo restano a 16px per iOS)
+- [x] Voci della lista compatte, attaccate in un blocco per reparto
+- [x] Le funzioni della voce (alternative, rinomina, elimina) in un popup aperto
+      dal ⋯: nella riga resta solo la spunta
+- [x] Piano: via la pastiglia "oggi", il giorno corrente resta solo evidenziato
+
 ## Step 13 — Supabase
 
 Da qui in poi l'app diventa condivisa.

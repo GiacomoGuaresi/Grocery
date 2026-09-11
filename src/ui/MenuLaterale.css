@@ -1,0 +1,139 @@
+/* Il menu laterale a scomparsa: scivola dentro da sinistra sopra un velo che
+   scurisce la pagina. Da chiuso è nascosto anche alla tastiera (visibility),
+   ma solo a transizione finita, così l'uscita si vede. */
+.menu-velo {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: rgb(61 55 51 / 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 200ms ease-out,
+    visibility 0s 200ms;
+}
+
+.menu-velo--aperto {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 200ms ease-out;
+}
+
+/* Su schermi larghi il menu parte dal bordo della colonna, non dello schermo. */
+.menu {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: max(0px, calc((100vw - var(--colonna)) / 2));
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  width: min(80vw, 256px);
+  padding: env(safe-area-inset-top) 8px calc(8px + env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: var(--crema);
+  border-right: 1px solid var(--bordo);
+  box-shadow: 4px 0 16px rgb(61 55 51 / 0.12);
+  transform: translateX(-100%);
+  visibility: hidden;
+  transition:
+    transform 200ms ease-out,
+    visibility 0s 200ms;
+}
+
+.menu--aperto {
+  transform: none;
+  visibility: visible;
+  transition: transform 200ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menu-velo,
+  .menu--aperto,
+  .menu-velo--aperto {
+    transition: none;
+  }
+}
+
+.menu__testata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 8px;
+}
+
+.menu__titolo {
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.menu__chiudi {
+  width: var(--tocco);
+  height: var(--tocco);
+  padding: 0;
+  border: none;
+  border-radius: var(--raggio);
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  font-size: var(--testo-grande);
+  cursor: pointer;
+}
+
+.menu__chiudi:active {
+  background: var(--crema-scura);
+}
+
+.menu__gruppo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu__voce {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu__voce:active {
+  background: var(--bordo);
+}
+
+/* La sezione in cui ci si trova: evidenziata con la barretta color salvia. */
+.menu__voce[aria-current='page'] {
+  background: var(--crema-scura);
+  box-shadow: inset 3px 0 0 var(--salvia-scura);
+  font-weight: 600;
+}
+
+.menu__icona {
+  width: 20px;
+  text-align: center;
+}
+
+/* Le azioni stanno sotto le sezioni, staccate da una riga. */
+.menu__separatore {
+  margin: 8px 4px;
+  border: none;
+  border-top: 1px solid var(--bordo);
+}
+
+.menu__voce--azione {
+  color: var(--salvia-scura);
+  font-weight: 600;
+}

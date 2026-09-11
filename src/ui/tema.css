@@ -12,14 +12,20 @@
   --inchiostro-tenue: #8a7f77;
   --bordo: #e8dccc;
 
-  --raggio: 14px;
-  --spazio: 16px;
-  /* Altezza minima di ogni elemento toccabile: si usa in piedi, con una mano. */
-  --tocco: 56px;
+  /* Tutto è in scala 0.8 rispetto alla prima versione: sul telefono era troppo
+     grande e si vedevano poche voci per volta. */
+  --raggio: 11px;
+  --spazio: 13px;
+  /* Altezza minima dei bottoni principali: si usa in piedi, con una mano. */
+  --tocco: 44px;
+  /* Le righe della lista sono più basse: se ne vedono di più insieme. */
+  --riga: 38px;
 
-  --testo-base: 18px;
-  --testo-grande: 22px;
-  --testo-piccolo: 15px;
+  --testo-base: 14px;
+  --testo-grande: 18px;
+  --testo-piccolo: 12px;
+  /* I campi di testo restano a 16px: sotto, iOS zooma da solo al tocco. */
+  --testo-campo: 16px;
 
   color-scheme: light;
 }

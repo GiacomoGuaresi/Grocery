@@ -1,0 +1,157 @@
+/* Il popup delle azioni di una voce: sale dal fondo dello schermo, dove
+   arriva il pollice, largo quanto la colonna dell'app. È un <dialog> modale:
+   sotto, la lista non si tocca e non scorre. */
+.azioni-voce {
+  width: 100%;
+  max-width: var(--colonna, 448px);
+  max-height: 85dvh;
+  margin: auto auto 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--raggio) var(--raggio) 0 0;
+  background: var(--panna);
+  color: var(--inchiostro);
+  box-shadow: 0 -4px 16px rgb(61 55 51 / 0.12);
+}
+
+.azioni-voce::backdrop {
+  background: rgb(61 55 51 / 0.35);
+}
+
+.azioni-voce[open] {
+  animation: azioni-voce-sale 200ms ease-out;
+}
+
+@keyframes azioni-voce-sale {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .azioni-voce[open] {
+    animation: none;
+  }
+}
+
+body:has(.azioni-voce[open]) {
+  overflow: hidden;
+}
+
+.azioni-voce__corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--spazio) var(--spazio) calc(var(--spazio) + env(safe-area-inset-bottom));
+}
+
+.azioni-voce__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.azioni-voce__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.azioni-voce__etichetta {
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--salvia-scura);
+}
+
+/* Select e campo della rinomina: a 16px, altrimenti iOS zooma al tocco. */
+.azioni-voce__scelta {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--tocco);
+  padding: 0 12px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema);
+  color: inherit;
+  font: inherit;
+  font-size: var(--testo-campo);
+  cursor: pointer;
+}
+
+.azioni-voce__scelta--testo {
+  border-color: var(--salvia);
+  background: var(--panna);
+  cursor: text;
+}
+
+.azioni-voce__scelta--testo:focus {
+  outline: 2px solid var(--salvia);
+  outline-offset: -1px;
+}
+
+/* Un tipo di Frutta o Verdura per riga: il nome e accanto la sua dropdown. */
+.azioni-voce__elementi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.azioni-voce__elemento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.azioni-voce__bottone {
+  min-height: var(--tocco);
+  padding: 0 16px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema);
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.azioni-voce__bottone:active:not(:disabled) {
+  background: var(--crema-scura);
+}
+
+.azioni-voce__bottone:disabled {
+  color: var(--inchiostro-tenue);
+  cursor: default;
+}
+
+.azioni-voce__bottone--elimina {
+  border-color: var(--pomodoro);
+  color: var(--pomodoro);
+}
+
+.azioni-voce__bottone--principale:not(:disabled) {
+  border-color: var(--salvia);
+  background: var(--salvia);
+  color: var(--panna);
+  font-weight: 600;
+}
+
+.azioni-voce__coppia {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.azioni-voce__chiudi {
+  min-height: var(--tocco);
+  border: none;
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  cursor: pointer;
+}

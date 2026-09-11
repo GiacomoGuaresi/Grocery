@@ -3,7 +3,7 @@
 .piano {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .piano__titolo {
@@ -18,7 +18,7 @@
 .piano__giorni {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -28,8 +28,8 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px var(--spazio);
+  gap: 10px;
+  padding: 11px var(--spazio);
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--panna);
@@ -41,27 +41,14 @@
 }
 
 .piano__nome {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   color: var(--inchiostro-tenue);
   text-transform: capitalize;
 }
 
+/* Il giorno corrente si riconosce solo dall'evidenziazione della riga. */
 .piano__giorno--oggi .piano__nome {
   color: var(--inchiostro);
   font-weight: 600;
-}
-
-.piano__oggi {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--salvia);
-  color: var(--panna);
-  font-size: var(--testo-piccolo);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .piano__categoria {

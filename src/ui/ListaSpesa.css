@@ -3,13 +3,13 @@
 .lista {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 19px;
 }
 
 /* Quando non resta niente da prendere, sopra la sezione "Già presi". */
 .lista__tutto-preso {
   margin: 0;
-  padding: 32px var(--spazio);
+  padding: 26px var(--spazio);
   color: var(--inchiostro-tenue);
   text-align: center;
 }
@@ -19,14 +19,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   min-height: 60vh;
   padding: var(--spazio);
   text-align: center;
 }
 
 .lista-vuota__icona {
-  font-size: 56px;
+  font-size: 45px;
   line-height: 1;
 }
 
@@ -44,8 +44,8 @@
 
 .bottone {
   min-height: var(--tocco);
-  padding: 0 28px;
-  margin-top: 8px;
+  padding: 0 22px;
+  margin-top: 6px;
   border: none;
   border-radius: var(--raggio);
   background: var(--salvia);
@@ -68,7 +68,7 @@
 /* Caricamento dallo storage ed errore di apertura del database. */
 .lista__messaggio {
   margin: 0;
-  padding: 48px var(--spazio);
+  padding: 38px var(--spazio);
   color: var(--inchiostro-tenue);
   text-align: center;
 }

@@ -5,7 +5,7 @@
   position: sticky;
   bottom: 0;
   z-index: 1;
-  margin-top: 24px;
+  margin-top: 19px;
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--panna);
 }
@@ -14,8 +14,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin: 0 0 8px;
-  padding: 6px;
+  margin: 0 0 6px;
+  padding: 5px;
   list-style: none;
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
@@ -26,9 +26,9 @@
   display: block;
   width: 100%;
   min-height: var(--tocco);
-  padding: 0 12px;
+  padding: 0 10px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: none;
   color: inherit;
   font: inherit;
@@ -42,8 +42,8 @@
 
 .aggiungi__riga {
   display: flex;
-  gap: 8px;
-  padding: 8px 0 12px;
+  gap: 6px;
+  padding: 6px 0 10px;
   border-top: 1px solid var(--bordo);
 }
 
@@ -51,14 +51,13 @@
   flex: 1;
   min-width: 0;
   min-height: var(--tocco);
-  padding: 0 14px;
+  padding: 0 11px;
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--panna);
   color: inherit;
   font: inherit;
-  /* Sotto i 16px iOS zooma da solo appena si tocca il campo. */
-  font-size: var(--testo-base);
+  font-size: var(--testo-campo);
 }
 
 .aggiungi__campo:focus {
@@ -69,7 +68,7 @@
 .aggiungi__bottone {
   flex: none;
   min-height: var(--tocco);
-  padding: 0 20px;
+  padding: 0 16px;
   border: none;
   border-radius: var(--raggio);
   background: var(--salvia);

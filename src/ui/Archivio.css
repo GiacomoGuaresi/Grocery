@@ -4,7 +4,7 @@
 .archivio {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .archivio__titolo {
@@ -19,7 +19,7 @@
 .archivio__liste {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -29,10 +29,10 @@
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 2px 12px;
+  gap: 2px 10px;
   width: 100%;
   min-height: var(--tocco);
-  padding: 12px var(--spazio);
+  padding: 10px var(--spazio);
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--panna);
@@ -57,14 +57,14 @@
   grid-row: 1 / span 2;
   width: 0;
   height: 0;
-  border-left: 7px solid var(--inchiostro-tenue);
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  border-left: 6px solid var(--inchiostro-tenue);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
 }
 
 .archivio__messaggio {
   margin: 0;
-  padding: 32px var(--spazio);
+  padding: 26px var(--spazio);
   color: var(--inchiostro-tenue);
   text-align: center;
 }
@@ -74,14 +74,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   min-height: 60vh;
   padding: var(--spazio);
   text-align: center;
 }
 
 .archivio-vuoto__icona {
-  font-size: 56px;
+  font-size: 45px;
   line-height: 1;
 }
 
@@ -102,16 +102,16 @@
 .passata {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .passata__indietro {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   align-self: flex-start;
   min-height: var(--tocco);
-  padding: 0 8px 0 0;
+  padding: 0 6px 0 0;
   border: none;
   background: none;
   color: var(--salvia-scura);
@@ -123,9 +123,9 @@
 .passata__freccia {
   width: 0;
   height: 0;
-  border-right: 7px solid currentColor;
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
+  border-right: 6px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
 }
 
 .passata__titolo {
@@ -143,11 +143,11 @@
 .passata__reparto {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .passata__reparto-titolo {
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   font-size: var(--testo-piccolo);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -158,14 +158,14 @@
 .passata__voci {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .passata__voce {
-  padding: 12px var(--spazio);
+  padding: 10px var(--spazio);
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--panna);
@@ -180,14 +180,14 @@
 .passata__elementi {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0 0;
+  gap: 5px;
+  margin: 6px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .passata__elemento {
-  padding: 2px 10px;
+  padding: 2px 8px;
   border-radius: 999px;
   background: var(--crema-scura);
   color: var(--inchiostro);

@@ -1,28 +1,43 @@
-/* Una voce della lista: riga ampia, comoda da toccare in corsia. */
+/* Una voce della lista: una riga bassa, attaccata alle altre del suo reparto,
+   così sullo schermo del telefono ne stanno tante insieme. Il reparto diventa
+   un unico blocco con i bordi arrotondati solo in cima e in fondo. Le azioni
+   stanno nel popup (AzioniVoce.css). */
 .voce {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 6px var(--spazio) 12px;
+  padding: 0 2px 0 var(--spazio);
   border: 1px solid var(--bordo);
-  border-radius: var(--raggio);
   background: var(--panna);
+}
+
+.voce + .voce {
+  border-top: none;
+}
+
+.voce:first-child {
+  border-top-left-radius: var(--raggio);
+  border-top-right-radius: var(--raggio);
+}
+
+.voce:last-child {
+  border-bottom-left-radius: var(--raggio);
+  border-bottom-right-radius: var(--raggio);
 }
 
 /* La riga della spunta e, di lato, il tocco che apre le azioni. */
 .voce__testata {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 /* Quasi tutta la riga è il bersaglio del tocco: si usa in piedi, con una mano. */
 .voce__riga {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
-  min-height: var(--tocco);
+  min-height: var(--riga);
   padding: 0;
   border: none;
   background: none;
@@ -38,10 +53,10 @@
 
 .voce__segno {
   flex: none;
-  width: 26px;
-  height: 26px;
+  width: 17px;
+  height: 17px;
   border: 2px solid var(--salvia);
-  border-radius: 8px;
+  border-radius: 5px;
 }
 
 /* Nei già presi il segno è pieno, con la spunta. */
@@ -54,12 +69,12 @@
 .voce__riga[aria-pressed='true'] .voce__segno::after {
   content: '';
   position: absolute;
-  top: 3px;
-  left: 7px;
-  width: 6px;
-  height: 12px;
+  top: 1px;
+  left: 4px;
+  width: 4px;
+  height: 8px;
   border: solid var(--panna);
-  border-width: 0 2.5px 2.5px 0;
+  border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
@@ -72,19 +87,20 @@
   background: var(--crema-scura);
 }
 
-/* Gli elementi di Frutta e Verdura: rientrati sotto il nome della voce. */
+/* Gli elementi di Frutta e Verdura: rientrati sotto il nome, allineati al
+   testo e non alla spunta. */
 .voce__elementi {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
   margin: 0;
-  padding: 0 0 0 38px;
+  padding: 0 0 8px 27px;
   list-style: none;
 }
 
 .voce__elemento {
-  min-height: 40px;
-  padding: 4px 16px;
+  min-height: 28px;
+  padding: 2px 10px;
   border: 1px solid transparent;
   border-radius: 999px;
   background: var(--crema-scura);
@@ -105,14 +121,15 @@
   border-color: var(--salvia);
 }
 
-/* Il tocco che apre le azioni: defilato, per non rubare spazio alla spunta. */
+/* Il tocco che apre il popup delle azioni: defilato, per non rubare spazio
+   alla spunta. */
 .voce__azioni-apri {
   flex: none;
-  width: 44px;
-  min-height: var(--tocco);
+  width: 34px;
+  min-height: var(--riga);
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: none;
   color: var(--inchiostro-tenue);
   font: inherit;
@@ -121,91 +138,7 @@
   cursor: pointer;
 }
 
-.voce__azioni-apri[aria-expanded='true'] {
+.voce__azioni-apri:active {
   background: var(--crema-scura);
   color: var(--inchiostro);
-}
-
-.voce__azioni,
-.voce__rinomina {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding-top: 4px;
-}
-
-.voce__azione {
-  min-height: 44px;
-  padding: 4px 18px;
-  border: 1px solid var(--bordo);
-  border-radius: 999px;
-  background: var(--crema);
-  color: inherit;
-  font: inherit;
-  font-size: var(--testo-piccolo);
-  cursor: pointer;
-}
-
-.voce__azione:disabled {
-  color: var(--inchiostro-tenue);
-  cursor: default;
-}
-
-.voce__azione--elimina {
-  border-color: var(--pomodoro);
-  color: var(--pomodoro);
-}
-
-.voce__azione:active:not(:disabled) {
-  background: var(--crema-scura);
-}
-
-/* Il campo della rinomina si prende tutta la riga: il nome è lungo. */
-.voce__campo {
-  flex: 1 1 100%;
-  min-height: 44px;
-  padding: 4px 14px;
-  border: 1px solid var(--salvia);
-  border-radius: 10px;
-  background: var(--panna);
-  color: inherit;
-  font: inherit;
-}
-
-/* La dropdown delle alternative: un select di sistema, vestito come i bottoni
-   delle azioni. Sul telefono apre la ruota nativa (F6). */
-.voce__alternative {
-  max-width: 100%;
-  min-height: 44px;
-  padding: 4px 14px;
-  border: 1px solid var(--bordo);
-  border-radius: 999px;
-  background: var(--crema);
-  color: inherit;
-  font: inherit;
-  font-size: var(--testo-piccolo);
-  cursor: pointer;
-}
-
-.voce__alternative:active {
-  background: var(--crema-scura);
-}
-
-/* Ogni tipo di Frutta e Verdura ha la sua, accanto alla spunta: solo il segno. */
-.voce__elemento-riga {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.voce__alternative--compatta {
-  width: 40px;
-  min-height: 40px;
-  padding: 0;
-  border-color: transparent;
-  background: none;
-  color: var(--inchiostro-tenue);
-  text-align: center;
-  text-align-last: center;
 }

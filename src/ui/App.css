@@ -1,30 +1,35 @@
 /* Layout mobile-first: header fisso in alto, contenuto scorrevole sotto.
    Su schermi larghi la colonna resta stretta, come sul telefono. */
 .app {
+  --colonna: 448px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  max-width: 560px;
+  max-width: var(--colonna);
   margin: 0 auto;
   background: var(--panna);
   border-inline: 1px solid var(--bordo);
 }
 
-/* Intestazione e barra delle schermate restano in alto insieme. */
-.app__testata {
+/* L'intestazione resta in alto: a sinistra il bottone che apre il menu. */
+.app__intestazione {
   position: sticky;
   top: 0;
   z-index: 1;
-}
-
-.app__intestazione {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: calc(var(--spazio) + env(safe-area-inset-top)) var(--spazio) var(--spazio);
+  align-items: center;
+  gap: 4px;
+  padding: env(safe-area-inset-top) var(--spazio) 0 4px;
   background: var(--crema-scura);
   border-bottom: 1px solid var(--bordo);
+}
+
+.app__titoli {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
 }
 
 .app__titolo {
@@ -36,8 +41,11 @@
 
 .app__sottotitolo {
   margin: 0;
+  overflow: hidden;
   font-size: var(--testo-piccolo);
   color: var(--inchiostro-tenue);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .app__contenuto {
@@ -46,26 +54,50 @@
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
 }
 
-/* Barra delle schermate, sotto l'intestazione: due sole voci, tap ampi. */
-.app__navigazione {
-  display: flex;
-  background: var(--crema-scura);
-  border-bottom: 1px solid var(--bordo);
-}
-
-.app__scheda {
-  flex: 1;
-  min-height: var(--tocco);
+/* Il bottone del menu: le tre righe dentro un bersaglio pieno. */
+.app__menu-apri {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--tocco);
+  height: var(--tocco);
+  padding: 0;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-radius: var(--raggio);
   background: none;
-  color: var(--inchiostro-tenue);
-  font: inherit;
-  font-weight: 600;
+  color: var(--inchiostro);
   cursor: pointer;
 }
 
-.app__scheda--attiva {
-  border-bottom-color: var(--salvia-scura);
-  color: var(--inchiostro);
+.app__menu-apri:active {
+  background: var(--bordo);
+}
+
+.app__hamburger,
+.app__hamburger::before,
+.app__hamburger::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+}
+
+.app__hamburger {
+  position: relative;
+}
+
+.app__hamburger::before,
+.app__hamburger::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.app__hamburger::before {
+  top: -6px;
+}
+
+.app__hamburger::after {
+  top: 6px;
 }
