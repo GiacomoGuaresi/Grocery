@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { normalizza } from './aggiunta'
 import { categorie, stagionalita } from './dati'
 import { generaLista, meseDi, occorrenzePerCiclo } from './generazione'
 import type { IdCategoria, Lista, Voce } from './tipi'
@@ -65,14 +66,15 @@ describe('occorrenzePerCiclo', () => {
 describe('generaLista — copertura', () => {
   const { lista } = generaLista({ data: ilQuindici(6) })
 
-  it('genera tante voci quante le occorrenze di ogni categoria', () => {
+  it('genera tante voci quante le occorrenze di ogni categoria, le uova una sola', () => {
     for (const [categoria, quante] of occorrenzePerCiclo()) {
-      expect(vociDi(lista, categoria)).toHaveLength(quante)
+      expect(vociDi(lista, categoria)).toHaveLength(categoria === 'uova' ? 1 : quante)
     }
   })
 
   it('più una voce per ogni tipo di verdura e di frutta, in ortofrutta', () => {
-    expect(lista.voci).toHaveLength(14 + 4 + 4)
+    // 14 cene, ma le due di uova sono una voce sola.
+    expect(lista.voci).toHaveLength(13 + 4 + 4)
     for (const gruppo of ['verdura', 'frutta'] as const) {
       const voci = vociDi(lista, gruppo)
       expect(voci).toHaveLength(4)
@@ -111,8 +113,18 @@ describe('generaLista — varietà dentro il ciclo', () => {
     }
   })
 
-  it('le uova sono l’eccezione: due voci identiche, senza rotazione', () => {
-    expect(nomi(vociDi(lista, 'uova'))).toEqual(['uova', 'uova'])
+  it('le uova tornano due volte nella routine ma sono una voce sola', () => {
+    expect(nomi(vociDi(lista, 'uova'))).toEqual(['uova'])
+  })
+
+  it('nessuna voce si ripete, in nessun mese e con nessun seme', () => {
+    for (let mese = 1; mese <= 12; mese++) {
+      for (let seme = 1; seme <= 5; seme++) {
+        const { lista } = generaLista({ data: ilQuindici(mese), caso: caso(mese * 10 + seme) })
+        const tutti = lista.voci.map((voce) => normalizza(voce.nome))
+        expect(new Set(tutti).size).toBe(tutti.length)
+      }
+    }
   })
 
   it('i 4 tipi di verdura e i 4 di frutta sono diversi tra loro', () => {

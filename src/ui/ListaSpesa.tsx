@@ -1,4 +1,4 @@
-import { aggiungiVoce } from '../domain/aggiunta'
+import { aggiungiVoce, voceGiaPresente } from '../domain/aggiunta'
 import { alternativeVoce, sostituisciVoce } from '../domain/alternative'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
@@ -25,12 +25,13 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
 
   const { lista } = stato
   const aggiungi = (nome: string) => modifica((corrente) => aggiungiVoce(corrente, nome))
+  const giaPresente = (nome: string) => voceGiaPresente(lista, nome)
 
   if (lista.voci.length === 0) {
     return (
       <div className="lista">
         <ListaVuota onGenera={genera} />
-        <AggiungiVoce onAggiungi={aggiungi} />
+        <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
       </div>
     )
   }
@@ -50,7 +51,8 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
     modifica((corrente) => rinominaVoce(corrente, id, nome))
 
   // Le alternative si calcolano sulla lista di adesso: quello che è già dentro
-  // non viene riproposto, e per frutta e verdura conta il mese corrente (F6).
+  // non viene riproposto, e per frutta e verdura il mese corrente decide cosa
+  // è di stagione e va in cima alla dropdown (F6).
   const sostituisci = (id: string, nome: string) =>
     modifica((corrente) => sostituisciVoce(corrente, id, nome))
 
@@ -81,7 +83,7 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
         onSostituisci={sostituisci}
         alternative={alternative}
       />
-      <AggiungiVoce onAggiungi={aggiungi} />
+      <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
     </div>
   )
 }

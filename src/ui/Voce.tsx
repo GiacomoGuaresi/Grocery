@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { Alternative } from '../domain/alternative'
 import { rinominabile } from '../domain/modifica'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { AzioniVoce } from './AzioniVoce'
@@ -7,8 +8,8 @@ import './Voce.css'
 
 interface Props {
   voce: VoceLista
-  /** Le tipologie con cui si può sostituire la voce (F6); di stagione per frutta e verdura. */
-  alternative: string[]
+  /** Le tipologie con cui si può sostituire la voce (F6); per frutta e verdura, prima quelle di stagione. */
+  alternative: Alternative
   /** Tocco sulla casella: la spunta, o la de-spunta se è tra i già presi. */
   onAlterna: (id: string) => void
   /** Toglie la voce dalla lista. */

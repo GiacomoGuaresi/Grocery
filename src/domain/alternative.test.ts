@@ -2,8 +2,8 @@ import initSqlJs from 'sql.js'
 import { beforeAll, describe, expect, it } from 'vitest'
 import { PersistenzaMemoria } from '../storage/memoria'
 import { apriStorageSqlite } from '../storage/sqlite'
-import { alternativeVoce, sostituisciVoce } from './alternative'
-import { categoria, diStagione } from './dati'
+import { alternativeVoce, sostituisciVoce, tutteLeAlternative } from './alternative'
+import { categoria, diStagione, stagionalita } from './dati'
 import { listaEsempio } from './listaEsempio'
 import type { Lista, Rotazione, Voce } from './tipi'
 
@@ -15,51 +15,75 @@ function voce(lista: Lista, id: string): Voce {
 }
 
 describe('alternativeVoce', () => {
-  it('propone le altre tipologie della categoria', () => {
+  it('propone le altre tipologie della categoria, in un elenco solo', () => {
     const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'pesce-2'))
-    expect(alternative).toContain('branzino')
-    expect(alternative.length).toBeGreaterThan(10)
+    expect(alternative.consigliate).toContain('branzino')
+    expect(alternative.consigliate.length).toBeGreaterThan(10)
+    expect(alternative.fuoriStagione).toEqual([])
   })
 
   it('non ripropone la voce stessa né quello che è già in lista', () => {
-    const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'pesce-2'))
+    const alternative = tutteLeAlternative(alternativeVoce(listaEsempio, voce(listaEsempio, 'pesce-2')))
     expect(alternative).not.toContain('orata')
     expect(alternative).not.toContain('merluzzo')
     expect(alternative).not.toContain('gamberi')
   })
 
   it('niente per le uova, che una tipologia sola ce l’hanno', () => {
-    expect(alternativeVoce(listaEsempio, voce(listaEsempio, 'uova-1'))).toEqual([])
+    expect(tutteLeAlternative(alternativeVoce(listaEsempio, voce(listaEsempio, 'uova-1')))).toEqual([])
   })
 
   it('niente per le voci manuali', () => {
-    expect(alternativeVoce(listaEsempio, voce(listaEsempio, 'manuale-1'))).toEqual([])
+    expect(tutteLeAlternative(alternativeVoce(listaEsempio, voce(listaEsempio, 'manuale-1')))).toEqual(
+      [],
+    )
   })
 })
 
 describe('alternativeVoce — frutta e verdura', () => {
-  it('propone solo frutta di stagione nel mese', () => {
+  it('prima la frutta di stagione nel mese, poi quella fuori stagione', () => {
     const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'frutta-1'), settembre)
     const diSettembre = diStagione('frutta', settembre)
-    expect(alternative.every((nome) => diSettembre.includes(nome))).toBe(true)
-    expect(alternative.length).toBeGreaterThan(0)
+    expect(alternative.consigliate.every((nome) => diSettembre.includes(nome))).toBe(true)
+    expect(alternative.fuoriStagione.some((nome) => diSettembre.includes(nome))).toBe(false)
+    expect(alternative.consigliate.length).toBeGreaterThan(0)
+    expect(alternative.fuoriStagione.length).toBeGreaterThan(0)
   })
 
-  it('a gennaio propone solo frutta di gennaio', () => {
+  it('propone tutta la frutta che non è già in lista', () => {
+    const alternative = tutteLeAlternative(
+      alternativeVoce(listaEsempio, voce(listaEsempio, 'frutta-1'), settembre),
+    )
+    const giaInLista = new Set(listaEsempio.voci.map((v) => v.nome))
+    expect(alternative.sort()).toEqual(
+      Object.keys(stagionalita.frutta)
+        .filter((nome) => !giaInLista.has(nome))
+        .sort(),
+    )
+  })
+
+  it('a gennaio la stagione è quella di gennaio', () => {
     const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'frutta-1'), 1)
-    expect(alternative.every((nome) => diStagione('frutta', 1).includes(nome))).toBe(true)
+    expect(alternative.consigliate.every((nome) => diStagione('frutta', 1).includes(nome))).toBe(true)
+    expect(alternative.fuoriStagione.some((nome) => diStagione('frutta', 1).includes(nome))).toBe(
+      false,
+    )
   })
 
   it('non ripropone i tipi già in lista', () => {
-    const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre)
+    const alternative = tutteLeAlternative(
+      alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre),
+    )
     for (const gia of ['zucchine', 'melanzane', 'spinaci', 'peperoni']) {
       expect(alternative).not.toContain(gia)
     }
   })
 
   it('al posto di una verdura propone solo verdura', () => {
-    const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre)
-    expect(alternative.every((nome) => diStagione('verdura', settembre).includes(nome))).toBe(true)
+    const alternative = tutteLeAlternative(
+      alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre),
+    )
+    expect(alternative.every((nome) => nome in stagionalita.verdura)).toBe(true)
   })
 })
 
@@ -88,8 +112,9 @@ describe('sostituisciVoce', () => {
   })
 
   it('scambia un tipo di verdura con uno di stagione, lasciando gli altri', () => {
-    const nuovo = alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre)[0]
-    const dopo = sostituisciVoce(listaEsempio, 'verdura-1', nuovo, settembre)
+    const nuovo = alternativeVoce(listaEsempio, voce(listaEsempio, 'verdura-1'), settembre)
+      .consigliate[0]
+    const dopo = sostituisciVoce(listaEsempio, 'verdura-1', nuovo)
     expect(dopo.voci.filter((v) => v.categoria === 'verdura').map((v) => v.nome)).toEqual([
       nuovo,
       'melanzane',
@@ -99,12 +124,19 @@ describe('sostituisciVoce', () => {
     expect(voce(dopo, 'verdura-1').reparto).toBe('ortofrutta')
   })
 
-  it('un tipo fuori stagione non entra in lista', () => {
-    const fuoriStagione = diStagione('frutta', settembre).find(
-      (nome) =>
-        !diStagione('frutta', 1).includes(nome) && !listaEsempio.voci.some((v) => v.nome === nome),
+  it('si può scegliere anche un tipo fuori stagione', () => {
+    const fuoriStagione = alternativeVoce(listaEsempio, voce(listaEsempio, 'frutta-1'), settembre)
+      .fuoriStagione[0]
+    const dopo = sostituisciVoce(listaEsempio, 'frutta-1', fuoriStagione)
+    expect(voce(dopo, 'frutta-1').nome).toBe(fuoriStagione)
+    expect(voce(dopo, 'frutta-1').reparto).toBe('ortofrutta')
+  })
+
+  it('al posto di una frutta non entra una verdura', () => {
+    const verdura = Object.keys(stagionalita.verdura).find(
+      (nome) => !listaEsempio.voci.some((v) => v.nome === nome),
     )!
-    expect(sostituisciVoce(listaEsempio, 'frutta-1', fuoriStagione, 1)).toBe(listaEsempio)
+    expect(sostituisciVoce(listaEsempio, 'frutta-1', verdura)).toBe(listaEsempio)
   })
 })
 
@@ -127,8 +159,8 @@ describe('la sostituzione non tocca la memoria della rotazione (R7)', () => {
     // Quello che fa l'interfaccia quando si sceglie un'alternativa: cambia la
     // lista e salva solo quella.
     const dopo = sostituisciVoce(listaEsempio, 'pesce-2', 'branzino')
-    const nuovaFrutta = alternativeVoce(dopo, voce(dopo, 'frutta-1'), settembre)[0]
-    await storage.salvaLista(sostituisciVoce(dopo, 'frutta-1', nuovaFrutta, settembre))
+    const nuovaFrutta = alternativeVoce(dopo, voce(dopo, 'frutta-1'), settembre).consigliate[0]
+    await storage.salvaLista(sostituisciVoce(dopo, 'frutta-1', nuovaFrutta))
 
     // Lo storage non promette un ordine: conta che le righe siano quelle.
     expect(await storage.leggiRotazioni()).toEqual(expect.arrayContaining(rotazioni))

@@ -62,6 +62,9 @@ Flusso di inserimento:
    automaticamente**.
 4. Se il prodotto è **nuovo** (non in catalogo), finisce **sempre** nella sezione
    **"Altro"**, senza possibilità di scegliere il reparto al volo.
+5. Le voci **non si ripetono mai** (stesso confronto: maiuscole, accenti e spazi non
+   contano). Se il prodotto è già in lista **e non è spuntato**, non viene aggiunto e
+   compare un **avviso**; se era già spuntato, torna tra quelli da prendere.
 
 Il catalogo **non impara**: i prodotti nuovi non vi entrano automaticamente. Se uno
 ricorre spesso viene aggiunto a `prodotti.json` con un commit.
@@ -75,7 +78,9 @@ per sostituirla se la proposta non va bene.
 
 Frutta e verdura compaiono in **elenco diretto**, una voce per tipo (es. *Carote,
 Indivia, Zucca, Cavolfiore, Fichi, More, Prugne*): la dropdown di ogni tipo propone
-gli altri prodotti **di stagione** dello stesso gruppo.
+gli altri prodotti dello stesso gruppo, divisa in **due sezioni**: prima quelli **di
+stagione** nel mese, poi quelli **fuori stagione**. Si possono scegliere tutti, ma si
+vede sempre quali alternative è meglio preferire.
 
 La dropdown è **l'unico modo di modificare una voce generata**: i nomi degli alimenti
 vengono dal catalogo e non si rinominano.

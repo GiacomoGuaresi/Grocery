@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { aggiungiVoce, creaVoceManuale, normalizza, suggerimenti, trovaProdotto } from './aggiunta'
+import {
+  aggiungiVoce,
+  creaVoceManuale,
+  normalizza,
+  suggerimenti,
+  trovaProdotto,
+  voceGiaPresente,
+} from './aggiunta'
 import { listaEsempio } from './listaEsempio'
+import { spuntaVoce } from './spunta'
 
 describe('normalizza', () => {
   it('ignora maiuscole, accenti e spazi di troppo', () => {
@@ -94,5 +102,30 @@ describe('aggiungiVoce', () => {
 
   it('con un nome vuoto non aggiunge niente', () => {
     expect(aggiungiVoce(listaEsempio, '   ')).toEqual(listaEsempio)
+  })
+
+  it('non ripete una voce ancora da prendere, scritta in qualsiasi modo', () => {
+    const conYogurt = aggiungiVoce(listaEsempio, 'yogurt', 'v3')
+    expect(aggiungiVoce(conYogurt, '  YOGURT ', 'v4')).toEqual(conYogurt)
+  })
+
+  it('una voce già presa torna da prendere, senza farne un doppione', () => {
+    const presa = spuntaVoce(aggiungiVoce(listaEsempio, 'yogurt', 'v3'), 'v3')
+    const dopo = aggiungiVoce(presa, 'yogurt', 'v4')
+    expect(dopo.voci).toHaveLength(presa.voci.length)
+    expect(dopo.voci.find((v) => v.id === 'v3')?.comprata).toBe(false)
+  })
+})
+
+describe('voceGiaPresente', () => {
+  const conYogurt = aggiungiVoce(listaEsempio, 'yogurt', 'v3')
+
+  it('trova la voce senza badare a maiuscole, accenti e spazi', () => {
+    expect(voceGiaPresente(conYogurt, ' Yogùrt ')?.id).toBe('v3')
+  })
+
+  it('non trova niente per un nome che non è in lista o vuoto', () => {
+    expect(voceGiaPresente(conYogurt, 'lievito madre')).toBeUndefined()
+    expect(voceGiaPresente(conYogurt, '  ')).toBeUndefined()
   })
 })

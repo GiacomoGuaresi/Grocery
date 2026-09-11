@@ -72,11 +72,11 @@ function mescola<T>(elenco: T[], caso: () => number): T[] {
 }
 
 /**
- * Pesca a caso `quanti` elementi dai candidati, senza ripetizioni (R4). Quello
- * che era uscito l'ultima volta passa in coda: si ripesca solo se il catalogo
- * di stagione è troppo corto per farne a meno (R3). Se i candidati sono meno
- * delle voci da riempire — le uova, che hanno una sola tipologia — si ricomincia
- * da capo e la stessa voce si ripete.
+ * Pesca a caso fino a `quanti` elementi dai candidati, mai due volte lo stesso
+ * (R4). Quello che era uscito l'ultima volta passa in coda: si ripesca solo se
+ * il catalogo di stagione è troppo corto per farne a meno (R3). Se i candidati
+ * sono meno delle voci da riempire — le uova, che hanno una sola tipologia —
+ * escono tutti una volta sola: nella lista una voce non si ripete mai (R8).
  */
 function pesca<T>(
   candidati: T[],
@@ -85,7 +85,6 @@ function pesca<T>(
   daEvitare: Set<string>,
   caso: () => number,
 ): T[] {
-  if (candidati.length === 0) return []
   const urna = [
     ...mescola(
       candidati.filter((voce) => !daEvitare.has(nome(voce))),
@@ -96,7 +95,7 @@ function pesca<T>(
       caso,
     ),
   ]
-  return Array.from({ length: quanti }, (_, i) => urna[i % urna.length])
+  return urna.slice(0, quanti)
 }
 
 /** Le voci di una categoria per il ciclo, con le tipologie da ricordare. */

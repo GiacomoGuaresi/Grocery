@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { Alternative } from '../domain/alternative'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { Icona } from './Icona'
 import { Voce } from './Voce'
@@ -11,7 +12,7 @@ interface Props {
   onRinomina: (id: string, nome: string) => void
   onSostituisci: (id: string, nome: string) => void
   /** Le alternative per la voce (F6). */
-  alternative: (voce: VoceLista) => string[]
+  alternative: (voce: VoceLista) => Alternative
 }
 
 /**

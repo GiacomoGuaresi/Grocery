@@ -111,8 +111,9 @@ da salvare (R3). La sorgente del caso è un parametro (`caso`), così i test la
 sostituiscono con un generatore a seme e restano riproducibili.
 
 `alternative.ts` dà le alternative della dropdown (F6): le altre tipologie della
-categoria o, per un tipo di frutta e verdura, gli altri di stagione nel mese, senza
-quello che è già in lista. `sostituisciVoce()` mette la scelta al posto della voce.
+categoria o, per un tipo di frutta e verdura, gli altri tipi del gruppo divisi tra di
+stagione nel mese e fuori stagione, senza quello che è già in lista.
+`sostituisciVoce()` mette la scelta al posto della voce.
 
 `archivio.ts` è la parte di dominio delle liste passate: solo formattazione, perché
 una lista archiviata non ha più transizioni di stato. `etichettaData()` scrive la

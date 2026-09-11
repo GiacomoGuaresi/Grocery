@@ -100,7 +100,8 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 ## Step 10 — Dropdown delle alternative ✅
 
 - [x] Dropdown su ogni voce generata, con le altre tipologie della categoria
-- [x] Dropdown su ogni tipo di frutta e verdura, con le alternative **di stagione**
+- [x] Dropdown su ogni tipo di frutta e verdura, in due sezioni: prima le alternative
+      **di stagione**, poi quelle fuori stagione
 - [x] La sostituzione non altera lo stato della rotazione salvata
 - [x] Le alternative non ripropongono quello che è già in lista
 - [x] Il reparto segue la tipologia scelta: è un dato del catalogo (pesce fresco →

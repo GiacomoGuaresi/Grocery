@@ -7,7 +7,7 @@ import type { Lista } from './tipi'
 /** Una lista con una voce manuale nuova ("Altro") e una manuale riconosciuta. */
 function conVociManuali(): Lista {
   const conNuova = aggiungiVoce(listaEsempio, 'lievito madre', 'manuale-nuova')
-  return aggiungiVoce(conNuova, 'caffè', 'manuale-nota')
+  return aggiungiVoce(conNuova, 'Carta igienica', 'manuale-nota')
 }
 
 function voce(lista: Lista, id: string) {
@@ -77,8 +77,8 @@ describe('rinominaVoce', () => {
   })
 
   it('non rinomina una voce manuale riconosciuta dal catalogo', () => {
-    const dopo = rinominaVoce(conVociManuali(), 'manuale-nota', 'caffè decaffeinato')
-    expect(voce(dopo, 'manuale-nota')?.nome).toBe('caffe')
+    const dopo = rinominaVoce(conVociManuali(), 'manuale-nota', 'carta da forno')
+    expect(voce(dopo, 'manuale-nota')?.nome).toBe('carta igienica')
   })
 
   it("un nome vuoto lascia la lista com'è", () => {

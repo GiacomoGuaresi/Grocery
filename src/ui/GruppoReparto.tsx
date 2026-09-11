@@ -1,3 +1,4 @@
+import type { Alternative } from '../domain/alternative'
 import type { GruppoReparto as Gruppo } from '../domain/lista'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { Voce } from './Voce'
@@ -10,7 +11,7 @@ interface Props {
   onRinomina: (id: string, nome: string) => void
   onSostituisci: (id: string, nome: string) => void
   /** Le alternative per la voce (F6). */
-  alternative: (voce: VoceLista) => string[]
+  alternative: (voce: VoceLista) => Alternative
 }
 
 /** Un reparto della lista, col suo titolo e le sue voci. */

@@ -4,6 +4,7 @@
 // prodotto che non c'è finisce nel reparto "altro" (doc/04-funzionalita.md).
 
 import { prodotti, type Prodotto } from './dati'
+import { despuntaVoce } from './spunta'
 import type { Lista, Voce } from './tipi'
 
 /**
@@ -73,10 +74,23 @@ export function creaVoceManuale(nome: string, id: string = nuovoId()): Voce {
 }
 
 /**
- * Aggiunge la voce in fondo alla lista. Un nome vuoto non aggiunge niente:
- * la lista torna identica.
+ * La voce della lista con questo nome, se c'è già: il confronto è quello
+ * tollerante del catalogo, quindi "Uova " e "uova" sono la stessa voce.
+ */
+export function voceGiaPresente(lista: Lista, nome: string): Voce | undefined {
+  const chiave = normalizza(nome)
+  if (chiave === '') return undefined
+  return lista.voci.find((voce) => normalizza(voce.nome) === chiave)
+}
+
+/**
+ * Aggiunge la voce in fondo alla lista. Le voci non si ripetono mai: se è
+ * già da prendere la lista resta com'è (l'interfaccia avvisa), se era già
+ * presa torna da prendere. Un nome vuoto non aggiunge niente.
  */
 export function aggiungiVoce(lista: Lista, nome: string, id?: string): Lista {
   if (normalizza(nome) === '') return lista
+  const presente = voceGiaPresente(lista, nome)
+  if (presente) return presente.comprata ? despuntaVoce(lista, presente.id) : lista
   return { ...lista, voci: [...lista.voci, creaVoceManuale(nome, id)] }
 }

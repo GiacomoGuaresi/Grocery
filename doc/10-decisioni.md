@@ -66,6 +66,8 @@
 | 2026-09-09 | Solo le voci manuali in "Altro" si rinominano; il reparto non è mai modificabile | deciso |
 | 2026-09-11 | Si spunta **solo dalla checkbox**; in "Altro" il tap sul testo rinomina la voce nella riga | deciso |
 | 2026-09-11 | **Icone SVG** a tratto al posto delle emoji, disegnate in casa (stile Lucide) senza librerie | deciso |
+| 2026-09-11 | Dropdown di frutta e verdura in **due sezioni**: prima i tipi di stagione, poi quelli fuori stagione (sceglibili anche loro) | deciso |
 | 2026-09-09 | Piano settimanale: mostra la **categoria**, non la tipologia del giorno | deciso |
 | 2026-09-09 | **Uova**: voce fissa senza quantità | deciso |
+| 2026-09-11 | Le voci **non si ripetono mai**: uova una voce sola; aggiungere a mano una voce già da prendere avvisa, una già presa torna da prendere | deciso |
 | 2026-09-09 | Si passa allo **sviluppo**: struttura del progetto e dati JSON | deciso |

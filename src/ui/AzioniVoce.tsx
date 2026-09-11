@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { tutteLeAlternative, type Alternative } from '../domain/alternative'
 import { rinominabile } from '../domain/modifica'
 import type { Voce as VoceLista } from '../domain/tipi'
 import './AzioniVoce.css'
 
 interface Props {
   voce: VoceLista
-  /** Le tipologie con cui si può sostituire la voce (F6); di stagione per frutta e verdura. */
-  alternative: string[]
+  /** Le tipologie con cui si può sostituire la voce (F6); per frutta e verdura, prima quelle di stagione. */
+  alternative: Alternative
   onElimina: () => void
   onRinomina: (nome: string) => void
   onSostituisci: (nome: string) => void
@@ -16,7 +17,7 @@ interface Props {
 
 /**
  * Il popup con le azioni di una voce: sostituirla con un'alternativa (F6) —
- * per un tipo di frutta o verdura, con un altro di stagione — rinominarla
+ * per un tipo di frutta o verdura, meglio con un altro di stagione — rinominarla
  * (solo le voci manuali sotto "Altro", F6b) ed eliminarla. Nella riga della
  * lista restano la spunta e il nome, così le righe sono basse e in corsia non
  * si cancella niente per sbaglio.
@@ -59,10 +60,10 @@ export function AzioniVoce({
 
         {nomeInCorso === null ? (
           <>
-            {alternative.length > 0 && (
+            {tutteLeAlternative(alternative).length > 0 && (
               <label className="azioni-voce__campo">
                 <span className="azioni-voce__etichetta">Sostituisci con</span>
-                <Alternative
+                <SceltaAlternativa
                   testo="Scegli un'alternativa…"
                   alternative={alternative}
                   onScegli={(nome) => {
@@ -145,16 +146,20 @@ export function AzioniVoce({
  * apre la ruota nativa, che con una mano sola è la cosa più comoda che ci sia.
  * Non ha uno stato suo: mostra sempre il segnaposto e riparte da lì, perché il
  * valore scelto diventa il nome della voce, non la selezione della dropdown.
+ *
+ * Per frutta e verdura le opzioni sono in due sezioni: prima quelle di
+ * stagione, da preferire, poi le altre. Per le altre categorie è un elenco solo.
  */
-function Alternative({
+function SceltaAlternativa({
   testo,
   alternative,
   onScegli,
 }: {
   testo: string
-  alternative: string[]
+  alternative: Alternative
   onScegli: (nome: string) => void
 }) {
+  const { consigliate, fuoriStagione } = alternative
   return (
     <select
       className="azioni-voce__scelta"
@@ -164,11 +169,28 @@ function Alternative({
       }}
     >
       <option value="">{testo}</option>
-      {alternative.map((nome) => (
-        <option key={nome} value={nome}>
-          {nome}
-        </option>
-      ))}
+      {fuoriStagione.length === 0 ? (
+        <Opzioni nomi={consigliate} />
+      ) : (
+        <>
+          {consigliate.length > 0 && (
+            <optgroup label="Di stagione">
+              <Opzioni nomi={consigliate} />
+            </optgroup>
+          )}
+          <optgroup label="Fuori stagione">
+            <Opzioni nomi={fuoriStagione} />
+          </optgroup>
+        </>
+      )}
     </select>
   )
+}
+
+function Opzioni({ nomi }: { nomi: string[] }) {
+  return nomi.map((nome) => (
+    <option key={nome} value={nome}>
+      {nome}
+    </option>
+  ))
 }

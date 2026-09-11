@@ -1,10 +1,13 @@
 import { useRef, useState } from 'react'
 import { suggerimenti } from '../domain/aggiunta'
+import type { Voce } from '../domain/tipi'
 import './AggiungiVoce.css'
 
 interface Props {
   /** Aggiunge alla lista il prodotto scritto o scelto tra i suggerimenti. */
   onAggiungi: (nome: string) => void
+  /** La voce della lista con questo nome, se c'è già. */
+  giaPresente: (nome: string) => Voce | undefined
 }
 
 const QUANTI_SUGGERIMENTI = 6
@@ -15,14 +18,20 @@ const QUANTI_SUGGERIMENTI = 6
  * prodotti del catalogo che combaciano, senza badare a maiuscole e accenti;
  * toccarne uno lo aggiunge subito, col suo reparto. Quello che non è in
  * catalogo si aggiunge lo stesso e finisce in "Altro".
+ *
+ * Le voci non si ripetono: se quella scritta è già da prendere non si aggiunge
+ * e compare un avviso; se era già presa torna da prendere.
  */
-export function AggiungiVoce({ onAggiungi }: Props) {
+export function AggiungiVoce({ onAggiungi, giaPresente }: Props) {
   const [testo, setTesto] = useState('')
+  const [avviso, setAvviso] = useState<string | null>(null)
   const campo = useRef<HTMLInputElement>(null)
   const proposte = suggerimenti(testo, QUANTI_SUGGERIMENTI)
 
   const aggiungi = (nome: string) => {
     if (nome.trim() === '') return
+    const presente = giaPresente(nome)
+    setAvviso(presente && !presente.comprata ? `“${presente.nome}” è già nella lista` : null)
     onAggiungi(nome)
     setTesto('')
     campo.current?.focus()
@@ -45,6 +54,11 @@ export function AggiungiVoce({ onAggiungi }: Props) {
           ))}
         </ul>
       )}
+      {avviso && (
+        <p className="aggiungi__avviso" role="status">
+          {avviso}
+        </p>
+      )}
       <form
         className="aggiungi__riga"
         onSubmit={(evento) => {
@@ -57,7 +71,10 @@ export function AggiungiVoce({ onAggiungi }: Props) {
           ref={campo}
           type="text"
           value={testo}
-          onChange={(evento) => setTesto(evento.target.value)}
+          onChange={(evento) => {
+            setTesto(evento.target.value)
+            setAvviso(null)
+          }}
           placeholder="Aggiungi un prodotto"
           aria-label="Aggiungi un prodotto"
           autoComplete="off"

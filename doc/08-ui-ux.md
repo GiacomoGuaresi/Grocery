@@ -51,8 +51,8 @@ volta inserita, non viene più richiesta sul dispositivo.
   anche **rinominare**.
 - **Frutta** e **Verdura** sono in **elenco diretto**: ogni tipo scelto (4 di verdura,
   4 di frutta) è una voce a sé nel reparto Ortofrutta, con la sua checkbox e, nel
-  popup, la sua dropdown di alternative di stagione. Nessuna voce "Frutta" o
-  "Verdura" che li raggruppa.
+  popup, la sua dropdown di alternative in due sezioni: **Di stagione** e poi
+  **Fuori stagione**. Nessuna voce "Frutta" o "Verdura" che li raggruppa.
 - **Aggiunta rapida** sempre raggiungibile (serve anche mentre si è al supermercato):
   campo di testo con **autocompletamento case-insensitive**; se il prodotto è nel
   catalogo eredita il reparto, altrimenti finisce sotto **"Altro"**.

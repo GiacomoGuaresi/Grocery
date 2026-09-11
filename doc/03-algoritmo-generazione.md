@@ -50,6 +50,9 @@ diverse tra loro**:
 
 Le **uova** sono l'eccezione: unica tipologia, nessuna rotazione.
 
+In generale **nella lista una voce non si ripete mai**: se una categoria ha meno
+tipologie delle sue occorrenze, ogni tipologia compare una volta sola.
+
 ### R5 — Contorni di stagione
 I contorni sono verdure — **patate incluse**, mai legumi — scelte **a caso tra quelle
 di stagione** nel mese di generazione.
@@ -97,7 +100,8 @@ non altera la memoria salvata.
 catalogo, non si rinominano.
 
 ### R8 — Uova
-Voce fissa, senza rotazione, senza quantità: compare semplicemente come **"uova"**.
+Voce fissa, senza rotazione, senza quantità: compare semplicemente come **"uova"**,
+**una volta sola**, anche se nel ciclo le cene a base di uova sono due.
 
 ## Cosa NON fa
 - Non calcola **quantità né grammature**: propone solo cosa comprare.

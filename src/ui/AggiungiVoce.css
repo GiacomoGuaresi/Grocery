@@ -40,6 +40,17 @@
   background: var(--crema-scura);
 }
 
+/* Avviso di voce già in lista: resta finché non si ricomincia a scrivere. */
+.aggiungi__avviso {
+  margin: 0 0 6px;
+  padding: 8px 11px;
+  border: 1px solid var(--terracotta);
+  border-radius: var(--raggio);
+  background: var(--crema);
+  color: var(--terracotta-scura);
+  font-weight: 600;
+}
+
 .aggiungi__riga {
   display: flex;
   gap: 6px;
