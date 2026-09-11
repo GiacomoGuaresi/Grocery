@@ -1,6 +1,6 @@
-// I test dell'interfaccia Storage, uguali per ogni implementazione: SQLite e
-// Supabase devono comportarsi allo stesso modo, perché il resto dell'app non sa
-// quale delle due ha sotto (doc/07-architettura-stack.md).
+// I test dell'interfaccia Storage: quello che il resto dell'app si aspetta da
+// qualunque implementazione abbia sotto (doc/07-architettura-stack.md). Oggi li
+// esegue supabase.test.ts.
 
 import { describe, expect, it } from 'vitest'
 import { listaEsempio } from '../domain/listaEsempio'
@@ -237,6 +237,18 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       const storage = await apriVuoto()
       await storage.salvaRotazioni([{ categoria: 'uova', ultimi: [] }])
       expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'uova', ultimi: [] }])
+    })
+
+    // Scegliere un'alternativa salva solo la lista: la memoria del ciclo resta
+    // quella della generazione (R7).
+    it('salvare la lista non tocca le rotazioni', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(listaEsempio)
+      await storage.salvaRotazioni(rotazioni)
+      await storage.salvaLista({ ...listaEsempio, voci: listaEsempio.voci.slice(1) })
+      expect(await storage.leggiRotazioni()).toEqual(
+        [...rotazioni].sort((a, b) => a.categoria.localeCompare(b.categoria)),
+      )
     })
   })
 }

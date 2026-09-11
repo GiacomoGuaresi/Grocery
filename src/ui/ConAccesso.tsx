@@ -11,7 +11,7 @@ type Stato =
 /**
  * Il cancello davanti all'app (F8): finché non c'è una sessione mostra la
  * passphrase, poi l'app. Se la sessione finisce mentre l'app è aperta si torna
- * alla passphrase. In sviluppo, su SQLite, si passa senza fermarsi.
+ * alla passphrase.
  */
 export function ConAccesso({ children }: { children: ReactNode }) {
   const [stato, setStato] = useState<Stato>({ fase: 'verifica' })

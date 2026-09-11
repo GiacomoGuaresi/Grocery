@@ -60,6 +60,7 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
       c'era fino al 2026-09-11: i database vecchi si migrano all'apertura)
 - [x] La lista sopravvive al refresh della pagina
 - [x] Test dell'implementazione contro l'interfaccia
+- [x] ~~SQLite~~ tolto il 2026-09-11: da allora anche lo sviluppo gira su Supabase
 
 ## Step 6 — Inserimento manuale ✅
 
@@ -148,10 +149,10 @@ Da qui in poi l'app diventa condivisa.
 - [x] `supabase login` + `supabase link`, per lavorare sul progetto dalla CLI senza
       connection string
 - [x] Seconda implementazione dell'interfaccia `Storage`
-- [x] Stessi test di contratto per le due implementazioni. Finora eseguiti solo su
-      SQLite: `supabase.test.ts` gira contro il Supabase locale, che vuole Docker
-- [x] Selezione dell'implementazione per ambiente (dev → SQLite, prod → Supabase;
-      `VITE_STORAGE` la forza)
+- [x] Test di contratto in `supabase.test.ts`, che gira contro il Supabase locale
+      (vuole Docker): senza, i test si saltano
+- [x] ~~Selezione dell'implementazione per ambiente (dev → SQLite, prod → Supabase;
+      `VITE_STORAGE` la forza)~~ → dal 2026-09-11 solo Supabase, anche in sviluppo
 - [x] Policy: lettura e scrittura solo per la sessione autenticata. Verificate sul
       progetto: senza sessione tabelle, vista e funzioni rispondono "permission denied"
 - [x] Registrazione pubblica disattivata in `supabase/config.toml`, che vale solo per
@@ -160,7 +161,7 @@ Da qui in poi l'app diventa condivisa.
 ## Step 14 — Accesso con passphrase
 
 - [x] Schermata con il solo campo passphrase, davanti all'app finché non c'è una
-      sessione; in sviluppo, su SQLite, non compare
+      sessione
 - [x] Sessione conservata nei cookie (`@supabase/ssr`): non viene richiesta a ogni
       apertura, nemmeno senza rete
 - [x] Se la sessione finisce con l'app aperta si torna alla passphrase
@@ -188,8 +189,8 @@ Da qui in poi l'app diventa condivisa.
       contro il Supabase locale, che vuole Docker
 - [x] Risoluzione dei conflitti *last-write-wins* per singola voce: dopo ogni
       modifica si scrivono solo le voci toccate (`salvaVoci`, funzione
-      `salva_voci`), così due spunte su voci diverse si sommano. Test di contratto
-      su entrambe le implementazioni
+      `salva_voci`), così due spunte su voci diverse si sommano. Coperta dai test
+      di contratto
 - [x] Una voce appena toccata non torna indietro per una rilettura capitata a metà:
       finché la sua scrittura è in volo vale la versione di questo dispositivo
 - [x] Una generazione fatta sull'altro dispositivo porta anche qui la lista nuova;

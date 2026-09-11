@@ -5,7 +5,7 @@ Due tipi di dato, con vite diverse:
 | Tipo | Dove vive | Chi lo cambia |
 |---|---|---|
 | **Configurazione** (cataloghi, routine, stagionalità) | JSON nel repo — vedi [05](05-dati-statici.md) | Un commit |
-| **Stato** (lista corrente, archivio, rotazioni) | DB condiviso — SQLite in sviluppo, Supabase in produzione | L'app |
+| **Stato** (lista corrente, archivio, rotazioni) | DB condiviso — Supabase, in sviluppo come in produzione | L'app |
 
 Non esiste il concetto di "utente proprietario": **un solo account condiviso**,
 tutti i dati sono comuni.

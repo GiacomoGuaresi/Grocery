@@ -25,8 +25,8 @@ La primissima versione utilizzabile deve avere, come minimo:
 - Statistiche sullo storico delle spese: **da valutare**, interesse basso.
 
 ## Pubblicazione
-L'app online userà **Supabase da subito**, ma **non viene pubblicata ora**: fino ad
-allora si sviluppa solo su PC, con SQLite in locale.
+L'app online userà **Supabase da subito**, ma **non viene pubblicata ora**. Anche
+lo sviluppo gira sullo stesso progetto Supabase.
 
 ## Prerequisiti operativi
 - Creare e pubblicare il **repository GitHub** — nome **`Grocery`**, ancora da fare.

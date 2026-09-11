@@ -1,11 +1,8 @@
-import initSqlJs from 'sql.js'
-import { beforeAll, describe, expect, it } from 'vitest'
-import { PersistenzaMemoria } from '../storage/memoria'
-import { apriStorageSqlite } from '../storage/sqlite'
+import { describe, expect, it } from 'vitest'
 import { alternativeVoce, sostituisciVoce, tutteLeAlternative } from './alternative'
 import { categoria, diStagione, stagionalita } from './dati'
 import { listaEsempio } from './listaEsempio'
-import type { Lista, Rotazione, Voce } from './tipi'
+import type { Lista, Voce } from './tipi'
 
 /** Settembre: il mese della lista di esempio, con la sua stagionalità. */
 const settembre = 9
@@ -143,33 +140,5 @@ describe('sostituisciVoce', () => {
       (nome) => !listaEsempio.voci.some((v) => v.nome === nome),
     )!
     expect(sostituisciVoce(listaEsempio, 'frutta-1', verdura)).toBe(listaEsempio)
-  })
-})
-
-describe('la sostituzione non tocca la memoria della rotazione (R7)', () => {
-  let SQL: Awaited<ReturnType<typeof initSqlJs>>
-
-  beforeAll(async () => {
-    SQL = await initSqlJs()
-  })
-
-  it('le rotazioni salvate restano quelle del ciclo generato', async () => {
-    const storage = await apriStorageSqlite(SQL, new PersistenzaMemoria())
-    const rotazioni: Rotazione[] = [
-      { categoria: 'pesce', ultimi: ['orata', 'merluzzo'] },
-      { categoria: 'frutta', ultimi: ['uva', 'pere', 'fichi', 'mele'] },
-    ]
-    await storage.salvaLista(listaEsempio)
-    await storage.salvaRotazioni(rotazioni)
-
-    // Quello che fa l'interfaccia quando si sceglie un'alternativa: cambia la
-    // lista e salva solo quella.
-    const dopo = sostituisciVoce(listaEsempio, 'pesce-2', 'branzino')
-    const nuovaFrutta = alternativeVoce(dopo, voce(dopo, 'frutta-1'), settembre).consigliate[0]
-    await storage.salvaLista(sostituisciVoce(dopo, 'frutta-1', nuovaFrutta))
-
-    // Lo storage non promette un ordine: conta che le righe siano quelle.
-    expect(await storage.leggiRotazioni()).toEqual(expect.arrayContaining(rotazioni))
-    expect(await storage.leggiRotazioni()).toHaveLength(rotazioni.length)
   })
 })

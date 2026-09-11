@@ -154,7 +154,7 @@ export class StorageSupabase implements Storage {
   }
 }
 
-/** Come StorageSqlite: i campi opzionali assenti restano assenti, non `null`. */
+/** I campi opzionali assenti restano assenti, non `null`. */
 function daRigaVoce(riga: RigaVoce): Voce {
   const voce: Voce = {
     id: riga.id,

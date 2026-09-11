@@ -4,29 +4,25 @@
 Grocery/
 ├── doc/                 documentazione (questi file)
 ├── Q&A.md               domande aperte in corso
-├── .env.example         variabili d'ambiente: quale storage, URL e chiave di Supabase
+├── .env.example         variabili d'ambiente: URL, chiave ed email di Supabase
 ├── supabase/            progetto Supabase (CLI)
 │   ├── config.toml      config del Supabase locale: registrazione pubblica spenta
-│   └── migrations/      schema, funzioni e policy del database di produzione
+│   └── migrations/      schema, funzioni e policy del database
 ├── index.html           entry point di Vite
 ├── package.json         React + TypeScript + Vite + Vitest
 ├── vite.config.ts       base: '/Grocery/' per GitHub Pages + config Vitest
 ├── tsconfig.json
 └── src/
     ├── main.tsx         monta React su #root
-    ├── vite-env.d.ts    tipi di Vite (import di asset, es. il WASM di SQLite)
+    ├── vite-env.d.ts    tipi di Vite e delle variabili d'ambiente
     ├── data/            configurazioni statiche in JSON (vedi 05)
     ├── domain/          modello dati, dati statici tipizzati, algoritmo di generazione
-    ├── storage/         interfaccia di persistenza (SQLite in dev, Supabase in prod)
-    │   ├── tipi.ts      l'interfaccia `Storage` e la porta `Persistenza`
-    │   ├── schema.ts    lo schema SQL di liste, voci, rotazioni
-    │   ├── sqlite.ts    implementazione su sql.js
+    ├── storage/         interfaccia di persistenza, su Supabase
+    │   ├── tipi.ts      l'interfaccia `Storage`
     │   ├── supabase.ts  implementazione su Supabase
     │   ├── accesso.ts   l'interfaccia `Accesso`: passphrase e sessione
-    │   ├── contratto.ts i test dell'interfaccia, comuni alle due implementazioni
-    │   ├── indexeddb.ts il blob del database dentro IndexedDB
-    │   ├── memoria.ts   persistenza volatile, per i test
-    │   └── index.ts     scelta dell'implementazione per ambiente e apertura
+    │   ├── contratto.ts i test dell'interfaccia
+    │   └── index.ts     apertura del client, una volta sola
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
         ├── ConAccesso.tsx     il cancello: passphrase finché non c'è una sessione
@@ -142,8 +138,8 @@ si perda o si duplichi.
 in funzioni pure. `differenze(prima, dopo)` dice quali voci una modifica ha toccato
 e quali ha tolto: le transizioni del dominio lasciano intatti gli oggetti delle voci
 che non toccano, quindi basta confrontare i riferimenti. `applicaModifiche()` le
-riapplica a una lista (le toccate al loro posto, le nuove in fondo) ed è quello che
-fa `salvaVoci` su SQLite. `unisci()` mette insieme la lista riletta dal database con
+riapplica a una lista (le toccate al loro posto, le nuove in fondo), come fa
+`salva_voci` sul database. `unisci()` mette insieme la lista riletta dal database con
 quella a schermo: per le voci con una scrittura ancora in volo vale la versione
 locale, per tutte le altre quella riletta; se nel frattempo è nata una lista nuova
 vale quella. `sincronia.test.ts` copre le tre funzioni, compresi i due casi del
@@ -164,47 +160,17 @@ scrive solo le voci toccate da una modifica e serve a tutto il resto, così le
 modifiche dei due dispositivi si sommano invece di sovrascriversi; scrive solo sulla
 lista corrente. `quandoCambia(avvisa)` avvisa quando la lista può essere cambiata
 altrove. Il
-resto dell'app conosce solo questa: l'implementazione Supabase arriverà accanto a
-quella SQLite senza toccare né il dominio né la UI.
+resto dell'app conosce solo questa, e non sa cosa c'è sotto.
 
-`schema.ts` tiene lo schema SQL delle tre tabelle di
-[06](06-modello-dati.md) — `liste`, `voci`, `rotazioni` — scritto in SQL
-standard perché regga anche su Postgres. In `rotazioni` la memoria è l'elenco delle
-tipologie dell'ultimo ciclo (JSON in una colonna di testo); i database di sviluppo
-creati quando era una posizione nel catalogo si migrano buttando la tabella, che si
-ricostruisce alla prima generazione. Le voci portano una `posizione`, così l'ordine
-della lista è quello con cui è stata salvata, e le `alternative` viaggiano come JSON
-in una colonna di testo.
-
-`sqlite.ts` implementa `Storage` su `sql.js`: il database sta in memoria e dopo ogni
-scrittura viene esportato in un blob e affidato alla `Persistenza`. Ogni salvataggio
-riscrive la lista per intero dentro una transazione, così quello che sparisce
-dall'oggetto sparisce anche dal database; salvando una lista `corrente` le altre
-correnti passano ad archiviata, perché ce n'è sempre una sola. `export()` di sql.js
-riapre la connessione, quindi il `PRAGMA foreign_keys` va rimesso a ogni
-transazione: senza, i `CASCADE` smettono di scattare dopo il primo salvataggio.
-
-Fino al 2026-09-11 frutta e verdura erano una voce sola ciascuna, coi tipi in una
-tabella `elementi`. All'apertura, se quella tabella c'è ancora, `migraElementi()`
-riscrive ogni lista salvata con una voce per tipo — spunte comprese, archivio
-compreso — e poi la butta.
-
-L'archivio si legge da lì: `leggiArchivio()` elenca le liste `archiviata` dalla più
-recente alla più vecchia contando le voci con un'aggregazione — per l'elenco non
-serve caricarle — e `leggiLista(id)` tira su una lista qualsiasi per intero, come
-`leggiListaCorrente()`, che ormai è la stessa lettura con una `WHERE` diversa.
-
-La `Persistenza` è la porta che dice dove finiscono quei byte:
-`PersistenzaIndexedDB` li tiene in un unico record di IndexedDB — è ciò che fa
-sopravvivere la lista al refresh — e `PersistenzaMemoria` non li fa sopravvivere a
-niente, ed è quella dei test. `index.ts` mette insieme i pezzi per l'app in
-esecuzione: carica il WASM di SQLite e apre lo storage una volta sola.
-
-`supabase.ts` è la seconda implementazione, per la produzione (Step 13). Lo schema
-sta in `supabase/migrations`: le stesse tre tabelle, coi tipi di Postgres — date
-`timestamptz`, `comprata` booleano, `alternative` e `ultimi` come `text[]` invece
-che JSON in una colonna di testo. Un indice unico parziale garantisce che la lista
-`corrente` sia una sola, e la vista `archivio` fa i conteggi dell'elenco. Il client
+`supabase.ts` la implementa su Supabase (Step 13), in sviluppo come in produzione:
+fino al 2026-09-11 in sviluppo c'era SQLite nel browser, poi tolto. Lo schema sta
+in `supabase/migrations`: le tre tabelle di [06](06-modello-dati.md) — `liste`,
+`voci`, `rotazioni` — con date `timestamptz`, `comprata` booleano, `alternative` e
+`ultimi` come `text[]`. Le voci portano una `posizione`, così l'ordine della lista
+è quello con cui è stata salvata. Un indice unico parziale garantisce che la lista
+`corrente` sia una sola, e la vista `archivio` fa i conteggi dell'elenco: per
+l'elenco non serve caricare le voci, mentre `leggiLista(id)` tira su una lista
+qualsiasi per intero, come `leggiListaCorrente()`. Il client
 di Supabase non apre transazioni, quindi le scritture composte sono funzioni
 Postgres chiamate via RPC: `salva_lista` aggiorna le voci sul posto e cancella solo
 quelle sparite, `salva_voci` scrive solo le voci toccate (le nuove in fondo, le
@@ -221,23 +187,21 @@ niente del contenuto della lista. Il realtime non ripete gli eventi persi, quind
 primo piano: il telefono in tasca chiude il socket senza dirlo. `salva_voci` prende
 il lock sulla riga della lista, e questo mette in fila le scritture concorrenti.
 Non scrive su una lista che non è più la corrente: un dispositivo rimasto indietro
-non tocca l'archivio. Su SQLite `quandoCambia` non fa niente, perché nessun altro
-scrive in quel database.
+non tocca l'archivio.
 
 Le policy (RLS) aprono le tre tabelle alla sola sessione autenticata, senza
 filtri per utente perché l'account è uno solo; al ruolo `anon` sono tolti anche i
 permessi su tabelle, vista e funzioni. In `supabase/config.toml` la registrazione
 pubblica è spenta.
 
-`index.ts` sceglie l'implementazione: SQLite con `npm run dev`, Supabase nella
-build, e `VITE_STORAGE=sqlite|supabase` forza la scelta. URL e chiave publishable
-del progetto arrivano da `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`
-(vedi `.env.example`, da copiare in `.env.local`).
+`index.ts` apre il client una volta sola, con `npm run dev` come nella build: i due
+ambienti usano lo stesso progetto Supabase, quindi gli stessi dati. URL e chiave
+publishable del progetto arrivano da `VITE_SUPABASE_URL` e
+`VITE_SUPABASE_PUBLISHABLE_KEY` (vedi `.env.example`, da copiare in `.env.local`).
 
 L'accesso (F8, Step 14) segue lo stesso schema: l'interfaccia `Accesso` di
-`accesso.ts` — `haSessione()`, `entra(passphrase)`, `quandoEsce()` — ha due
-implementazioni. `accessoLibero` è quella di SQLite: lo stato non esce dal
-dispositivo, e si entra sempre. `AccessoSupabase` fa della passphrase la password
+`accesso.ts` — `haSessione()`, `entra(passphrase)`, `quandoEsce()` — implementata
+da `AccessoSupabase`, che fa della passphrase la password
 dell'unico account, la cui email arriva da `VITE_SUPABASE_EMAIL`: chi entra scrive
 solo la passphrase. Storage e accesso condividono un solo client, creato con
 `createBrowserClient` di `@supabase/ssr`, che tiene la sessione nei **cookie**
@@ -245,11 +209,11 @@ solo la passphrase. Storage e accesso condividono un solo client, creato con
 mancanza di rete la sessione resta valida: in corsia non si chiede la passphrase a
 chi è già entrato. `accesso.test.ts` verifica tutto questo su un client finto.
 
-I test dell'interfaccia stanno in `contratto.ts` e girano su entrambe le
-implementazioni: la lista riletta identica a quella salvata, l'ordine delle voci
+I test dell'interfaccia stanno in `contratto.ts`: la lista riletta identica a quella salvata, l'ordine delle voci
 (anche dopo un riordino), i campi opzionali che restano assenti, il salvataggio
 che aggiorna invece di duplicare, le voci tolte che spariscono, l'unica lista
-corrente, le rotazioni sostituite e non accumulate, l'archivio che elenca le liste
+corrente, le rotazioni sostituite e non accumulate e lasciate stare quando si salva
+la lista (R7), l'archivio che elenca le liste
 passate ma non quella corrente, nell'ordine giusto e con i conteggi giusti, la
 lista archiviata riletta identica a com'era. Per `salvaVoci`: le voci non toccate
 che restano come sono, le spunte di due dispositivi su voci diverse che si sommano,
@@ -261,9 +225,7 @@ finto, come `accesso.test.ts`, quindi gira sempre: si ascolta la sola tabella
 `liste`, si avvisa a ogni cambio e a ogni connessione, ogni ascolto ha il suo canale
 e smettendo il canale si chiude.
 
-`sqlite.test.ts` li esegue su SQLite e ci aggiunge quello che è solo di SQLite: le
-migrazioni dei database vecchi e il refresh, simulato riaprendo il database sulla
-stessa `Persistenza`. `supabase.test.ts` li esegue contro un Supabase vero e
+`supabase.test.ts` li esegue contro un Supabase vero e
 verifica le policy: senza sessione non si legge e non si scrive niente, e una spunta
 avvisa via realtime chi ascolta con la sessione ma non chi è senza. Svuota le
 tabelle a ogni test, quindi va puntato solo sul Supabase locale: gira se trova
@@ -275,7 +237,7 @@ Davanti a tutto c'è `ConAccesso`, montato in `main.tsx` attorno ad `App`: finch
 non c'è una sessione mostra `Accesso`, la schermata col solo campo passphrase
 (doc/08, §1), poi l'app. Mentre legge i cookie non mostra niente, per non far
 lampeggiare la passphrase a chi è già entrato; se la sessione finisce con l'app
-aperta torna alla passphrase. In sviluppo, su SQLite, passa senza fermarsi.
+aperta torna alla passphrase. Anche in sviluppo si entra con la passphrase.
 
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
 zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemento

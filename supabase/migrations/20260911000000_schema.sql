@@ -1,6 +1,5 @@
--- Schema dello stato su Supabase: le stesse tabelle di src/storage/schema.ts
--- (liste, voci, rotazioni), con i tipi di Postgres al posto dei ripieghi di
--- SQLite: date vere, booleani veri, elenchi come text[] invece che JSON in testo.
+-- Schema dello stato su Supabase: le tabelle di doc/06 (liste, voci, rotazioni),
+-- con date vere, booleani veri, elenchi come text[].
 -- Nessuna migrazione dal passato (elementi, surgelati, salumi_formaggi): questo
 -- database nasce dopo.
 
@@ -10,8 +9,8 @@ create table public.liste (
   stato      text not null check (stato in ('corrente', 'archiviata'))
 );
 
--- Una sola lista corrente alla volta (doc/06): su SQLite la tiene salvaLista,
--- qui la garantisce anche il database.
+-- Una sola lista corrente alla volta (doc/06): la tiene salva_lista, e la
+-- garantisce anche il database.
 create unique index liste_una_corrente on public.liste (stato) where stato = 'corrente';
 
 create table public.voci (
@@ -49,7 +48,7 @@ group by liste.id;
 -- funzioni, che Postgres esegue tutte o niente.
 
 /**
- * Salva la lista per intero, come StorageSqlite.salvaLista: le voci sparite
+ * Salva la lista per intero: le voci sparite
  * dall'oggetto spariscono, le altre si aggiornano sul posto (non si cancellano
  * e reinseriscono, così al realtime dello Step 15 arrivano solo le voci toccate).
  * Salvando una lista corrente le altre correnti passano ad archiviate.

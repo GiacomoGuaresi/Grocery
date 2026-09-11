@@ -1,6 +1,6 @@
 import type { AuthChangeEvent, SupabaseClient } from '@supabase/supabase-js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { AccessoSupabase, accessoLibero } from './accesso'
+import { AccessoSupabase } from './accesso'
 
 const EMAIL = 'casa@example.com'
 
@@ -89,12 +89,5 @@ describe('uscita', () => {
     smetti()
     emetti('SIGNED_OUT')
     expect(avvisa).not.toHaveBeenCalled()
-  })
-})
-
-describe('senza Supabase', () => {
-  it('si entra sempre', async () => {
-    expect(await accessoLibero.haSessione()).toBe(true)
-    expect(await accessoLibero.entra('')).toBe('dentro')
   })
 })

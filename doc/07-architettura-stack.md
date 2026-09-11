@@ -12,8 +12,7 @@ privilegiando cose gratuite, semplici da mantenere e presentabili in un portfoli
 | Build | **Vite** | Build statica veloce, deploy immediato su Pages |
 | Stile | **Tailwind CSS** | Rapido per una UI mobile-first, nessun file CSS da gestire |
 | PWA | **vite-plugin-pwa** (Workbox) | Installabile e offline con poca configurazione |
-| DB (sviluppo) | **SQLite** via `sql.js` (WASM) nel browser | Nessun servizio esterno né server da avviare |
-| DB (produzione) | **Supabase** (piano gratuito) | Postgres gestito, realtime incluso, gratuito, poco codice |
+| DB | **Supabase** (piano gratuito), in sviluppo e in produzione | Postgres gestito, realtime incluso, gratuito, poco codice |
 | Test | **Vitest** + Testing Library | Stessa toolchain di Vite |
 | Hosting | **GitHub Pages** | Richiesto |
 | CI/CD | **GitHub Actions** | Build e deploy su push del branch principale |
@@ -23,24 +22,19 @@ privilegiando cose gratuite, semplici da mantenere e presentabili in un portfoli
 ```
 frontend statico (GitHub Pages)
   ├── dati di configurazione  → JSON nel repo (build-time)
-  └── stato condiviso         → SQLite in sviluppo · Supabase in produzione
+  └── stato condiviso         → Supabase
 ```
 
-### Due ambienti di persistenza
-Lo stato passa da un'**interfaccia di storage** unica, con due implementazioni:
+### Un solo database
+Lo stato passa da un'**interfaccia di storage** unica, implementata su
+**Supabase**. Il codice applicativo non conosce l'implementazione: si programma
+contro l'interfaccia.
 
-- **sviluppo (solo PC)** → **SQLite** eseguito nel browser con `sql.js` (SQLite
-  compilato in WebAssembly), database persistito su IndexedDB. Nessun server da
-  avviare, nessun account da configurare, e resta vero SQL: lo schema è lo stesso che
-  gira su Postgres in produzione.
-- **produzione** → **Supabase**, che aggiunge il realtime tra i due dispositivi.
-
-Il codice applicativo non conosce l'implementazione: si programma contro
-l'interfaccia.
-
-L'app online userà **Supabase fin da subito**; semplicemente non viene pubblicata
-finché la base non è pronta. Nel frattempo si sviluppa in locale su SQLite, senza
-collegare Supabase.
+Sviluppo e produzione usano **lo stesso progetto Supabase**: `npm run dev` legge e
+scrive i dati veri. È una scelta consapevole (2026-09-11): i dati di prova si
+mescolano a quelli reali e un errore in sviluppo tocca la lista vera, in cambio di
+un solo database da tenere e di un ambiente di sviluppo che è quello che si usa.
+Fino al 2026-09-11 in sviluppo c'era SQLite nel browser (`sql.js`, su IndexedDB).
 
 Nessun backend proprio. Nessuna funzione serverless: non servendo l'IA, non c'è
 alcuna API key da nascondere. La chiave `anon` di Supabase è pubblica per

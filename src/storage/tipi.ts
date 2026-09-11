@@ -1,6 +1,6 @@
 // Interfaccia di persistenza — vedi doc/07-architettura-stack.md.
-// Il resto dell'app programma solo contro questa: oggi l'implementazione è
-// SQLite via sql.js (Step 5), in produzione sarà Supabase (Step 13).
+// Il resto dell'app programma solo contro questa: l'implementazione è
+// Supabase (Step 13), in sviluppo come in produzione.
 
 import type { Modifiche } from '../domain/sincronia'
 import type { Lista, Rotazione, SintesiLista } from '../domain/tipi'
@@ -31,13 +31,4 @@ export interface Storage {
   leggiRotazioni(): Promise<Rotazione[]>
   /** Sostituisce la memoria della rotazione con quella passata. */
   salvaRotazioni(rotazioni: Rotazione[]): Promise<void>
-}
-
-/**
- * Dove finisce il file SQLite tra un'apertura e l'altra. In browser è
- * IndexedDB; nei test è la memoria del processo.
- */
-export interface Persistenza {
-  carica(): Promise<Uint8Array | null>
-  salva(dati: Uint8Array): Promise<void>
 }

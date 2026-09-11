@@ -1,7 +1,6 @@
 // Accesso con passphrase (F8, Step 14): un solo account condiviso, la
 // passphrase ne è la password. Come per Storage, il resto dell'app conosce
-// solo l'interfaccia: con SQLite lo stato non esce dal dispositivo e si entra
-// sempre; con Supabase serve la sessione, che le policy pretendono.
+// solo l'interfaccia; sotto c'è la sessione di Supabase, che le policy pretendono.
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 
@@ -13,13 +12,6 @@ export interface Accesso {
   entra(passphrase: string): Promise<EsitoAccesso>
   /** `avvisa` scatta quando la sessione finisce (revocata, scaduta). Restituisce come smettere. */
   quandoEsce(avvisa: () => void): () => void
-}
-
-/** Lo storage locale di sviluppo non ha niente da proteggere. */
-export const accessoLibero: Accesso = {
-  haSessione: async () => true,
-  entra: async () => 'dentro',
-  quandoEsce: () => () => {},
 }
 
 export class AccessoSupabase implements Accesso {
