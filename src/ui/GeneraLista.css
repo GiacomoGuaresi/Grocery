@@ -8,12 +8,22 @@
   gap: 10px;
 }
 
+/* Entra con una dissolvenza e un lieve ingrandimento: si capisce che è una
+   domanda comparsa adesso, non un pezzo della pagina. */
 .genera--conferma {
   align-items: stretch;
   padding: var(--spazio);
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--crema-scura);
+  animation: genera-entra 220ms ease-out both;
+}
+
+@keyframes genera-entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
 }
 
 .genera__titolo {

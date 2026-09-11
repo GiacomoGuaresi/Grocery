@@ -52,8 +52,12 @@ export function suggerimenti(testo: string, limite = 6): Prodotto[] {
   return [...inizia, ...contiene].slice(0, limite)
 }
 
-/** Un id che non collide con quelli delle voci generate, tutti per categoria. */
-function nuovoId(): string {
+/**
+ * Un id che non collide con quelli delle voci generate, tutti per categoria.
+ * L'interfaccia lo sceglie prima di aggiungere, per sapere quale riga far
+ * lampeggiare.
+ */
+export function nuovoId(): string {
   return `manuale-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 }
 

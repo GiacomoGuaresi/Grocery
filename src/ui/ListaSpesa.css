@@ -1,18 +1,40 @@
 /* Schermata principale: i gruppi per reparto uno sotto l'altro, oppure lo
    stato vuoto quando non c'è nessuna lista. */
 .lista {
+  /* Lo stacco tra i reparti: il reparto che se ne va se lo mangia
+     (GruppoReparto.css). */
+  --stacco: 19px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 19px;
+  gap: var(--stacco);
 }
 
-/* Quando non resta niente da prendere, sopra la sezione "Già presi". */
+/* Quando non resta niente da prendere, sopra la sezione "Già presi". Entra
+   con il carrello che scivola dentro da sinistra e si assesta. */
 .lista__tutto-preso {
   margin: 0;
   padding: 26px var(--spazio);
   color: var(--inchiostro-tenue);
   text-align: center;
+  animation: tutto-preso 320ms ease-out both;
+}
+
+.lista__tutto-preso-icona {
+  animation: carrello-arriva 600ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+
+@keyframes tutto-preso {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes carrello-arriva {
+  from {
+    opacity: 0;
+    transform: translateX(-48px) rotate(-12deg);
+  }
 }
 
 /* Occupa tutto lo spazio libero: resta centrato e la barra di aggiunta finisce

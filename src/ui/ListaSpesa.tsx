@@ -1,4 +1,5 @@
-import { aggiungiVoce, voceGiaPresente } from '../domain/aggiunta'
+import { useState } from 'react'
+import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
 import { alternativeVoce, sostituisciVoce } from '../domain/alternative'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
@@ -10,6 +11,7 @@ import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
 import { Icona } from './Icona'
 import type { ListaPersistita } from './useLista'
+import type { Arrivo } from './Voce'
 import './ListaSpesa.css'
 
 /**
@@ -18,13 +20,26 @@ import './ListaSpesa.css'
  * il campo di aggiunta rapida; il ciclo nuovo si apre dal menu laterale. La
  * lista la tiene App (useLista), perché serve anche a "Genera lista": arriva
  * dallo storage e ogni modifica ci torna, così resta anche dopo un refresh.
+ *
+ * Tiene a mente l'ultima voce arrivata (aggiunta, spuntata o de-spuntata),
+ * che entra nel suo posto nuovo con un'animazione.
  */
 export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: ListaPersistita) {
+  const [arrivo, setArrivo] = useState<Arrivo | null>(null)
+
   if (stato.fase === 'caricamento') return <Caricamento />
   if (stato.fase === 'errore') return <Errore />
 
   const { lista } = stato
-  const aggiungi = (nome: string) => modifica((corrente) => aggiungiVoce(corrente, nome))
+
+  // L'id della voce nuova si sceglie qui, per sapere quale riga far lampeggiare.
+  // Se c'è già da prendere non arriva niente: la barra avvisa e basta.
+  const aggiungi = (nome: string) => {
+    const presente = voceGiaPresente(lista, nome)
+    const id = presente?.id ?? nuovoId()
+    if (!presente || presente.comprata) setArrivo({ id, tipo: 'aggiunta', comprata: false })
+    modifica((corrente) => aggiungiVoce(corrente, nome, id))
+  }
   const giaPresente = (nome: string) => voceGiaPresente(lista, nome)
   const rete = senzaRete && <SenzaRete inAttesa={inAttesa} />
 
@@ -41,11 +56,14 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   const attive = raggruppaPerReparto(vociAttive(lista))
   const comprate = vociComprate(lista)
 
-  const alterna = (id: string) =>
+  const alterna = (id: string) => {
+    const voce = lista.voci.find((v) => v.id === id)
+    if (voce) setArrivo({ id, tipo: 'spostata', comprata: !voce.comprata })
     modifica((corrente) => {
       const voce = corrente.voci.find((v) => v.id === id)
       return voce?.comprata ? despuntaVoce(corrente, id) : spuntaVoce(corrente, id)
     })
+  }
 
   const elimina = (id: string) => modifica((corrente) => eliminaVoce(corrente, id))
 
@@ -68,6 +86,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
           <GruppoReparto
             key={gruppo.id}
             gruppo={gruppo}
+            arrivo={arrivo}
             onAlterna={alterna}
             onElimina={elimina}
             onRinomina={rinomina}
@@ -80,6 +99,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
       )}
       <GiaPresi
         voci={comprate}
+        arrivo={arrivo}
         onAlterna={alterna}
         onElimina={elimina}
         onRinomina={rinomina}
@@ -128,7 +148,7 @@ function SenzaRete({ inAttesa }: { inAttesa: number }) {
 function TuttoPreso() {
   return (
     <p className="lista__tutto-preso">
-      <Icona nome="carrello" /> Preso tutto.
+      <Icona nome="carrello" className="lista__tutto-preso-icona" /> Preso tutto.
     </p>
   )
 }

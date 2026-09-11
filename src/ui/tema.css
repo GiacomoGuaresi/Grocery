@@ -30,6 +30,11 @@
   /* I campi di testo restano a 16px: sotto, iOS zooma da solo al tocco. */
   --testo-campo: 16px;
 
+  /* Le animazioni sono brevi: in corsia non si aspetta. */
+  --durata-voce: 240ms;
+  /* Quanto si vede la spunta prima che la riga se ne vada. */
+  --ritardo-spunta: 180ms;
+
   color-scheme: light;
 }
 
@@ -39,9 +44,27 @@
 
 /* L'attributo hidden nasconde sempre, anche gli elementi a cui il loro CSS dà
    un display (flex, grid...), che altrimenti vincerebbe e li lascerebbe
-   visibili: così si ripiega "Già presi". */
+   visibili. */
 [hidden] {
   display: none !important;
+}
+
+/* Chi ha chiesto meno movimento vede tutto cambiare di colpo. Le animazioni
+   durano 1ms invece di sparire: la loro fine fa partire le modifiche alla
+   lista (useUscita in animazioni.ts), quindi deve arrivare comunque. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0s !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0s !important;
+  }
+
+  ::backdrop {
+    animation-duration: 1ms !important;
+  }
 }
 
 html,

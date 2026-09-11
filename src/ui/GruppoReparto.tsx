@@ -1,11 +1,13 @@
 import type { Alternative } from '../domain/alternative'
 import type { GruppoReparto as Gruppo } from '../domain/lista'
 import type { Voce as VoceLista } from '../domain/tipi'
-import { Voce } from './Voce'
+import { Voce, type Arrivo } from './Voce'
 import './GruppoReparto.css'
 
 interface Props {
   gruppo: Gruppo
+  /** L'ultima voce arrivata nella lista, da far entrare con un'animazione. */
+  arrivo: Arrivo | null
   onAlterna: (id: string) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
@@ -17,6 +19,7 @@ interface Props {
 /** Un reparto della lista, col suo titolo e le sue voci. */
 export function GruppoReparto({
   gruppo,
+  arrivo,
   onAlterna,
   onElimina,
   onRinomina,
@@ -34,6 +37,7 @@ export function GruppoReparto({
             key={voce.id}
             voce={voce}
             alternative={alternative(voce)}
+            arrivo={arrivo}
             onAlterna={onAlterna}
             onElimina={onElimina}
             onRinomina={onRinomina}

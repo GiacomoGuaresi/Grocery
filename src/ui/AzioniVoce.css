@@ -18,8 +18,23 @@
   background: rgb(59 44 38 / 0.35);
 }
 
+/* Sale dal fondo mentre il velo si scurisce, e ridiscende allo stesso modo
+   quando si chiude. Chi chiede meno movimento lo ha da tema.css. */
 .azioni-voce[open] {
   animation: azioni-voce-sale 200ms ease-out;
+}
+
+.azioni-voce[open]::backdrop {
+  animation: azioni-velo 200ms ease-out;
+}
+
+.azioni-voce--chiude[open] {
+  animation: azioni-voce-scende 200ms ease-in forwards;
+  pointer-events: none;
+}
+
+.azioni-voce--chiude[open]::backdrop {
+  animation: azioni-velo 200ms ease-in reverse forwards;
 }
 
 @keyframes azioni-voce-sale {
@@ -28,9 +43,15 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .azioni-voce[open] {
-    animation: none;
+@keyframes azioni-voce-scende {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes azioni-velo {
+  from {
+    opacity: 0;
   }
 }
 

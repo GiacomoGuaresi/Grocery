@@ -30,6 +30,28 @@ ampi, testo leggibile, poche schermate, nessun passaggio inutile.
 - **Voci compatte**: le voci di un reparto sono righe basse attaccate l'una
   all'altra, un unico blocco per reparto, così se ne vedono più alla volta.
 
+## Animazioni
+Brevi (intorno ai 200ms), solo dove aiutano a capire cosa è successo. Chi ha
+chiesto meno movimento nelle impostazioni del telefono vede tutto cambiare di
+colpo.
+- **Eliminazione**: la riga sfuma e si ripiega in altezza, quelle sotto salgono
+  senza scatti. Se parte dal popup, prima il popup ridiscende, poi la riga se ne va.
+- **Spunta**: il segno si riempie con un piccolo scatto, poi la riga si ripiega
+  e va tra i "Già presi".
+- **De-spunta**: la riga lascia i "Già presi" allo stesso modo e si apre, in
+  dissolvenza, nel suo reparto.
+- **Voce aggiunta**: si apre nel suo reparto con un breve lampo color zucca, e
+  la lista scorre fin lì se era fuori schermo.
+- **Reparto che si svuota**: quando esce l'ultima voce, il titolo del reparto si
+  ripiega insieme a lei.
+- **"Già presi"** si apre e si chiude a fisarmonica; il contatore fa un saltello
+  quando cambia.
+- **"Preso tutto"** entra col carrello che scivola dentro da sinistra.
+- **Popup delle azioni**: sale dal fondo e ridiscende quando si chiude, in
+  qualunque modo (Chiudi, tocco fuori, Esc).
+- **Conferma di "Genera lista"**: entra con una dissolvenza e un lieve
+  ingrandimento.
+
 ## Navigazione
 Un **menu laterale a scomparsa**, aperto dal bottone ☰ nell'intestazione, contiene
 tutte le sezioni e le azioni. **Da desktop** (finestra larga almeno 1024px) il menu

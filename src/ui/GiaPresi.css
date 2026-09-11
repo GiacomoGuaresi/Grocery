@@ -29,6 +29,7 @@
 }
 
 .gia-presi__quanti {
+  display: inline-block;
   min-width: 21px;
   padding: 1px 6px;
   border-radius: 999px;
@@ -40,17 +41,44 @@
 /* La freccia che ruota verso il basso quando la sezione si apre. */
 .gia-presi__freccia {
   font-size: 16px;
-  transition: transform 120ms ease-out;
+  transition: transform var(--durata-voce) ease-out;
 }
 
 .gia-presi__intestazione[aria-expanded='true'] .gia-presi__freccia {
   transform: rotate(90deg);
 }
 
+/* A fisarmonica: l'unica traccia della griglia va da 0fr a 1fr, così la
+   sezione si allunga fino all'altezza delle sue voci senza doverla sapere.
+   Il margine negativo si mangia lo stacco dall'intestazione quando è chiusa.
+   Da chiusa è nascosta anche alla tastiera (visibility), ma solo a
+   transizione finita, così la chiusura si vede. */
+.gia-presi__corpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: -6px;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--durata-voce) ease-out,
+    margin-top var(--durata-voce) ease-out,
+    visibility 0s var(--durata-voce);
+}
+
+.gia-presi__corpo--aperto {
+  grid-template-rows: 1fr;
+  margin-top: 0;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--durata-voce) ease-out,
+    margin-top var(--durata-voce) ease-out;
+}
+
 .gia-presi__voci {
   display: flex;
   flex-direction: column;
+  min-height: 0;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   list-style: none;
 }

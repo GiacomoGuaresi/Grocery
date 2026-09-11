@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { tutteLeAlternative, type Alternative } from '../domain/alternative'
 import { rinominabile } from '../domain/modifica'
 import type { Voce as VoceLista } from '../domain/tipi'
+import { useUscita } from './animazioni'
 import './AzioniVoce.css'
 
 interface Props {
@@ -24,6 +25,9 @@ interface Props {
  *
  * È un `<dialog>` modale: il browser si occupa del fuoco, di Esc e del velo
  * sopra la lista. Ogni chiusura passa da `close()`, che avvisa con `onChiudi`.
+ *
+ * Prima di chiudersi ridiscende verso il fondo. L'eliminazione aspetta che sia
+ * sceso, così dopo si vede la riga che se ne va.
  */
 export function AzioniVoce({
   voce,
@@ -42,14 +46,27 @@ export function AzioniVoce({
     if (dialogo && !dialogo.open) dialogo.showModal()
   }, [])
 
-  const chiudi = () => finestra.current?.close()
+  const { uscita, esci, fine } = useUscita<'chiudi' | 'elimina'>((motivo) => {
+    finestra.current?.close()
+    if (motivo === 'elimina') onElimina()
+  })
+  const chiudi = () => esci('chiudi')
 
   return (
     <dialog
       ref={finestra}
-      className="azioni-voce"
+      className={uscita ? 'azioni-voce azioni-voce--chiude' : 'azioni-voce'}
       aria-labelledby={`azioni-${voce.id}`}
       onClose={onChiudi}
+      // Anche Esc passa dall'animazione di chiusura.
+      onCancel={(evento) => {
+        evento.preventDefault()
+        chiudi()
+      }}
+      onAnimationEnd={(evento) => {
+        if (evento.target === evento.currentTarget && evento.animationName === 'azioni-voce-scende')
+          fine()
+      }}
       // Il tocco sul velo arriva al dialog stesso: chiude, come fuori dal menu.
       onClick={(evento) => evento.target === evento.currentTarget && chiudi()}
     >
@@ -86,10 +103,7 @@ export function AzioniVoce({
             <button
               className="azioni-voce__bottone azioni-voce__bottone--elimina"
               type="button"
-              onClick={() => {
-                onElimina()
-                chiudi()
-              }}
+              onClick={() => esci('elimina')}
             >
               Elimina
             </button>

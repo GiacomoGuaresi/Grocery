@@ -16,3 +16,40 @@
   padding: 0;
   list-style: none;
 }
+
+/* Quando esce l'ultima voce il reparto se ne va con lei: il titolo si ripiega
+   e il margine negativo si mangia lo stacco della lista, così sotto non scatta
+   niente. Se l'ultima esce per la spunta, aspetta come lei che la si veda. */
+.reparto {
+  --ritardo: 0s;
+}
+
+.reparto:has(.voce--si-spunta) {
+  --ritardo: var(--ritardo-spunta);
+}
+
+.reparto:not(:has(.voce:not(.voce--esce))) {
+  animation: reparto-esce var(--durata-voce) ease-in var(--ritardo) forwards;
+}
+
+.reparto:not(:has(.voce:not(.voce--esce))) .reparto__titolo {
+  overflow: hidden;
+  animation: reparto-titolo-esce var(--durata-voce) ease-in var(--ritardo) forwards;
+}
+
+@keyframes reparto-esce {
+  to {
+    margin-bottom: calc(var(--stacco) * -1);
+    opacity: 0;
+  }
+}
+
+@keyframes reparto-titolo-esce {
+  from {
+    max-height: 2em;
+  }
+  to {
+    max-height: 0;
+    margin-bottom: 0;
+  }
+}

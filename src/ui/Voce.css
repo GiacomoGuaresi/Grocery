@@ -3,8 +3,10 @@
    un unico blocco con i bordi arrotondati solo in cima e in fondo. Le azioni
    stanno nel popup (AzioniVoce.css). */
 .voce {
-  display: flex;
-  flex-direction: column;
+  /* Una sola traccia di griglia: portandola da 1fr a 0fr la riga si chiude
+     senza sapere quanto è alta (animazioni in fondo al file). */
+  display: grid;
+  grid-template-rows: 1fr;
   padding: 0 2px 0 var(--spazio);
   border: 1px solid var(--bordo);
   background: var(--panna);
@@ -185,4 +187,69 @@
 .voce__azioni-apri:active {
   background: var(--crema-scura);
   color: var(--inchiostro);
+}
+
+/* Animazioni (doc/08-ui-ux.md, "Animazioni"). Mentre la riga si apre o si
+   chiude il contenuto è ritagliato, altrimenti debordava sulla riga sotto. */
+.voce--arriva .voce__testata,
+.voce--esce .voce__testata {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Spostata da una spunta o da una de-spunta: si apre nel posto nuovo. */
+.voce--arriva {
+  animation: voce-arriva var(--durata-voce) ease-out both;
+}
+
+/* Aggiunta a mano: si apre e lampeggia color zucca, così si vede dove è
+   finita. Lo scroll la porta in vista, fuori dall'intestazione e dalla barra
+   di aggiunta. */
+.voce--arriva-aggiunta {
+  animation:
+    voce-arriva var(--durata-voce) ease-out both,
+    voce-lampo 1s ease-out var(--durata-voce) backwards;
+  scroll-margin-block: 64px 96px;
+}
+
+/* In fondo, così vince sull'arrivo. Mentre esce non si tocca più. */
+.voce--esce {
+  animation: voce-esce var(--durata-voce) ease-in forwards;
+  pointer-events: none;
+}
+
+/* Spuntata: il segno si riempie con un piccolo scatto, e la riga aspetta che
+   lo si veda prima di andarsene. */
+.voce--si-spunta {
+  animation-delay: var(--ritardo-spunta);
+}
+
+.voce--si-spunta .voce__segno {
+  animation: voce-segno var(--ritardo-spunta) ease-out;
+}
+
+@keyframes voce-arriva {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+@keyframes voce-lampo {
+  from {
+    background-color: var(--zucca);
+  }
+}
+
+@keyframes voce-esce {
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+  }
+}
+
+@keyframes voce-segno {
+  50% {
+    transform: scale(1.3);
+  }
 }
