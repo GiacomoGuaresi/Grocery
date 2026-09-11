@@ -5,7 +5,7 @@
   position: fixed;
   inset: 0;
   z-index: 10;
-  background: rgb(61 55 51 / 0.35);
+  background: rgb(59 44 38 / 0.35);
   opacity: 0;
   visibility: hidden;
   transition:
@@ -33,7 +33,7 @@
   overflow-y: auto;
   background: var(--crema);
   border-right: 1px solid var(--bordo);
-  box-shadow: 4px 0 16px rgb(61 55 51 / 0.12);
+  box-shadow: 4px 0 16px rgb(59 44 38 / 0.12);
   transform: translateX(-100%);
   visibility: hidden;
   transition:
@@ -114,10 +114,10 @@
   background: var(--bordo);
 }
 
-/* La sezione in cui ci si trova: evidenziata con la barretta color salvia. */
+/* La sezione in cui ci si trova: evidenziata con la barretta color terracotta. */
 .menu__voce[aria-current='page'] {
   background: var(--crema-scura);
-  box-shadow: inset 3px 0 0 var(--salvia-scura);
+  box-shadow: inset 3px 0 0 var(--terracotta-scura);
   font-weight: 600;
 }
 
@@ -134,6 +134,6 @@
 }
 
 .menu__voce--azione {
-  color: var(--salvia-scura);
+  color: var(--terracotta-scura);
   font-weight: 600;
 }

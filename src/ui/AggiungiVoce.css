@@ -61,7 +61,7 @@
 }
 
 .aggiungi__campo:focus {
-  outline: 2px solid var(--salvia);
+  outline: 2px solid var(--terracotta);
   outline-offset: -1px;
 }
 
@@ -71,7 +71,7 @@
   padding: 0 16px;
   border: none;
   border-radius: var(--raggio);
-  background: var(--salvia);
+  background: var(--terracotta);
   color: var(--panna);
   font: inherit;
   font-weight: 600;
@@ -79,7 +79,7 @@
 }
 
 .aggiungi__bottone:active {
-  background: var(--salvia-scura);
+  background: var(--terracotta-scura);
 }
 
 .aggiungi__bottone:disabled {

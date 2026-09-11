@@ -11,11 +11,11 @@
   border-radius: var(--raggio) var(--raggio) 0 0;
   background: var(--panna);
   color: var(--inchiostro);
-  box-shadow: 0 -4px 16px rgb(61 55 51 / 0.12);
+  box-shadow: 0 -4px 16px rgb(59 44 38 / 0.12);
 }
 
 .azioni-voce::backdrop {
-  background: rgb(61 55 51 / 0.35);
+  background: rgb(59 44 38 / 0.35);
 }
 
 .azioni-voce[open] {
@@ -62,7 +62,7 @@ body:has(.azioni-voce[open]) {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--salvia-scura);
+  color: var(--terracotta-scura);
 }
 
 /* Select e campo della rinomina: a 16px, altrimenti iOS zooma al tocco. */
@@ -81,13 +81,13 @@ body:has(.azioni-voce[open]) {
 }
 
 .azioni-voce__scelta--testo {
-  border-color: var(--salvia);
+  border-color: var(--terracotta);
   background: var(--panna);
   cursor: text;
 }
 
 .azioni-voce__scelta--testo:focus {
-  outline: 2px solid var(--salvia);
+  outline: 2px solid var(--terracotta);
   outline-offset: -1px;
 }
 
@@ -135,8 +135,8 @@ body:has(.azioni-voce[open]) {
 }
 
 .azioni-voce__bottone--principale:not(:disabled) {
-  border-color: var(--salvia);
-  background: var(--salvia);
+  border-color: var(--terracotta);
+  background: var(--terracotta);
   color: var(--panna);
   font-weight: 600;
 }

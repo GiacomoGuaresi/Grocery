@@ -55,15 +55,15 @@
   flex: none;
   width: 17px;
   height: 17px;
-  border: 2px solid var(--salvia);
+  border: 2px solid var(--terracotta);
   border-radius: 5px;
 }
 
 /* Nei già presi il segno è pieno, con la spunta. */
 .voce__riga[aria-pressed='true'] .voce__segno {
   position: relative;
-  border-color: var(--salvia-scura);
-  background: var(--salvia-scura);
+  border-color: var(--terracotta-scura);
+  background: var(--terracotta-scura);
 }
 
 .voce__riga[aria-pressed='true'] .voce__segno::after {
@@ -118,7 +118,7 @@
 }
 
 .voce__elemento:active {
-  border-color: var(--salvia);
+  border-color: var(--terracotta);
 }
 
 /* Il tocco che apre il popup delle azioni: defilato, per non rubare spazio

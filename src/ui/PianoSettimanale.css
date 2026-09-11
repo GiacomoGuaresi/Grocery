@@ -12,7 +12,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--salvia-scura);
+  color: var(--terracotta-scura);
 }
 
 .piano__giorni {
@@ -36,7 +36,7 @@
 }
 
 .piano__giorno--oggi {
-  border-color: var(--salvia-scura);
+  border-color: var(--terracotta-scura);
   background: var(--crema-scura);
 }
 

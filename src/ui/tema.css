@@ -1,16 +1,19 @@
-/* Palette pastello a tema culinario: crema, salvia, zucca, pomodoro spento.
+/* Palette calda a tema culinario: panna chiara, terracotta, zucca, pomodoro.
    Solo tema chiaro, come da doc/08-ui-ux.md. */
 :root {
-  --crema: #fdf8f0;
-  --crema-scura: #f5ece0;
-  --panna: #fffdf9;
-  --salvia: #a8c3a0;
-  --salvia-scura: #6f8f6a;
-  --zucca: #f0b67f;
-  --pomodoro: #d98878;
-  --inchiostro: #3d3733;
-  --inchiostro-tenue: #8a7f77;
-  --bordo: #e8dccc;
+  --crema: #fbf4ec;
+  --crema-scura: #f3e4d6;
+  --panna: #fffbf6;
+  /* Abbastanza scuro da reggere il testo panna sui bottoni (contrasto ~4.7:1). */
+  --terracotta: #b05a3c;
+  --terracotta-scura: #8f4630;
+  --zucca: #e9a878;
+  /* Più rosso e freddo del terracotta, così "elimina" non si confonde con le
+     azioni principali. */
+  --pomodoro: #a8333a;
+  --inchiostro: #3b2c26;
+  --inchiostro-tenue: #8a7268;
+  --bordo: #ecd9c8;
 
   /* Tutto è in scala 0.8 rispetto alla prima versione: sul telefono era troppo
      grande e si vedevano poche voci per volta. */

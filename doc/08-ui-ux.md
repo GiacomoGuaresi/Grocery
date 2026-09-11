@@ -6,7 +6,8 @@ ampi, testo leggibile, poche schermate, nessun passaggio inutile.
 
 ## Stile
 - **Tema chiaro** soltanto (nessun tema scuro).
-- **Colori pastello**, con un leggero tema **culinario**.
+- **Colori caldi**, **terracotta** su fondo **panna chiara**, con un leggero tema
+  **culinario**.
 - Lingua: **solo italiano**.
 - **Scala 0.8**: testi, spazi e tocchi sono ridotti all'80% della prima versione,
   che sul telefono era troppo grande. I campi di testo restano a 16px, altrimenti
