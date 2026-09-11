@@ -86,7 +86,7 @@ export function alternativeVoce(
 /**
  * Mette al posto della voce un'altra tipologia della stessa categoria. Il
  * reparto segue la tipologia nuova — è un dato del catalogo, non una scelta
- * dell'utente: il tonno fresco sta in pescheria, i bastoncini nei surgelati.
+ * dell'utente: il tonno fresco sta in pescheria, la mortadella nei salumi.
  * Un nome che non è tra le alternative lascia la lista com'è.
  */
 export function sostituisciVoce(lista: Lista, id: string, nome: string): Lista {

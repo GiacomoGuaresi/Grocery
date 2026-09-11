@@ -55,7 +55,7 @@ export interface Prodotto {
   reparto: IdReparto
 }
 
-/** I 9 reparti nell'ordine del percorso in corsia. */
+/** Gli 8 reparti nell'ordine del percorso in corsia. */
 export const reparti: Reparto[] = repartiJson.reparti as Reparto[]
 
 /** Le categorie di rotazione, nell'ordine in cui compaiono nel catalogo. */

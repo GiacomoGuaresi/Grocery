@@ -95,9 +95,15 @@ describe('sostituisciVoce', () => {
   })
 
   it('il reparto segue la tipologia nuova: è un dato del catalogo', () => {
-    const surgelato = categoria('pesce')!.tipi.find((t) => t.reparto === 'surgelati')!
-    const dopo = sostituisciVoce(listaEsempio, 'pesce-1', surgelato.nome)
-    expect(voce(dopo, 'pesce-1').reparto).toBe('surgelati')
+    const nuovo = categoria('pesce')!.tipi.find(
+      (t) => !listaEsempio.voci.some((v) => v.nome === t.nome),
+    )!
+    const dopo = sostituisciVoce(listaEsempio, 'pesce-1', nuovo.nome)
+    expect(voce(dopo, 'pesce-1').reparto).toBe(nuovo.reparto)
+  })
+
+  it('il pesce surgelato sta in pescheria: non c è un reparto dei surgelati', () => {
+    expect(categoria('pesce')!.tipi.every((t) => t.reparto === 'pescheria')).toBe(true)
   })
 
   it('un nome fuori dalle alternative non cambia niente', () => {

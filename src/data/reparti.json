@@ -7,7 +7,6 @@
     { "id": "salumi_formaggi", "nome": "Salumi e formaggi" },
     { "id": "latticini_uova", "nome": "Latticini e uova" },
     { "id": "dispensa", "nome": "Dispensa" },
-    { "id": "surgelati", "nome": "Surgelati" },
     { "id": "casa_igiene", "nome": "Casa e igiene" },
     { "id": "altro", "nome": "Altro" }
   ]

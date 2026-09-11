@@ -218,6 +218,29 @@ describe('liste salvate con frutta e verdura raggruppate', () => {
   })
 })
 
+describe('liste salvate col reparto Surgelati', () => {
+  it('si riaprono con ogni surgelato nel reparto del prodotto', async () => {
+    const vecchio = new SQL.Database()
+    vecchio.run(SCHEMA)
+    vecchio.run(`INSERT INTO liste VALUES ('adesso', '2026-09-07T08:00:00.000Z', 'corrente')`)
+    vecchio.run(`INSERT INTO voci (lista_id, id, posizione, nome, reparto, categoria, origine, comprata) VALUES
+      ('adesso', 'pesce-1', 0, 'salmone affumicato', 'surgelati', 'pesce', 'generata', 0),
+      ('adesso', 'manuale-1', 1, 'gelato', 'surgelati', NULL, 'manuale', 1),
+      ('adesso', 'manuale-2', 2, 'verdure surgelate', 'surgelati', NULL, 'manuale', 0)`)
+    const persistenza = new PersistenzaMemoria()
+    await persistenza.salva(vecchio.export())
+    vecchio.close()
+
+    const { storage } = await apri(persistenza)
+    const reparti = (await storage.leggiListaCorrente())?.voci.map((v) => [v.nome, v.reparto])
+    expect(reparti).toEqual([
+      ['salmone affumicato', 'pescheria'],
+      ['gelato', 'latticini_uova'],
+      ['verdure surgelate', 'ortofrutta'],
+    ])
+  })
+})
+
 describe('rotazioni', () => {
   const rotazioni: Rotazione[] = [
     { categoria: 'pesce', ultimi: ['orata', 'branzino', 'cozze', 'polpo'] },

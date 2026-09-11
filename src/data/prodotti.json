@@ -175,23 +175,23 @@
     },
     {
       "nome": "verdure surgelate",
-      "reparto": "surgelati"
+      "reparto": "ortofrutta"
     },
     {
       "nome": "patatine surgelate",
-      "reparto": "surgelati"
+      "reparto": "ortofrutta"
     },
     {
       "nome": "pizza surgelata",
-      "reparto": "surgelati"
+      "reparto": "dispensa"
     },
     {
       "nome": "gelato",
-      "reparto": "surgelati"
+      "reparto": "latticini_uova"
     },
     {
       "nome": "pesce surgelato",
-      "reparto": "surgelati"
+      "reparto": "pescheria"
     },
     {
       "nome": "detersivo piatti",

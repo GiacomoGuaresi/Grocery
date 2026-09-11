@@ -6,7 +6,7 @@
 import type { Database, SqlJsStatic } from 'sql.js'
 import { eGruppoFisso } from '../domain/dati'
 import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
-import { MIGRAZIONE_ROTAZIONI, SCHEMA } from './schema'
+import { MIGRAZIONE_ROTAZIONI, MIGRAZIONE_SURGELATI, SCHEMA } from './schema'
 import type { Persistenza, Storage } from './tipi'
 
 /**
@@ -22,6 +22,7 @@ export async function apriStorageSqlite(
   db.run('PRAGMA foreign_keys = ON')
   if (rotazioniDaMigrare(db)) db.run(MIGRAZIONE_ROTAZIONI)
   db.run(SCHEMA)
+  db.run(MIGRAZIONE_SURGELATI)
   const storage = new StorageSqlite(db, persistenza)
   if (tabellaEsiste(db, 'elementi')) await storage.migraElementi()
   return storage

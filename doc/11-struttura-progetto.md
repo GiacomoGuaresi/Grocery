@@ -42,7 +42,7 @@ Grocery/
 
 | File | Contenuto | Voci |
 |---|---|---|
-| `reparti.json` | I 9 reparti nell'ordine del percorso in corsia | 9 |
+| `reparti.json` | Gli 8 reparti nell'ordine del percorso in corsia | 8 |
 | `routine.json` | Categoria proteica per giorno + gruppi fissi (frutta, verdura) | 7 giorni |
 | `catalogo.json` | Tipologie per categoria, ognuna col proprio reparto | 150 |
 | `stagionalita.json` | Verdura e frutta per mese, Nord Italia | 44 + 27 |
@@ -52,8 +52,8 @@ Ogni file porta un campo `$commento` che ne spiega lo scopo, così resta leggibi
 anche aprendolo da solo.
 
 ### Note sui dati
-- In `catalogo.json` il **pesce** è diviso tra reparto `pescheria` (fresco) e
-  `surgelati`, perché si compra in entrambi i modi.
+- Non c'è un reparto dei surgelati: ogni surgelato sta nel reparto del prodotto.
+  In `catalogo.json` tutto il **pesce**, fresco o surgelato, è in `pescheria`.
 - In `stagionalita.json` i mesi sono numeri (1 = gennaio) e gli intervalli possono
   attraversare dicembre (es. le arance sono `[12,1,2,3,4]`).
 - Ogni mese ha almeno 8 verdure e 8 frutti disponibili: sempre abbastanza per

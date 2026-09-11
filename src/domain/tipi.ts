@@ -2,7 +2,7 @@
 
 export type IdReparto =
   | 'ortofrutta' | 'macelleria' | 'pescheria' | 'salumi_formaggi'
-  | 'latticini_uova' | 'dispensa' | 'surgelati' | 'casa_igiene' | 'altro'
+  | 'latticini_uova' | 'dispensa' | 'casa_igiene' | 'altro'
 
 export type IdCategoria =
   | 'carne_rossa' | 'carne_bianca' | 'pesce' | 'formaggio' | 'affettati' | 'uova'

@@ -5,6 +5,6 @@ import reparti from '../data/reparti.json'
 describe('fondamenta', () => {
   it('carica i reparti dal JSON', () => {
     expect(Array.isArray(reparti.reparti)).toBe(true)
-    expect(reparti.reparti.length).toBe(9)
+    expect(reparti.reparti.length).toBe(8)
   })
 })

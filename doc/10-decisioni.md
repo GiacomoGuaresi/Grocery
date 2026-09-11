@@ -57,7 +57,8 @@
 | 2026-09-09 | ~~Frutta e verdura come **una voce raggruppata ciascuna**, con dropdown sui singoli tipi~~ | superata |
 | 2026-09-11 | Frutta e verdura in **elenco diretto**: una voce per ogni tipo, niente voce raggruppata | deciso |
 | 2026-09-09 | Formaggi e affettati **preconfezionati** → reparto "Salumi e formaggi", non banco gastronomia | deciso |
-| 2026-09-09 | Pesce sia **fresco sia surgelato**: il reparto è per singola voce di catalogo | deciso |
+| 2026-09-09 | ~~Pesce sia **fresco sia surgelato**: il reparto è per singola voce di catalogo~~ | superata |
+| 2026-09-11 | **Niente reparto Surgelati**: ogni surgelato sta nel reparto del prodotto (il pesce surgelato in pescheria) | deciso |
 | 2026-09-09 | `prodotti.json` parte da un **elenco ridotto** di prodotti base, espanso nel tempo | deciso |
 | 2026-09-09 | L'app online userà **Supabase da subito**, ma non viene pubblicata ora | deciso |
 | 2026-09-09 | Sviluppo solo su PC con **SQLite via `sql.js` (WASM) nel browser**, persistito su IndexedDB | deciso |

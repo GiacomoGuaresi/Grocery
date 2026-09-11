@@ -22,22 +22,22 @@ L'**ordine** degli elenchi è indifferente: le tipologie si pescano a caso
 ## Reparti (ordine in corsia)
 1. **Ortofrutta**
 2. **Macelleria**
-3. **Pescheria** — pesce fresco al banco
+3. **Pescheria** — pesce fresco e surgelato
 4. **Salumi e formaggi** — banco frigo, **preconfezionati** (non il banco gastronomia)
 5. **Latticini e uova**
 6. **Dispensa**
-7. **Surgelati** — anche il pesce surgelato
-8. **Casa e igiene**
-9. **Altro** — prodotti manuali non presenti in `prodotti.json`
+7. **Casa e igiene**
+8. **Altro** — prodotti manuali non presenti in `prodotti.json`
 
 Ordine **fissato nel JSON**, non riordinabile dall'app.
 
 Formaggi e affettati si comprano **preconfezionati**, quindi finiscono nel reparto
 *Salumi e formaggi*, non a un banco servito.
 
-Il pesce si compra **sia fresco sia surgelato**: ogni voce del catalogo porta con sé
-il proprio reparto (*Pescheria* o *Surgelati*) a seconda di come viene tipicamente
-acquistata.
+**Non c'è un reparto Surgelati**: ogni surgelato sta nel reparto del prodotto
+corrispondente. Il pesce si compra sia fresco sia surgelato, e sta sempre in
+*Pescheria* (il salmone affumicato come l'orata); le verdure surgelate in
+*Ortofrutta*, e così via.
 
 ---
 
@@ -65,7 +65,7 @@ spiedini · cotoletta
 
 Altro: coniglio (a pezzi) · coniglio (busto) · faraona
 
-### Pesce — reparto: Pescheria (fresco) o Surgelati
+### Pesce — reparto: Pescheria (fresco e surgelato)
 Pesce: salmone (filetto) · salmone (trancio) · orata · branzino · merluzzo ·
 nasello · platessa · sogliola · pesce spada · tonno fresco · trota · trota salmonata ·
 sgombro · alici · sardine · rana pescatrice · halibut · baccalà · persico ·
@@ -242,19 +242,23 @@ automaticamente. Se un prodotto ricorre spesso, viene aggiunto al JSON con un co
 Si parte da un **elenco ridotto di prodotti base**, da espandere nel tempo con i
 prodotti che effettivamente ricorrono.
 
+### Ortofrutta
+verdure surgelate · patatine surgelate
+
+### Pescheria
+pesce surgelato
+
 ### Dispensa
 pasta · riso · farina · pane in cassetta · fette biscottate · biscotti · cereali ·
 marmellata · miele · crema di nocciole · zucchero · sale · olio extravergine ·
 olio di semi · aceto · pepe · spezie · dado · passata di pomodoro · pomodori pelati ·
 tonno in scatola · mais · legumi in scatola · caffè · tè · tisane · acqua · succhi ·
-vino · birra · cioccolato · patatine · crackers · taralli · frutta secca
+vino · birra · cioccolato · patatine · crackers · taralli · frutta secca ·
+pizza surgelata
 
 ### Latticini e uova
 latte · yogurt · panna da cucina · burro · parmigiano · grana · uova ·
-formaggio spalmabile
-
-### Surgelati
-verdure surgelate · patatine surgelate · pizza surgelata · gelato · pesce surgelato
+formaggio spalmabile · gelato
 
 ### Casa e igiene
 detersivo piatti · detersivo lavastoviglie · pastiglie lavastoviglie · brillantante ·

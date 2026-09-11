@@ -10,6 +10,22 @@
  */
 export const MIGRAZIONE_ROTAZIONI = `DROP TABLE IF EXISTS rotazioni;`
 
+/**
+ * Fino al 2026-09-11 c'era un reparto Surgelati: ora ogni surgelato sta nel
+ * reparto del prodotto (il pesce in pescheria, le verdure in ortofrutta...).
+ * Le voci salvate col reparto vecchio si spostano all'apertura; senza, finirebbero
+ * in un gruppo senza nome in cima alla lista. Rieseguirla non cambia niente.
+ */
+export const MIGRAZIONE_SURGELATI = `
+UPDATE voci SET reparto = CASE
+  WHEN categoria = 'pesce' OR nome = 'pesce surgelato' THEN 'pescheria'
+  WHEN nome IN ('verdure surgelate', 'patatine surgelate') THEN 'ortofrutta'
+  WHEN nome = 'pizza surgelata' THEN 'dispensa'
+  WHEN nome = 'gelato' THEN 'latticini_uova'
+  ELSE 'altro'
+END
+WHERE reparto = 'surgelati';`
+
 // Fino al 2026-09-11 c'era anche una tabella `elementi`, coi tipi di frutta e
 // verdura dentro un'unica voce: ora ogni tipo è una voce a sé. I database che
 // ce l'hanno ancora si migrano all'apertura (StorageSqlite.migraElementi).
