@@ -29,7 +29,7 @@ L'app online userà **Supabase da subito**, ma **non viene pubblicata ora**. Anc
 lo sviluppo gira sullo stesso progetto Supabase.
 
 ## Prerequisiti operativi
-- Creare e pubblicare il **repository GitHub** — nome **`Grocery`**, ancora da fare.
-- **README** di progetto, sobrio ma presentabile.
+- ~~Creare e pubblicare il **repository GitHub**~~ — fatto: **`Grocery`**, pubblico.
+- ~~**README** di progetto, sobrio ma presentabile~~ — fatto, con gli screenshot.
 - Espandere nel tempo `prodotti.json`, che parte da un **elenco ridotto** di prodotti
   base.

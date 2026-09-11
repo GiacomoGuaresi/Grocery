@@ -83,3 +83,5 @@
 | 2026-09-11 | Una scrittura **rifiutata dal database** (non per la rete) si scarta: riprovarla darebbe lo stesso errore e bloccherebbe la coda | deciso |
 | 2026-09-11 | La **generazione vuole la rete**; spunte, aggiunte, eliminazioni e sostituzioni no | deciso |
 | 2026-09-11 | Icona dell'app: il **cesto** delle icone, panna su terracotta | deciso |
+| 2026-09-11 | Configurazione di Supabase per la build nelle **variabili** del repository GitHub, non nei segreti: URL, chiave publishable ed email finiscono comunque nel bundle pubblico | deciso |
+| 2026-09-11 | Il sito va online **solo con le registrazioni pubbliche spente** sul progetto Supabase | deciso |

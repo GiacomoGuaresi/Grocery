@@ -3,7 +3,10 @@
 ```
 Grocery/
 ├── doc/                 documentazione (questi file)
+│   └── immagini/        gli screenshot del README
 ├── Q&A.md               domande aperte in corso
+├── .github/workflows/
+│   └── pubblica.yml     test, build e deploy su GitHub Pages a ogni push su main
 ├── .env.example         variabili d'ambiente: URL, chiave ed email di Supabase
 ├── supabase/            progetto Supabase (CLI)
 │   ├── config.toml      config del Supabase locale: registrazione pubblica spenta

@@ -85,8 +85,15 @@ successiva.
 
 ## Deploy
 Un solo ambiente: **produzione** su GitHub Pages, deploy automatico dal branch
-principale. Il repository si chiamerà **`Grocery`** (nome mantenuto per ora) e
-**non è ancora stato creato**: verrà pubblicato dopo aver messo in piedi la base del
-progetto.
+principale. Il repository è **`Grocery`** (nome mantenuto per ora), pubblico su
+`github.com/GiacomoGuaresi/Grocery`; il sito sarà su
+`giacomoguaresi.github.io/Grocery/`.
 
-Serve un **README** del progetto, non elaborato ma presentabile.
+Il workflow `.github/workflows/pubblica.yml` a ogni push su `main` fa girare i test
+e la build e pubblica `dist` su Pages. URL, chiave publishable ed email
+dell'account arrivano dalle **variabili** del repository: finiscono comunque nel
+bundle pubblico, quindi non sono segreti. Il sito va online solo con le
+registrazioni pubbliche spente sul progetto Supabase: con la chiave publishable in
+giro, un account creato da chiunque vedrebbe tutti i dati.
+
+Il **README** del progetto è sobrio, con qualche screenshot in `doc/immagini`.
