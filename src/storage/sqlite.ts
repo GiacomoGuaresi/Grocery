@@ -5,6 +5,7 @@
 
 import type { Database, SqlJsStatic } from 'sql.js'
 import { eGruppoFisso } from '../domain/dati'
+import { applicaModifiche, type Modifiche } from '../domain/sincronia'
 import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
 import { MIGRAZIONE_FORMAGGI, MIGRAZIONE_ROTAZIONI, MIGRAZIONE_SURGELATI, SCHEMA } from './schema'
 import type { Persistenza, Storage } from './tipi'
@@ -117,6 +118,21 @@ export class StorageSqlite implements Storage {
       })
     })
     await this.salvaSuDisco()
+  }
+
+  /**
+   * Il database è in memoria e lo usa un dispositivo solo: basta rileggere la
+   * lista, applicarci le modifiche e riscriverla.
+   */
+  async salvaVoci(listaId: string, modifiche: Modifiche): Promise<void> {
+    const lista = await this.leggiLista(listaId)
+    if (lista?.stato !== 'corrente') return
+    await this.salvaLista(applicaModifiche(lista, modifiche))
+  }
+
+  /** Nessun altro scrive in questo database: non c'è niente da ascoltare. */
+  quandoCambia(): () => void {
+    return () => {}
   }
 
   async leggiRotazioni(): Promise<Rotazione[]> {

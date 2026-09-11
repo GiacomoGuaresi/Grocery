@@ -74,3 +74,5 @@
 | 2026-09-09 | **Uova**: voce fissa senza quantità | deciso |
 | 2026-09-11 | Le voci **non si ripetono mai**: uova una voce sola; aggiungere a mano una voce già da prendere avvisa, una già presa torna da prendere | deciso |
 | 2026-09-09 | Si passa allo **sviluppo**: struttura del progetto e dati JSON | deciso |
+| 2026-09-11 | *Last-write-wins* per voce: ogni modifica scrive **solo le voci toccate**; l'"ultima" è l'ultima arrivata al database. Da rivedere con l'offline (Step 16) | deciso |
+| 2026-09-11 | Realtime come **campanello** sulla tabella `liste`: arriva l'avviso e la lista si rilegge. Le voci restano fuori dal canale, perché le cancellazioni viaggiano senza policy | deciso |

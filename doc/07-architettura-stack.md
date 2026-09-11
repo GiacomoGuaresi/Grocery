@@ -68,7 +68,11 @@ successiva.
 - **Realtime** quando c'è rete: le modifiche di un dispositivo compaiono sull'altro.
 - **Conflitti**: lo scenario reale è due persone nello stesso supermercato che
   spuntano cose diverse. Si applica *last-write-wins* per singola voce, che è
-  sufficiente e non richiede merge complessi.
+  sufficiente e non richiede merge complessi. In pratica ogni modifica scrive solo
+  le voci che ha toccato, e sulla stessa voce vince l'ultima scrittura arrivata al
+  database (Step 15).
+- **Come arriva il realtime**: Supabase avvisa quando la riga della lista corrente
+  cambia, e l'app rilegge la lista. Dal canale non passa il contenuto delle voci.
 
 ## Requisiti non funzionali
 - **Mobile-first**, usabile con una mano in corsia.

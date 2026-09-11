@@ -4,6 +4,7 @@
 
 import { createBrowserClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Modifiche } from '../domain/sincronia'
 import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
 import { AccessoSupabase } from './accesso'
 import type { Storage } from './tipi'
@@ -72,6 +73,51 @@ export class StorageSupabase implements Storage {
     const { error } = await this.client.rpc('salva_lista', { lista })
     if (error) throw error
   }
+
+  /** In `salva_voci`: si scrivono solo le voci toccate, e vince l'ultima scrittura. */
+  async salvaVoci(listaId: string, { voci, eliminate }: Modifiche): Promise<void> {
+    const { error } = await this.client.rpc('salva_voci', {
+      id_lista: listaId,
+      modificate: voci,
+      eliminate,
+    })
+    if (error) throw error
+  }
+
+  /**
+   * Il realtime ascolta solo la tabella `liste`: ogni scrittura sulla lista
+   * corrente ne aggiorna la riga (`aggiornata_il`), e la nascita di una lista
+   * nuova ne inserisce una. Le voci arrivano poi con la rilettura. Così dal
+   * canale non passa mai il contenuto della lista, nemmeno quello delle voci
+   * cancellate, che Postgres manderebbe senza guardare le policy.
+   *
+   * Il realtime non ripete quello che si è perso: si avvisa anche a ogni
+   * (ri)connessione del canale e quando l'app torna in primo piano, perché il
+   * telefono in tasca chiude il socket senza dirlo a nessuno.
+   */
+  quandoCambia(avvisa: () => void): () => void {
+    const canale = this.client
+      // Un nome nuovo per ogni ascolto: con lo stesso nome il client
+      // restituirebbe il canale di prima, magari ancora in chiusura.
+      .channel(`lista-corrente-${++StorageSupabase.canali}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'liste' }, () => avvisa())
+      .subscribe((stato) => {
+        if (stato === 'SUBSCRIBED') avvisa()
+      })
+
+    const tornando = () => {
+      if (document.visibilityState === 'visible') avvisa()
+    }
+    const conDocumento = typeof document !== 'undefined'
+    if (conDocumento) document.addEventListener('visibilitychange', tornando)
+
+    return () => {
+      if (conDocumento) document.removeEventListener('visibilitychange', tornando)
+      void this.client.removeChannel(canale)
+    }
+  }
+
+  private static canali = 0
 
   async leggiRotazioni(): Promise<Rotazione[]> {
     const { data, error } = await this.client

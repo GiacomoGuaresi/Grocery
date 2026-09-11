@@ -178,16 +178,34 @@ Da qui in poi l'app diventa condivisa.
 
 ## Step 15 — Realtime
 
-- [ ] Sottoscrizione alle modifiche della lista corrente
-- [ ] Le spunte di un dispositivo compaiono sull'altro
-- [ ] Risoluzione dei conflitti *last-write-wins* per singola voce
+- [x] Sottoscrizione alle modifiche della lista corrente: il realtime ascolta la
+      tabella `liste`, che fa da campanello (`aggiornata_il`), e a ogni avviso la
+      lista si rilegge. Si rilegge anche a ogni riconnessione del canale e quando
+      l'app torna in primo piano. Migrazione `20260911100000_realtime.sql`
+      applicata al progetto con `supabase db push`
+- [ ] Le spunte di un dispositivo compaiono sull'altro — scritto ma **non ancora
+      provato con due dispositivi veri**. Il test di `supabase.test.ts` lo verifica
+      contro il Supabase locale, che vuole Docker
+- [x] Risoluzione dei conflitti *last-write-wins* per singola voce: dopo ogni
+      modifica si scrivono solo le voci toccate (`salvaVoci`, funzione
+      `salva_voci`), così due spunte su voci diverse si sommano. Test di contratto
+      su entrambe le implementazioni
+- [x] Una voce appena toccata non torna indietro per una rilettura capitata a metà:
+      finché la sua scrittura è in volo vale la versione di questo dispositivo
+- [x] Una generazione fatta sull'altro dispositivo porta anche qui la lista nuova;
+      le scritture rimaste indietro non toccano l'archivio
 
 ## Step 16 — PWA e offline
 
 - [ ] `vite-plugin-pwa`, manifest e icone
 - [ ] Installabile sul telefono
 - [ ] Shell in cache: l'app si apre senza rete
-- [ ] Scritture offline messe in coda e sincronizzate al ritorno della connessione
+- [ ] Scritture offline messe in coda e sincronizzate al ritorno della connessione.
+      Oggi una scrittura fallita per mancanza di rete resta a schermo solo fino
+      alla rilettura successiva, poi vince il database
+- [ ] Rivedere il *last-write-wins*: oggi l'"ultima" scrittura è l'ultima arrivata
+      al database, e una coda offline svuotata tardi vincerebbe su modifiche più
+      recenti. Probabilmente serve l'ora della modifica su ogni voce
 - [ ] Test del ciclo offline → online
 
 ## Step 17 — Pubblicazione

@@ -4,8 +4,9 @@
 
 import { describe, expect, it } from 'vitest'
 import { listaEsempio } from '../domain/listaEsempio'
+import { differenze } from '../domain/sincronia'
 import { spuntaVoce } from '../domain/spunta'
-import type { Lista, Rotazione } from '../domain/tipi'
+import type { Lista, Rotazione, Voce } from '../domain/tipi'
 import type { Storage } from './tipi'
 
 export const lista: Lista = {
@@ -101,6 +102,56 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       const nuova: Lista = { ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' }
       await storage.salvaLista(nuova)
       expect((await storage.leggiListaCorrente())?.id).toBe('lista-2')
+    })
+  })
+
+  describe('scrittura delle sole voci toccate', () => {
+    it('una voce toccata cambia, le altre restano', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      const spuntata = spuntaVoce(lista, 'pesce-1')
+      await storage.salvaVoci(lista.id, differenze(lista, spuntata))
+      expect(await storage.leggiListaCorrente()).toEqual(spuntata)
+    })
+
+    it('due dispositivi che spuntano voci diverse tengono entrambe le spunte', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      // Tutti e due partono dalla stessa lista, nessuno vede la spunta dell'altro.
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'verdura-1')))
+      const riletta = await storage.leggiListaCorrente()
+      expect(riletta?.voci.map((v) => v.comprata)).toEqual([true, true, true])
+    })
+
+    it('sulla stessa voce vince l ultima scrittura', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
+      await storage.salvaVoci(lista.id, {
+        voci: [{ ...lista.voci[1], comprata: false }],
+        eliminate: [],
+      })
+      const riletta = await storage.leggiListaCorrente()
+      expect(riletta?.voci[1].comprata).toBe(false)
+    })
+
+    it('le voci nuove vanno in fondo, le tolte spariscono', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      const nuova: Voce = { id: 'manuale-2', nome: 'sale', reparto: 'dispensa', origine: 'manuale', comprata: false }
+      await storage.salvaVoci(lista.id, { voci: [nuova], eliminate: ['verdura-1'] })
+      const riletta = await storage.leggiListaCorrente()
+      expect(riletta?.voci.map((v) => v.id)).toEqual(['pesce-1', 'manuale-1', 'manuale-2'])
+      expect(riletta?.voci[2]).toEqual(nuova)
+    })
+
+    it('una lista archiviata non si tocca', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      await storage.salvaLista({ ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' })
+      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] })
+      expect((await storage.leggiLista(lista.id))?.voci).toHaveLength(lista.voci.length)
     })
   })
 

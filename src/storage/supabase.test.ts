@@ -4,7 +4,9 @@
 // di produzione. Senza le variabili i test si saltano.
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { differenze } from '../domain/sincronia'
+import { spuntaVoce } from '../domain/spunta'
 import { AccessoSupabase } from './accesso'
 import { lista, verificaContratto } from './contratto'
 import { StorageSupabase } from './supabase'
@@ -64,6 +66,36 @@ describe.skipIf(!url || !chiave || !segreta)('StorageSupabase', () => {
       const accesso = porta()
       expect(await accesso.entra('passphrase-sbagliata')).toBe('passphrase-sbagliata')
       expect(await accesso.haSessione()).toBe(false)
+    })
+  })
+
+  describe('realtime', () => {
+    /** Ascolta e aspetta la prima connessione: da lì in poi conta solo i cambi. */
+    async function inAscolto(storage: StorageSupabase) {
+      let avvisi = 0
+      const smetti = storage.quandoCambia(() => avvisi++)
+      await new Promise((pronto) => setTimeout(pronto, 1500))
+      const connessione = avvisi
+      return { cambi: () => avvisi - connessione, smetti }
+    }
+
+    it('una spunta avvisa chi ascolta con la sessione, non chi è senza', async () => {
+      await svuota()
+      const storage = new StorageSupabase(autenticato)
+      await storage.salvaLista(lista)
+      const dentro = await inAscolto(storage)
+      const fuori = await inAscolto(
+        new StorageSupabase(createClient(url, chiave, SENZA_SESSIONE_SALVATA)),
+      )
+
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
+      await vi.waitFor(() => expect(dentro.cambi()).toBeGreaterThan(0), { timeout: 5000 })
+      // L'evento è partito: se chi è senza sessione dovesse riceverlo, ormai l'avrebbe.
+      await new Promise((pronto) => setTimeout(pronto, 1000))
+      expect(fuori.cambi()).toBe(0)
+
+      dentro.smetti()
+      fuori.smetti()
     })
   })
 

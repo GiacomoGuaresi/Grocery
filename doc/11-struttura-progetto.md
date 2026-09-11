@@ -138,6 +138,18 @@ parte quelli che ci sono tutto l'anno. `stagioni.test.ts` verifica che le stagio
 coprano i dodici mesi una volta sola, che i gruppi non si mescolino e che nessun tipo
 si perda o si duplichi.
 
+`sincronia.ts` tiene la lista condivisa tra i due dispositivi (F7, Step 15), tutto
+in funzioni pure. `differenze(prima, dopo)` dice quali voci una modifica ha toccato
+e quali ha tolto: le transizioni del dominio lasciano intatti gli oggetti delle voci
+che non toccano, quindi basta confrontare i riferimenti. `applicaModifiche()` le
+riapplica a una lista (le toccate al loro posto, le nuove in fondo) ed è quello che
+fa `salvaVoci` su SQLite. `unisci()` mette insieme la lista riletta dal database con
+quella a schermo: per le voci con una scrittura ancora in volo vale la versione
+locale, per tutte le altre quella riletta; se nel frattempo è nata una lista nuova
+vale quella. `sincronia.test.ts` copre le tre funzioni, compresi i due casi del
+*last-write-wins* per singola voce: spunte su voci diverse che si sommano e, sulla
+stessa voce, l'ultima che vince.
+
 `ciclo.ts` sta intorno all'algoritmo: `vociDaRiportare()` dice cosa è rimasto da
 prendere e `nuovoCiclo()` mette insieme lista nuova, rotazioni da salvare e lista
 precedente da archiviare, portando avanti le voci non spuntate se lo si è chiesto
@@ -145,8 +157,13 @@ precedente da archiviare, portando avanti le voci non spuntate se lo si è chies
 
 ## `src/storage`
 Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
-`leggiListaCorrente()`, `salvaLista()`, `leggiArchivio()`, `leggiLista(id)`,
-`leggiRotazioni()`, `salvaRotazioni()`. Il
+`leggiListaCorrente()`, `salvaLista()`, `salvaVoci()`, `leggiArchivio()`,
+`leggiLista(id)`, `leggiRotazioni()`, `salvaRotazioni()` e `quandoCambia()`.
+`salvaLista()` scrive la lista per intero e serve alla generazione; `salvaVoci()`
+scrive solo le voci toccate da una modifica e serve a tutto il resto, così le
+modifiche dei due dispositivi si sommano invece di sovrascriversi; scrive solo sulla
+lista corrente. `quandoCambia(avvisa)` avvisa quando la lista può essere cambiata
+altrove. Il
 resto dell'app conosce solo questa: l'implementazione Supabase arriverà accanto a
 quella SQLite senza toccare né il dominio né la UI.
 
@@ -190,9 +207,22 @@ che JSON in una colonna di testo. Un indice unico parziale garantisce che la lis
 `corrente` sia una sola, e la vista `archivio` fa i conteggi dell'elenco. Il client
 di Supabase non apre transazioni, quindi le scritture composte sono funzioni
 Postgres chiamate via RPC: `salva_lista` aggiorna le voci sul posto e cancella solo
-quelle sparite (non riscrive tutto, così al realtime arriveranno solo le voci
-toccate) e `salva_rotazioni` sostituisce la memoria. Le date tornano da Postgres
-come `+00:00` e si rimettono nella forma di `toISOString()`.
+quelle sparite, `salva_voci` scrive solo le voci toccate (le nuove in fondo, le
+altre al loro posto) e `salva_rotazioni` sostituisce la memoria. Le date tornano da
+Postgres come `+00:00` e si rimettono nella forma di `toISOString()`.
+
+Il realtime (Step 15, migrazione `20260911100000_realtime.sql`) ascolta solo la
+tabella `liste`, che fa da campanello: `salva_voci` e `salva_lista` ne aggiornano
+la colonna `aggiornata_il`, il client riceve l'UPDATE (o l'INSERT di una lista nuova)
+e rilegge. Le voci non sono nella pubblicazione: le cancellazioni Postgres le manda a
+chiunque sia in ascolto senza guardare le policy, e dal canale non deve passare
+niente del contenuto della lista. Il realtime non ripete gli eventi persi, quindi
+`quandoCambia` avvisa anche a ogni (ri)connessione del canale e quando l'app torna in
+primo piano: il telefono in tasca chiude il socket senza dirlo. `salva_voci` prende
+il lock sulla riga della lista, e questo mette in fila le scritture concorrenti.
+Non scrive su una lista che non è più la corrente: un dispositivo rimasto indietro
+non tocca l'archivio. Su SQLite `quandoCambia` non fa niente, perché nessun altro
+scrive in quel database.
 
 Le policy (RLS) aprono le tre tabelle alla sola sessione autenticata, senza
 filtri per utente perché l'account è uno solo; al ruolo `anon` sono tolti anche i
@@ -221,12 +251,21 @@ implementazioni: la lista riletta identica a quella salvata, l'ordine delle voci
 che aggiorna invece di duplicare, le voci tolte che spariscono, l'unica lista
 corrente, le rotazioni sostituite e non accumulate, l'archivio che elenca le liste
 passate ma non quella corrente, nell'ordine giusto e con i conteggi giusti, la
-lista archiviata riletta identica a com'era.
+lista archiviata riletta identica a com'era. Per `salvaVoci`: le voci non toccate
+che restano come sono, le spunte di due dispositivi su voci diverse che si sommano,
+l'ultima scrittura che vince sulla stessa voce, le nuove in fondo, l'archivio che
+non si tocca.
+
+`realtime.test.ts` prova `quandoCambia` e `salvaVoci` di Supabase su un client
+finto, come `accesso.test.ts`, quindi gira sempre: si ascolta la sola tabella
+`liste`, si avvisa a ogni cambio e a ogni connessione, ogni ascolto ha il suo canale
+e smettendo il canale si chiude.
 
 `sqlite.test.ts` li esegue su SQLite e ci aggiunge quello che è solo di SQLite: le
 migrazioni dei database vecchi e il refresh, simulato riaprendo il database sulla
 stessa `Persistenza`. `supabase.test.ts` li esegue contro un Supabase vero e
-verifica le policy (senza sessione non si legge e non si scrive niente). Svuota le
+verifica le policy: senza sessione non si legge e non si scrive niente, e una spunta
+avvisa via realtime chi ascolta con la sessione ma non chi è senza. Svuota le
 tabelle a ogni test, quindi va puntato solo sul Supabase locale: gira se trova
 `SUPABASE_TEST_URL`, `SUPABASE_TEST_PUBLISHABLE_KEY` e `SUPABASE_TEST_SECRET_KEY`
 (i valori li stampa `supabase status`), altrimenti si salta.
@@ -244,10 +283,19 @@ toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
 stesso. Nessuna libreria di stili.
 
 La lista corrente arriva dallo storage: `useLista.ts` la legge all'apertura, mostra
-"Apro la lista…" finché non c'è e alla prima apertura salva la lista di esempio, che
-da lì in poi è la lista corrente vera. Ogni spunta va prima nello stato React —
-l'interfaccia risponde subito — e poi in coda verso il database, in modo che i tocchi
-rapidi arrivino nell'ordine in cui sono stati fatti.
+"Apro la lista…" finché non c'è e alla prima apertura salva una lista vuota, che
+da lì in poi è la lista corrente vera. Ogni modifica va prima nello stato React
+(l'interfaccia risponde subito) e poi in coda verso il database, con `salvaVoci` e
+le sole voci toccate, così i tocchi rapidi arrivano nell'ordine in cui sono stati
+fatti.
+
+Quando lo storage avvisa che la lista è cambiata altrove, `useLista` aspetta un
+attimo (una generazione arriva come una raffica di avvisi) e la rilegge. La
+rilettura passa dalla stessa coda delle scritture, quindi ritrova sul database le
+modifiche già partite. Per quelle non ancora scritte tiene la versione di qui (vedi
+`unisci()`): tiene il conto delle scritture in volo per ogni voce. Anche l'eco
+delle proprie scritture arriva come avviso, e rileggere la propria spunta non la fa
+tremare.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
 voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Frutta e
