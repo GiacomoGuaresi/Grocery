@@ -120,40 +120,6 @@
   background: var(--crema-scura);
 }
 
-/* Gli elementi di Frutta e Verdura: rientrati sotto il nome, allineati al
-   testo e non alla spunta. */
-.voce__elementi {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin: 0;
-  padding: 0 0 8px 27px;
-  list-style: none;
-}
-
-.voce__elemento {
-  min-height: 28px;
-  padding: 2px 10px;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  background: var(--crema-scura);
-  color: inherit;
-  font: inherit;
-  font-size: var(--testo-piccolo);
-  cursor: pointer;
-}
-
-.voce__elemento[aria-pressed='true'] {
-  border-color: var(--bordo);
-  background: none;
-  color: var(--inchiostro-tenue);
-  text-decoration: line-through;
-}
-
-.voce__elemento:active {
-  border-color: var(--terracotta);
-}
-
 /* Il tocco che apre il popup delle azioni: defilato, per non rubare spazio
    alla spunta. */
 .voce__azioni-apri {

@@ -7,14 +7,11 @@ import './GiaPresi.css'
 interface Props {
   voci: VoceLista[]
   onAlterna: (id: string) => void
-  onAlternaElemento: (id: string, nome: string) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
   onSostituisci: (id: string, nome: string) => void
-  onSostituisciElemento: (id: string, nome: string, nuovo: string) => void
-  /** Le alternative per la voce intera e per un suo tipo (F6). */
+  /** Le alternative per la voce (F6). */
   alternative: (voce: VoceLista) => string[]
-  alternativeElemento: (voce: VoceLista, nome: string) => string[]
 }
 
 /**
@@ -25,13 +22,10 @@ interface Props {
 export function GiaPresi({
   voci,
   onAlterna,
-  onAlternaElemento,
   onElimina,
   onRinomina,
   onSostituisci,
-  onSostituisciElemento,
   alternative,
-  alternativeElemento,
 }: Props) {
   const [aperta, setAperta] = useState(false)
 
@@ -56,13 +50,10 @@ export function GiaPresi({
             key={voce.id}
             voce={voce}
             alternative={alternative(voce)}
-            alternativeDi={(nome) => alternativeElemento(voce, nome)}
             onAlterna={onAlterna}
-            onAlternaElemento={onAlternaElemento}
             onElimina={onElimina}
             onRinomina={onRinomina}
             onSostituisci={onSostituisci}
-            onSostituisciElemento={onSostituisciElemento}
           />
         ))}
       </ul>

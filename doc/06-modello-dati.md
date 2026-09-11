@@ -32,19 +32,14 @@ Un articolo della lista.
 | `id` | id | |
 | `nome` | string | Es. "salmone", "detersivo piatti" |
 | `reparto` | string | Riferito a `reparti.json`; `Altro` se prodotto nuovo |
-| `categoria` | string? | Categoria di rotazione (`pesce`, `carne_rossa`, ...); assente per le voci manuali |
+| `categoria` | string? | Categoria di rotazione (`pesce`, `carne_rossa`, ..., più `verdura` e `frutta`); assente per le voci manuali |
 | `origine` | `generata` \| `manuale` | |
 | `comprata` | bool | Spuntata durante la spesa |
 | `alternative` | string[]? | Tipologie sostitutive per la dropdown (F6) |
-| `elementi` | `elemento[]`? | Solo per le voci raggruppate *Frutta* e *Verdura*: i 4 tipi scelti |
 
-### `elemento`
-Un tipo dentro una voce raggruppata. Sostituibile e spuntabile singolarmente.
-
-| Campo | Tipo | Note |
-|---|---|---|
-| `nome` | string | Es. "mele" |
-| `comprato` | bool | Spunta indipendente dagli altri |
+Ogni tipo di frutta e verdura è una `voce` a sé, con categoria `verdura` o `frutta`.
+Non esiste più l'entità `elemento` (i tipi dentro una voce raggruppata): i database
+che la contengono vengono migrati all'apertura, una voce per tipo.
 
 ### `rotazione`
 Memoria della rotazione tra un ciclo e l'altro (R3).

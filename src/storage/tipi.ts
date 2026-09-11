@@ -7,7 +7,7 @@ import type { Lista, Rotazione, SintesiLista } from '../domain/tipi'
 export interface Storage {
   /** La lista in stato `corrente`, oppure `null` se non ne esiste ancora una. */
   leggiListaCorrente(): Promise<Lista | null>
-  /** Salva la lista per intero (voci ed elementi compresi), sostituendo quella con lo stesso id. */
+  /** Salva la lista per intero (voci comprese), sostituendo quella con lo stesso id. */
   salvaLista(lista: Lista): Promise<void>
   /** Le liste archiviate, dalla più recente alla più vecchia (F11). */
   leggiArchivio(): Promise<SintesiLista[]>

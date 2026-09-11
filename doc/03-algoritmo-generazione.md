@@ -65,16 +65,22 @@ caso. La frutta copre un consumo di **2 porzioni al giorno**.
 Frutta e verdura si comprano **tutte insieme** in un'unica spesa. L'algoritmo
 suggerisce solo *quali tipi*, non le quantità né in quale settimana consumarli.
 
-### R5d — Voci raggruppate
-Frutta e verdura non generano una voce per tipo: producono **una voce sola ciascuna**,
-che elenca i 4 tipi scelti.
+### R5d — Una voce per tipo
+Frutta e verdura generano **una voce per ogni tipo scelto**, in elenco diretto nel
+reparto Ortofrutta, come tutte le altre voci. Non c'è una voce "Frutta" o "Verdura"
+che raggruppa i tipi.
 
-    Frutta:  mele, pere, arance, kiwi
-    Verdura: zucchine, radicchio, patate, spinaci
+    Carote
+    Indivia
+    Zucca
+    Cavolfiore
+    Fichi
+    More
+    Prugne
 
-Ogni tipo all'interno della voce è **sostituibile** tramite la propria **dropdown**
-(R7, alternative di stagione) e si **spunta singolarmente**: se si trovano le mele ma
-non le pere, si segna solo la prima.
+Ogni tipo è **sostituibile** tramite la propria **dropdown** (R7, alternative di
+stagione dello stesso gruppo) e si **spunta** come qualsiasi altra voce: se si trovano
+le mele ma non le pere, si segna solo la prima.
 
 ### R6 — Voci non spuntate del ciclo precedente
 Alla generazione di una nuova lista, se la precedente contiene voci **non spuntate**

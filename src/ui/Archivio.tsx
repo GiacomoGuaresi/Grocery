@@ -1,6 +1,5 @@
 import { etichettaData, riepilogo, sintesi } from '../domain/archivio'
 import { raggruppaPerReparto } from '../domain/lista'
-import { eRaggruppata } from '../domain/spunta'
 import type { Lista, Voce } from '../domain/tipi'
 import { Icona } from './Icona'
 import { useArchivio } from './useArchivio'
@@ -74,23 +73,11 @@ function ListaArchiviata({ lista, onChiudi }: { lista: Lista; onChiudi: () => vo
   )
 }
 
-/** Una voce com'era rimasta: presa o no, coi suoi tipi se è raggruppata. */
+/** Una voce com'era rimasta: presa o no. */
 function VoceArchiviata({ voce }: { voce: Voce }) {
   return (
     <li className={`passata__voce${voce.comprata ? ' passata__voce--presa' : ''}`}>
       <span className="passata__nome">{voce.nome}</span>
-      {eRaggruppata(voce) && (
-        <ul className="passata__elementi">
-          {voce.elementi.map((elemento) => (
-            <li
-              key={elemento.nome}
-              className={`passata__elemento${elemento.comprato ? ' passata__elemento--preso' : ''}`}
-            >
-              {elemento.nome}
-            </li>
-          ))}
-        </ul>
-      )}
     </li>
   )
 }

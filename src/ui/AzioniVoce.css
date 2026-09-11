@@ -91,23 +91,6 @@ body:has(.azioni-voce[open]) {
   outline-offset: -1px;
 }
 
-/* Un tipo di Frutta o Verdura per riga: il nome e accanto la sua dropdown. */
-.azioni-voce__elementi {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.azioni-voce__elemento {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
-  align-items: center;
-  gap: 8px;
-}
-
 .azioni-voce__bottone {
   min-height: var(--tocco);
   padding: 0 16px;

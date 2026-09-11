@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { rinominabile } from '../domain/modifica'
-import { elementiAttivi, eRaggruppata } from '../domain/spunta'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { AzioniVoce } from './AzioniVoce'
 import { Icona } from './Icona'
@@ -8,44 +7,28 @@ import './Voce.css'
 
 interface Props {
   voce: VoceLista
-  /** Le tipologie con cui si può sostituire la voce intera (F6). */
+  /** Le tipologie con cui si può sostituire la voce (F6); di stagione per frutta e verdura. */
   alternative: string[]
-  /** Le alternative di stagione per un tipo dentro Frutta o Verdura. */
-  alternativeDi: (nome: string) => string[]
-  /** Tocco sulla voce intera: la spunta, o la de-spunta se è tra i già presi. */
+  /** Tocco sulla casella: la spunta, o la de-spunta se è tra i già presi. */
   onAlterna: (id: string) => void
-  /** Tocco su un singolo elemento di Frutta o Verdura. */
-  onAlternaElemento: (id: string, nome: string) => void
   /** Toglie la voce dalla lista. */
   onElimina: (id: string) => void
   /** Corregge il nome: solo per le voci manuali sotto "Altro". */
   onRinomina: (id: string, nome: string) => void
   /** Mette al posto della voce un'altra tipologia della sua categoria. */
   onSostituisci: (id: string, nome: string) => void
-  /** Scambia un tipo dentro Frutta o Verdura con un altro di stagione. */
-  onSostituisciElemento: (id: string, nome: string, nuovo: string) => void
 }
 
 /**
  * Una voce della lista. Toccare la sua casella la segna comprata e la fa
- * sparire dalla lista attiva; nelle voci raggruppate (Frutta, Verdura) ogni
- * elemento si spunta per conto suo e sparisce da solo (doc/08-ui-ux.md).
+ * sparire dalla lista attiva (doc/08-ui-ux.md). Ogni tipo di frutta e verdura
+ * è una voce a sé, come tutte le altre.
  *
  * Si spunta solo dalla casella: il nome non spunta. Nelle voci manuali sotto
  * "Altro" toccare il nome lo rende modificabile lì dove sta. Tutto il resto —
  * alternative, rinomina, elimina — sta nel popup che si apre col ⋯ (AzioniVoce).
  */
-export function Voce({
-  voce,
-  alternative,
-  alternativeDi,
-  onAlterna,
-  onAlternaElemento,
-  onElimina,
-  onRinomina,
-  onSostituisci,
-  onSostituisciElemento,
-}: Props) {
+export function Voce({ voce, alternative, onAlterna, onElimina, onRinomina, onSostituisci }: Props) {
   const [azioniAperte, setAzioniAperte] = useState(false)
   // Non nullo solo mentre si sta scrivendo il nome nuovo direttamente nella riga.
   const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
@@ -56,9 +39,6 @@ export function Voce({
     if (nome !== '' && nome !== voce.nome) onRinomina(voce.id, nome)
     setNomeInCorso(null)
   }
-
-  // Tra i già presi si rivede tutto quanto, per poterlo de-spuntare.
-  const elementi = voce.comprata ? (voce.elementi ?? []) : elementiAttivi(voce)
 
   return (
     <li className="voce">
@@ -113,33 +93,13 @@ export function Voce({
         </button>
       </div>
 
-      {eRaggruppata(voce) && (
-        <ul className="voce__elementi">
-          {elementi.map((elemento) => (
-            <li key={elemento.nome}>
-              <button
-                className="voce__elemento"
-                type="button"
-                aria-pressed={elemento.comprato}
-                onClick={() => onAlternaElemento(voce.id, elemento.nome)}
-              >
-                {elemento.nome}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
       {azioniAperte && (
         <AzioniVoce
           voce={voce}
-          elementi={elementi.map((e) => e.nome)}
           alternative={alternative}
-          alternativeDi={alternativeDi}
           onElimina={() => onElimina(voce.id)}
           onRinomina={(nome) => onRinomina(voce.id, nome)}
           onSostituisci={(nome) => onSostituisci(voce.id, nome)}
-          onSostituisciElemento={(nome, nuovo) => onSostituisciElemento(voce.id, nome, nuovo)}
           onChiudi={() => setAzioniAperte(false)}
         />
       )}

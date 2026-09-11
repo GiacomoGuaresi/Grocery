@@ -74,17 +74,14 @@ describe('lista di esempio', () => {
     }
   })
 
-  it('ha Frutta e Verdura come voci raggruppate da 4 elementi di stagione', () => {
+  it('ha 4 tipi di verdura e 4 di frutta di stagione, una voce ciascuno', () => {
     const mese = 9 // la lista di esempio è di settembre
-    for (const [id, gruppo] of [
-      ['verdura', 'verdura'],
-      ['frutta', 'frutta'],
-    ] as const) {
-      const raggruppata = listaEsempio.voci.find((v) => v.id === id)
-      expect(raggruppata?.elementi).toHaveLength(4)
+    for (const gruppo of ['verdura', 'frutta'] as const) {
+      const tipi = listaEsempio.voci.filter((v) => v.categoria === gruppo)
+      expect(tipi).toHaveLength(4)
       const stagione = diStagione(gruppo, mese)
-      for (const elemento of raggruppata!.elementi!) {
-        expect(stagione, elemento.nome).toContain(elemento.nome)
+      for (const tipo of tipi) {
+        expect(stagione, tipo.nome).toContain(tipo.nome)
       }
     }
   })

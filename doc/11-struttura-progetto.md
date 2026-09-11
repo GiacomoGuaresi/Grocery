@@ -15,7 +15,7 @@ Grocery/
     ├── domain/          modello dati, dati statici tipizzati, algoritmo di generazione
     ├── storage/         interfaccia di persistenza (SQLite in dev, Supabase in prod)
     │   ├── tipi.ts      l'interfaccia `Storage` e la porta `Persistenza`
-    │   ├── schema.ts    lo schema SQL di liste, voci, elementi, rotazioni
+    │   ├── schema.ts    lo schema SQL di liste, voci, rotazioni
     │   ├── sqlite.ts    implementazione su sql.js
     │   ├── indexeddb.ts il blob del database dentro IndexedDB
     │   ├── memoria.ts   persistenza volatile, per i test
@@ -33,7 +33,7 @@ Grocery/
         ├── GeneraLista.tsx    l'azione "Genera lista" e la sua conferma
         ├── PianoSettimanale.tsx  la tabella delle cene, in consultazione
         ├── Archivio.tsx       le spese passate e una di esse aperta
-        ├── Voce.tsx           una voce, con gli elementi se è raggruppata
+        ├── Voce.tsx           una voce: checkbox, nome (rinominabile in "Altro"), ⋯
         ├── AzioniVoce.tsx     il popup con le azioni di una voce
         └── Icona.tsx          le icone SVG dell'app, al posto delle emoji
 ```
@@ -61,13 +61,14 @@ anche aprendolo da solo.
 
 ## `src/domain`
 `tipi.ts` contiene il modello dati di [06](06-modello-dati.md): `Lista`, `Voce`,
-`Elemento`, `Rotazione`.
+`Rotazione`. Ogni tipo di frutta e verdura è una `Voce` con categoria `verdura` o
+`frutta`.
 
 `dati.ts` è l'unico punto in cui i JSON di `src/data` vengono importati: li tipizza e
 li espone come `reparti`, `categorie`, `giorniRoutine`, `gruppiFissi`,
 `stagionalita`, `prodotti`, più le funzioni `reparto()`, `categoria()`,
-`ordineReparto()` e `diStagione(gruppo, mese)`. Il resto del codice passa da qui e
-non tocca mai la forma grezza dei file.
+`ordineReparto()`, `diStagione(gruppo, mese)` ed `eGruppoFisso()`. Il resto del
+codice passa da qui e non tocca mai la forma grezza dei file.
 
 `dati.test.ts` verifica la coerenza dei dati statici: i reparti citati dal catalogo,
 dai prodotti e dai gruppi fissi esistono in `reparti.json`, le categorie della
@@ -83,20 +84,17 @@ banco di prova dei test.
 
 `lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
 delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
-esistenti, Frutta e Verdura con 4 elementi di stagione).
+esistenti, 4 tipi di verdura e 4 di frutta di stagione, una voce ciascuno).
 
 `spunta.ts` raccoglie le transizioni di stato della spunta, tutte pure: ogni funzione
 restituisce una lista nuova e lascia intatta quella di partenza. `spuntaVoce()` e
-`despuntaVoce()` spostano una voce tra lista attiva e "Già presi", trascinandosi
-dietro tutti i suoi elementi se è raggruppata; `alternaElemento()` spunta un singolo
-elemento di Frutta o Verdura e marca la voce comprata solo quando sono presi tutti,
-riportandola tra le attive appena se ne de-spunta uno. `elementiAttivi()` dà gli
-elementi ancora da prendere.
+`despuntaVoce()` spostano una voce tra lista attiva e "Già presi". Ogni tipo di
+frutta e verdura è una voce a sé, quindi si spunta come le altre.
 
 `spunta.test.ts` copre le transizioni: la voce che sparisce dalla lista attiva,
-l'immutabilità della lista di partenza, l'idempotenza, il passaggio della voce
-raggruppata a comprata all'ultimo elemento e il ritorno indietro, e l'invariante per
-cui attive e già presi coprono sempre tutte le voci senza doppioni.
+l'immutabilità della lista di partenza, l'idempotenza, il tipo di verdura che si
+spunta senza toccare gli altri, e l'invariante per cui attive e già presi coprono
+sempre tutte le voci senza doppioni.
 
 `aggiunta.ts` regge l'inserimento manuale: `normalizza()` mette i nomi in una forma
 confrontabile (minuscolo, senza accenti né spazi di troppo), `suggerimenti()` propone
@@ -105,11 +103,16 @@ del prodotto riconosciuto o in "Altro". `modifica.ts` tiene eliminazione e rinom
 solo le voci manuali in "Altro" si rinominano, e il reparto non cambia mai.
 
 `generazione.ts` è l'algoritmo di [03](03-algoritmo-generazione.md): da routine,
-cataloghi e stagionalità escono le voci del ciclo. Le tipologie si **pescano a caso**
-(R2) — a scorrere il catalogo in ordine usciva sempre lo stesso animale con tagli
-diversi — evitando quelle del ciclo prima, che arrivano dalle `rotazioni` salvate e
-tornano aggiornate da salvare (R3). La sorgente del caso è un parametro (`caso`), così
-i test la sostituiscono con un generatore a seme e restano riproducibili.
+cataloghi e stagionalità escono le voci del ciclo, compresa una voce per ogni tipo di
+verdura e di frutta scelto. Le tipologie si **pescano a caso** (R2) — a scorrere il
+catalogo in ordine usciva sempre lo stesso animale con tagli diversi — evitando
+quelle del ciclo prima, che arrivano dalle `rotazioni` salvate e tornano aggiornate
+da salvare (R3). La sorgente del caso è un parametro (`caso`), così i test la
+sostituiscono con un generatore a seme e restano riproducibili.
+
+`alternative.ts` dà le alternative della dropdown (F6): le altre tipologie della
+categoria o, per un tipo di frutta e verdura, gli altri di stagione nel mese, senza
+quello che è già in lista. `sostituisciVoce()` mette la scelta al posto della voce.
 
 `archivio.ts` è la parte di dominio delle liste passate: solo formattazione, perché
 una lista archiviata non ha più transizioni di stato. `etichettaData()` scrive la
@@ -129,14 +132,14 @@ Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
 resto dell'app conosce solo questa: l'implementazione Supabase arriverà accanto a
 quella SQLite senza toccare né il dominio né la UI.
 
-`schema.ts` tiene lo schema SQL delle quattro tabelle di
-[06](06-modello-dati.md) — `liste`, `voci`, `elementi`, `rotazioni` — scritto in SQL
+`schema.ts` tiene lo schema SQL delle tre tabelle di
+[06](06-modello-dati.md) — `liste`, `voci`, `rotazioni` — scritto in SQL
 standard perché regga anche su Postgres. In `rotazioni` la memoria è l'elenco delle
 tipologie dell'ultimo ciclo (JSON in una colonna di testo); i database di sviluppo
 creati quando era una posizione nel catalogo si migrano buttando la tabella, che si
-ricostruisce alla prima generazione. Le voci e gli elementi portano una
-`posizione`, così l'ordine della lista è quello con cui è stata salvata, e le
-`alternative` viaggiano come JSON in una colonna di testo.
+ricostruisce alla prima generazione. Le voci portano una `posizione`, così l'ordine
+della lista è quello con cui è stata salvata, e le `alternative` viaggiano come JSON
+in una colonna di testo.
 
 `sqlite.ts` implementa `Storage` su `sql.js`: il database sta in memoria e dopo ogni
 scrittura viene esportato in un blob e affidato alla `Persistenza`. Ogni salvataggio
@@ -145,6 +148,11 @@ dall'oggetto sparisce anche dal database; salvando una lista `corrente` le altre
 correnti passano ad archiviata, perché ce n'è sempre una sola. `export()` di sql.js
 riapre la connessione, quindi il `PRAGMA foreign_keys` va rimesso a ogni
 transazione: senza, i `CASCADE` smettono di scattare dopo il primo salvataggio.
+
+Fino al 2026-09-11 frutta e verdura erano una voce sola ciascuna, coi tipi in una
+tabella `elementi`. All'apertura, se quella tabella c'è ancora, `migraElementi()`
+riscrive ogni lista salvata con una voce per tipo — spunte comprese, archivio
+compreso — e poi la butta.
 
 L'archivio si legge da lì: `leggiArchivio()` elenca le liste `archiviata` dalla più
 recente alla più vecchia contando le voci con un'aggregazione — per l'elenco non
@@ -158,12 +166,13 @@ niente, ed è quella dei test. `index.ts` mette insieme i pezzi per l'app in
 esecuzione: carica il WASM di SQLite e apre lo storage una volta sola.
 
 `sqlite.test.ts` lavora contro l'interfaccia, non contro i dettagli: la lista
-riletta identica a quella salvata, l'ordine di voci ed elementi, i campi opzionali
-che restano assenti, il salvataggio che aggiorna invece di duplicare, le voci tolte
-che spariscono con i loro elementi, l'unica lista corrente, le rotazioni sostituite
-e non accumulate, l'archivio che elenca le liste passate ma non quella corrente,
-nell'ordine giusto e con i conteggi giusti, e la lista archiviata riletta identica a
-com'era. Il refresh si simula riaprendo il database sulla stessa `Persistenza`.
+riletta identica a quella salvata, l'ordine delle voci, i campi opzionali che restano
+assenti, il salvataggio che aggiorna invece di duplicare, le voci tolte che
+spariscono, l'unica lista corrente, le rotazioni sostituite e non accumulate,
+l'archivio che elenca le liste passate ma non quella corrente, nell'ordine giusto e
+con i conteggi giusti, la lista archiviata riletta identica a com'era e la
+migrazione delle liste con frutta e verdura raggruppate. Il refresh si simula
+riaprendo il database sulla stessa `Persistenza`.
 
 ## `src/ui`
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
@@ -178,14 +187,13 @@ l'interfaccia risponde subito — e poi in coda verso il database, in modo che i
 rapidi arrivino nell'ordine in cui sono stati fatti.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
-voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Le voci raggruppate (Frutta, Verdura)
-elencano i propri elementi come pastiglie sotto il nome, ognuna toccabile per conto
-suo.
+voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Frutta e
+verdura sono in elenco diretto: ogni tipo è una riga come le altre, in Ortofrutta.
 
-Toccare una voce la segna comprata e la fa sparire dalla lista attiva; nelle voci
-raggruppate sparisce il singolo elemento spuntato, e la voce intera se ne va quando
-non ne resta nessuno. In fondo alla lista sta la sezione ripiegata "Già presi", col
-conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
+Toccare la checkbox di una voce la segna comprata e la fa sparire dalla lista
+attiva; il tap sul testo non spunta, e nelle voci manuali in "Altro" rende il nome
+modificabile nella riga. In fondo alla lista sta la sezione ripiegata "Già presi",
+col conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
 de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
 quel percorso ormai è alle spalle.
 

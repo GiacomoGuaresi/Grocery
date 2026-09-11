@@ -40,12 +40,14 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 - [x] Stato in memoria con una lista di esempio
 - [x] Voci raggruppate per reparto, nell'ordine di corsia
 - [x] Reparti vuoti non mostrati
-- [x] Voci raggruppate *Frutta* e *Verdura* rese con i loro elementi
+- [x] ~~Voci raggruppate *Frutta* e *Verdura* rese con i loro elementi~~ → dal
+      2026-09-11 una voce per ogni tipo di frutta e verdura
 
 ## Step 4 — Spunta ✅
 
 - [x] Tap su una voce = comprata, la voce sparisce dalla lista attiva
-- [x] Spunta dei **singoli elementi** dentro Frutta e Verdura
+- [x] ~~Spunta dei **singoli elementi** dentro Frutta e Verdura~~ → ogni tipo è una
+      voce a sé e si spunta dalla sua checkbox
 - [x] Sezione ripiegata "Già presi" in fondo
 - [x] De-spunta di una voce dalla sezione "Già presi"
 - [x] Test sulle transizioni di stato
@@ -54,7 +56,8 @@ Prima di costruirci sopra, assicurarsi che i JSON siano coerenti.
 
 - [x] Interfaccia `Storage` (leggi lista, salva lista, leggi/salva rotazioni)
 - [x] Implementazione con `sql.js` (SQLite in WASM), database su IndexedDB
-- [x] Schema SQL delle tabelle `liste`, `voci`, `elementi`, `rotazioni`
+- [x] Schema SQL delle tabelle `liste`, `voci`, `rotazioni` (la tabella `elementi`
+      c'era fino al 2026-09-11: i database vecchi si migrano all'apertura)
 - [x] La lista sopravvive al refresh della pagina
 - [x] Test dell'implementazione contro l'interfaccia
 
@@ -97,7 +100,7 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 ## Step 10 — Dropdown delle alternative ✅
 
 - [x] Dropdown su ogni voce generata, con le altre tipologie della categoria
-- [x] Dropdown sugli elementi di Frutta e Verdura, con le alternative **di stagione**
+- [x] Dropdown su ogni tipo di frutta e verdura, con le alternative **di stagione**
 - [x] La sostituzione non altera lo stato della rotazione salvata
 - [x] Le alternative non ripropongono quello che è già in lista
 - [x] Il reparto segue la tipologia scelta: è un dato del catalogo (pesce fresco →

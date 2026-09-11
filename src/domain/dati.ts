@@ -7,12 +7,17 @@ import prodottiJson from '../data/prodotti.json'
 import repartiJson from '../data/reparti.json'
 import routineJson from '../data/routine.json'
 import stagionalitaJson from '../data/stagionalita.json'
-import type { IdCategoria, IdReparto } from './tipi'
+import type { IdCategoria, IdGruppo, IdReparto } from './tipi'
 
 /** 1 = gennaio ... 12 = dicembre. */
 export type Mese = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
-export type GruppoFisso = 'verdura' | 'frutta'
+export type GruppoFisso = IdGruppo
+
+/** Vero per le categorie di verdura e frutta, che vengono dalla stagionalità. */
+export function eGruppoFisso(categoria: string | undefined): categoria is GruppoFisso {
+  return categoria === 'verdura' || categoria === 'frutta'
+}
 
 export interface Reparto {
   id: IdReparto

@@ -10,6 +10,10 @@
  */
 export const MIGRAZIONE_ROTAZIONI = `DROP TABLE IF EXISTS rotazioni;`
 
+// Fino al 2026-09-11 c'era anche una tabella `elementi`, coi tipi di frutta e
+// verdura dentro un'unica voce: ora ogni tipo è una voce a sé. I database che
+// ce l'hanno ancora si migrano all'apertura (StorageSqlite.migraElementi).
+
 export const SCHEMA = `
 CREATE TABLE IF NOT EXISTS liste (
   id         TEXT PRIMARY KEY,
@@ -28,16 +32,6 @@ CREATE TABLE IF NOT EXISTS voci (
   comprata     INTEGER NOT NULL CHECK (comprata IN (0, 1)),
   alternative  TEXT,
   PRIMARY KEY (lista_id, id)
-);
-
-CREATE TABLE IF NOT EXISTS elementi (
-  lista_id   TEXT NOT NULL,
-  voce_id    TEXT NOT NULL,
-  posizione  INTEGER NOT NULL,
-  nome       TEXT NOT NULL,
-  comprato   INTEGER NOT NULL CHECK (comprato IN (0, 1)),
-  PRIMARY KEY (lista_id, voce_id, nome),
-  FOREIGN KEY (lista_id, voce_id) REFERENCES voci(lista_id, id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS rotazioni (

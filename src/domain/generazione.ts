@@ -10,13 +10,13 @@
 
 import {
   categorie,
+  diStagione,
   giorniRoutine,
   gruppiFissi,
-  stagionalita,
   type GruppoFisso,
   type Mese,
 } from './dati'
-import type { Elemento, IdCategoria, Lista, Rotazione, Voce } from './tipi'
+import type { IdCategoria, Lista, Rotazione, Voce } from './tipi'
 
 /** Le righe di rotazione hanno una chiave per categoria e una per gruppo fisso. */
 export type ChiaveRotazione = IdCategoria | GruppoFisso
@@ -123,34 +123,27 @@ function vociCategoria(
 }
 
 /**
- * La voce raggruppata di verdura o frutta: `tipiPerCiclo` tipi di stagione,
- * diversi tra loro, pescati a caso tra quelli del mese (R5, R5b, R5d).
+ * Le voci di verdura o frutta: `tipiPerCiclo` tipi di stagione, diversi tra
+ * loro, pescati a caso tra quelli del mese (R5, R5b). Ogni tipo è una voce a
+ * sé, che si spunta e si sostituisce come le altre (R5d).
  */
-function voceGruppo(
+function vociGruppo(
   gruppo: GruppoFisso,
   mese: Mese,
   daEvitare: Set<string>,
   caso: () => number,
-): { voce: Voce | null; ultimi: string[] } {
-  const diStagione = Object.keys(stagionalita[gruppo]).filter((nome) =>
-    stagionalita[gruppo][nome].includes(mese),
-  )
+): { voci: Voce[]; ultimi: string[] } {
   const { tipiPerCiclo, reparto } = gruppiFissi[gruppo]
-  const scelti = pesca(diStagione, tipiPerCiclo, (nome) => nome, daEvitare, caso)
-  if (scelti.length === 0) return { voce: null, ultimi: [] }
-
-  const elementi: Elemento[] = scelti.map((nome) => ({ nome, comprato: false }))
-  return {
-    voce: {
-      id: gruppo,
-      nome: gruppo === 'verdura' ? 'Verdura' : 'Frutta',
-      reparto,
-      origine: 'generata',
-      comprata: false,
-      elementi,
-    },
-    ultimi: scelti,
-  }
+  const scelti = pesca(diStagione(gruppo, mese), tipiPerCiclo, (nome) => nome, daEvitare, caso)
+  const voci = scelti.map((nome, posizione) => ({
+    id: `${gruppo}-${posizione + 1}`,
+    nome,
+    reparto,
+    categoria: gruppo,
+    origine: 'generata' as const,
+    comprata: false,
+  }))
+  return { voci, ultimi: scelti }
 }
 
 /**
@@ -168,8 +161,8 @@ export function generaLista(opzioni: OpzioniGenerazione = {}): Generazione {
   const rotazioni: Rotazione[] = []
 
   for (const gruppo of ['verdura', 'frutta'] as GruppoFisso[]) {
-    const scelta = voceGruppo(gruppo, mese, ultimi(rotazioniPrecedenti, gruppo), caso)
-    if (scelta.voce) voci.push(scelta.voce)
+    const scelta = vociGruppo(gruppo, mese, ultimi(rotazioniPrecedenti, gruppo), caso)
+    voci.push(...scelta.voci)
     rotazioni.push({ categoria: gruppo, ultimi: scelta.ultimi })
   }
 

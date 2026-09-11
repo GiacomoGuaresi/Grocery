@@ -1,13 +1,8 @@
 import { aggiungiVoce } from '../domain/aggiunta'
-import {
-  alternativeElemento,
-  alternativeVoce,
-  sostituisciElemento,
-  sostituisciVoce,
-} from '../domain/alternative'
+import { alternativeVoce, sostituisciVoce } from '../domain/alternative'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
-import { alternaElemento, despuntaVoce, spuntaVoce } from '../domain/spunta'
+import { despuntaVoce, spuntaVoce } from '../domain/spunta'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
@@ -49,9 +44,6 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
       return voce?.comprata ? despuntaVoce(corrente, id) : spuntaVoce(corrente, id)
     })
 
-  const alternaUnElemento = (id: string, nome: string) =>
-    modifica((corrente) => alternaElemento(corrente, id, nome))
-
   const elimina = (id: string) => modifica((corrente) => eliminaVoce(corrente, id))
 
   const rinomina = (id: string, nome: string) =>
@@ -62,13 +54,7 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
   const sostituisci = (id: string, nome: string) =>
     modifica((corrente) => sostituisciVoce(corrente, id, nome))
 
-  const sostituisciUnElemento = (id: string, nome: string, nuovo: string) =>
-    modifica((corrente) => sostituisciElemento(corrente, id, nome, nuovo))
-
   const alternative = (voce: VoceLista) => alternativeVoce(lista, voce)
-
-  const alternativeDi = (voce: VoceLista, nome: string) =>
-    alternativeElemento(lista, voce, nome)
 
   return (
     <div className="lista">
@@ -78,13 +64,10 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
             key={gruppo.id}
             gruppo={gruppo}
             onAlterna={alterna}
-            onAlternaElemento={alternaUnElemento}
             onElimina={elimina}
             onRinomina={rinomina}
             onSostituisci={sostituisci}
-            onSostituisciElemento={sostituisciUnElemento}
             alternative={alternative}
-            alternativeElemento={alternativeDi}
           />
         ))
       ) : (
@@ -93,13 +76,10 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
       <GiaPresi
         voci={comprate}
         onAlterna={alterna}
-        onAlternaElemento={alternaUnElemento}
         onElimina={elimina}
         onRinomina={rinomina}
         onSostituisci={sostituisci}
-        onSostituisciElemento={sostituisciUnElemento}
         alternative={alternative}
-        alternativeElemento={alternativeDi}
       />
       <AggiungiVoce onAggiungi={aggiungi} />
     </div>

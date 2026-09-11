@@ -40,8 +40,7 @@ nuova, archiviando la precedente.
 Ogni voce si segna come **comprata** con un tap.
 
 - L'articolo comprato **sparisce dalla lista attiva**.
-- Nelle voci raggruppate *Frutta* e *Verdura* si spuntano i **singoli tipi**, non il
-  gruppo intero.
+- Ogni tipo di frutta e verdura è una **voce a sé** e si spunta da solo.
 - Deve restare **visualizzabile** (sezione/toggle "già presi") e **de-spuntabile**
   per annullare un errore.
 - Non serve segnare "non trovato / esaurito".
@@ -74,9 +73,9 @@ campo note.
 Ogni voce generata ha una **dropdown** con le altre tipologie della sua categoria,
 per sostituirla se la proposta non va bene.
 
-Frutta e verdura compaiono come **una voce raggruppata ciascuna** (es. *"Frutta:
-mele, pere, arance, kiwi"*): la dropdown agisce sul singolo tipo dentro la voce e
-propone gli altri prodotti **di stagione**.
+Frutta e verdura compaiono in **elenco diretto**, una voce per tipo (es. *Carote,
+Indivia, Zucca, Cavolfiore, Fichi, More, Prugne*): la dropdown di ogni tipo propone
+gli altri prodotti **di stagione** dello stesso gruppo.
 
 La dropdown è **l'unico modo di modificare una voce generata**: i nomi degli alimenti
 vengono dal catalogo e non si rinominano.

@@ -35,8 +35,13 @@ describe('eliminaVoce', () => {
     expect(dopo.voci).toHaveLength(listaEsempio.voci.length - 1)
   })
 
-  it('toglie anche una voce raggruppata, con tutti i suoi elementi', () => {
-    expect(voce(eliminaVoce(listaEsempio, 'frutta'), 'frutta')).toBeUndefined()
+  it('toglie un solo tipo di frutta, lasciando gli altri', () => {
+    const dopo = eliminaVoce(listaEsempio, 'frutta-2')
+    expect(dopo.voci.filter((v) => v.categoria === 'frutta').map((v) => v.nome)).toEqual([
+      'uva',
+      'fichi',
+      'mele',
+    ])
   })
 
   it('toglie una voce già comprata', () => {

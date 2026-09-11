@@ -54,13 +54,14 @@
 | 2026-09-09 | Sessione conservata nei **cookie**: passphrase non richiesta ogni volta | deciso |
 | 2026-09-09 | Nome del repository: **`Grocery`** (mantenuto per ora) | deciso |
 | 2026-09-09 | Frutta e verdura comprate **tutte insieme**, nessuna divisione prima/seconda settimana | deciso |
-| 2026-09-09 | Frutta e verdura come **una voce raggruppata ciascuna**, con dropdown sui singoli tipi | deciso |
+| 2026-09-09 | ~~Frutta e verdura come **una voce raggruppata ciascuna**, con dropdown sui singoli tipi~~ | superata |
+| 2026-09-11 | Frutta e verdura in **elenco diretto**: una voce per ogni tipo, niente voce raggruppata | deciso |
 | 2026-09-09 | Formaggi e affettati **preconfezionati** → reparto "Salumi e formaggi", non banco gastronomia | deciso |
 | 2026-09-09 | Pesce sia **fresco sia surgelato**: il reparto è per singola voce di catalogo | deciso |
 | 2026-09-09 | `prodotti.json` parte da un **elenco ridotto** di prodotti base, espanso nel tempo | deciso |
 | 2026-09-09 | L'app online userà **Supabase da subito**, ma non viene pubblicata ora | deciso |
 | 2026-09-09 | Sviluppo solo su PC con **SQLite via `sql.js` (WASM) nel browser**, persistito su IndexedDB | deciso |
-| 2026-09-09 | Spunta dei **singoli tipi** dentro le voci raggruppate Frutta e Verdura | deciso |
+| 2026-09-09 | ~~Spunta dei **singoli tipi** dentro le voci raggruppate Frutta e Verdura~~ | superata |
 | 2026-09-09 | Le voci generate **non si rinominano**: sono dati statici, si sostituiscono con la dropdown | deciso |
 | 2026-09-09 | Solo le voci manuali in "Altro" si rinominano; il reparto non è mai modificabile | deciso |
 | 2026-09-11 | Si spunta **solo dalla checkbox**; in "Altro" il tap sul testo rinomina la voce nella riga | deciso |

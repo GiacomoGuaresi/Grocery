@@ -24,7 +24,7 @@ function ilQuindici(mese: number): Date {
   return new Date(2026, mese - 1, 15)
 }
 
-function vociDi(lista: Lista, categoria: IdCategoria): Voce[] {
+function vociDi(lista: Lista, categoria: NonNullable<Voce['categoria']>): Voce[] {
   return lista.voci.filter((voce) => voce.categoria === categoria)
 }
 
@@ -32,9 +32,9 @@ function nomi(voci: Voce[]): string[] {
   return voci.map((voce) => voce.nome)
 }
 
-function elementi(lista: Lista, id: 'verdura' | 'frutta'): string[] {
-  const voce = lista.voci.find((v) => v.id === id)
-  return (voce?.elementi ?? []).map((elemento) => elemento.nome)
+/** I tipi di verdura o di frutta del ciclo: una voce ciascuno. */
+function tipi(lista: Lista, gruppo: 'verdura' | 'frutta'): string[] {
+  return nomi(vociDi(lista, gruppo))
 }
 
 describe('meseDi', () => {
@@ -71,10 +71,18 @@ describe('generaLista — copertura', () => {
     }
   })
 
-  it('più le due voci raggruppate di verdura e frutta', () => {
-    expect(lista.voci).toHaveLength(16)
-    expect(elementi(lista, 'verdura')).toHaveLength(4)
-    expect(elementi(lista, 'frutta')).toHaveLength(4)
+  it('più una voce per ogni tipo di verdura e di frutta, in ortofrutta', () => {
+    expect(lista.voci).toHaveLength(14 + 4 + 4)
+    for (const gruppo of ['verdura', 'frutta'] as const) {
+      const voci = vociDi(lista, gruppo)
+      expect(voci).toHaveLength(4)
+      expect(voci.every((voce) => voce.reparto === 'ortofrutta')).toBe(true)
+    }
+  })
+
+  it('ogni voce ha il suo id', () => {
+    const ids = lista.voci.map((voce) => voce.id)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
   it('sono tutte voci generate, non spuntate, e nasce una lista corrente', () => {
@@ -108,8 +116,8 @@ describe('generaLista — varietà dentro il ciclo', () => {
   })
 
   it('i 4 tipi di verdura e i 4 di frutta sono diversi tra loro', () => {
-    expect(new Set(elementi(lista, 'verdura')).size).toBe(4)
-    expect(new Set(elementi(lista, 'frutta')).size).toBe(4)
+    expect(new Set(tipi(lista, 'verdura')).size).toBe(4)
+    expect(new Set(tipi(lista, 'frutta')).size).toBe(4)
   })
 })
 
@@ -149,7 +157,7 @@ describe('generaLista — scelta casuale', () => {
 
     expect(perCategoria.carne_rossa).toEqual(nomi(vociDi(lista, 'carne_rossa')))
     expect(perCategoria.pesce).toEqual(nomi(vociDi(lista, 'pesce')))
-    expect(perCategoria.verdura).toEqual(elementi(lista, 'verdura'))
+    expect(perCategoria.verdura).toEqual(tipi(lista, 'verdura'))
     // Le uova non ruotano: non c'è niente da ricordare.
     expect(perCategoria.uova).toEqual([])
   })
@@ -176,8 +184,8 @@ describe('generaLista — scelta casuale', () => {
       })
 
       for (const gruppo of ['verdura', 'frutta'] as const) {
-        const prima = new Set(elementi(primo.lista, gruppo))
-        for (const nome of elementi(secondo.lista, gruppo)) {
+        const prima = new Set(tipi(primo.lista, gruppo))
+        for (const nome of tipi(secondo.lista, gruppo)) {
           expect(prima).not.toContain(nome)
         }
       }
@@ -186,7 +194,7 @@ describe('generaLista — scelta casuale', () => {
 
   it('se il mese non offre abbastanza tipi si ripescano quelli del ciclo prima', () => {
     // Memoria che copre tutta la frutta: non resta niente di nuovo da pescare,
-    // ma la voce esce lo stesso con i suoi 4 tipi di stagione.
+    // ma escono lo stesso 4 tipi di stagione.
     const tuttaLaFrutta = Object.keys(stagionalita.frutta)
     const { lista } = generaLista({
       data: ilQuindici(3),
@@ -194,8 +202,8 @@ describe('generaLista — scelta casuale', () => {
       caso: caso(3),
     })
 
-    expect(new Set(elementi(lista, 'frutta')).size).toBe(4)
-    for (const nome of elementi(lista, 'frutta')) {
+    expect(new Set(tipi(lista, 'frutta')).size).toBe(4)
+    for (const nome of tipi(lista, 'frutta')) {
       expect(stagionalita.frutta[nome]).toContain(3)
     }
   })
@@ -204,14 +212,14 @@ describe('generaLista — scelta casuale', () => {
 describe('generaLista — stagionalità', () => {
   it('a gennaio non escono pomodori', () => {
     const { lista } = generaLista({ data: ilQuindici(1) })
-    expect(elementi(lista, 'verdura')).not.toContain('pomodori')
+    expect(tipi(lista, 'verdura')).not.toContain('pomodori')
   })
 
   it('sceglie solo verdura e frutta del mese, in ogni mese', () => {
     for (let mese = 1; mese <= 12; mese++) {
       const { lista } = generaLista({ data: ilQuindici(mese) })
       for (const gruppo of ['verdura', 'frutta'] as const) {
-        for (const nome of elementi(lista, gruppo)) {
+        for (const nome of tipi(lista, gruppo)) {
           expect(stagionalita[gruppo][nome]).toContain(mese)
         }
       }
@@ -225,7 +233,7 @@ describe('generaLista — stagionalità', () => {
       rotazioni: giugno.rotazioni,
       caso: caso(22),
     })
-    const prima = new Set(elementi(giugno.lista, 'frutta'))
-    for (const nome of elementi(luglio.lista, 'frutta')) expect(prima).not.toContain(nome)
+    const prima = new Set(tipi(giugno.lista, 'frutta'))
+    for (const nome of tipi(luglio.lista, 'frutta')) expect(prima).not.toContain(nome)
   })
 })

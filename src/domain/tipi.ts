@@ -7,24 +7,22 @@ export type IdReparto =
 export type IdCategoria =
   | 'carne_rossa' | 'carne_bianca' | 'pesce' | 'formaggio' | 'affettati' | 'uova'
 
-/** Un tipo dentro una voce raggruppata (Frutta / Verdura): sostituibile e spuntabile da solo. */
-export interface Elemento {
-  nome: string
-  comprato: boolean
-}
+/** Verdura e frutta: non legate a un giorno, scelte tra quelle di stagione. */
+export type IdGruppo = 'verdura' | 'frutta'
 
 export interface Voce {
   id: string
   nome: string
   reparto: IdReparto
-  /** Assente per le voci manuali. */
-  categoria?: IdCategoria
+  /**
+   * Assente per le voci manuali. Ogni tipo di verdura e di frutta è una voce a
+   * sé, con categoria `verdura` o `frutta`.
+   */
+  categoria?: IdCategoria | IdGruppo
   origine: 'generata' | 'manuale'
   comprata: boolean
   /** Tipologie sostitutive proposte nella dropdown. */
   alternative?: string[]
-  /** Solo per le voci raggruppate Frutta e Verdura. */
-  elementi?: Elemento[]
 }
 
 export interface Lista {
@@ -47,7 +45,7 @@ export interface SintesiLista {
 
 /** Memoria della rotazione tra un ciclo e l'altro. */
 export interface Rotazione {
-  categoria: IdCategoria | 'verdura' | 'frutta'
+  categoria: IdCategoria | IdGruppo
   /** Le tipologie proposte nell'ultimo ciclo: si evitano in quello nuovo (R3). */
   ultimi: string[]
 }

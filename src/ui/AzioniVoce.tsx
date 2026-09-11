@@ -5,39 +5,31 @@ import './AzioniVoce.css'
 
 interface Props {
   voce: VoceLista
-  /** I tipi di Frutta o Verdura che si vedono nella riga. Vuoto per le voci semplici. */
-  elementi: string[]
-  /** Le tipologie con cui si può sostituire la voce intera (F6). */
+  /** Le tipologie con cui si può sostituire la voce (F6); di stagione per frutta e verdura. */
   alternative: string[]
-  /** Le alternative di stagione per un tipo dentro Frutta o Verdura. */
-  alternativeDi: (nome: string) => string[]
   onElimina: () => void
   onRinomina: (nome: string) => void
   onSostituisci: (nome: string) => void
-  onSostituisciElemento: (nome: string, nuovo: string) => void
   /** Il popup si è chiuso, in qualunque modo. */
   onChiudi: () => void
 }
 
 /**
- * Il popup con le azioni di una voce: sostituirla con un'alternativa (F6),
- * cambiare un tipo di Frutta o Verdura con uno di stagione, rinominarla (solo
- * le voci manuali sotto "Altro", F6b) ed eliminarla. Nella riga della lista
- * resta solo la spunta, così le righe sono basse e in corsia non si cancella
- * niente per sbaglio.
+ * Il popup con le azioni di una voce: sostituirla con un'alternativa (F6) —
+ * per un tipo di frutta o verdura, con un altro di stagione — rinominarla
+ * (solo le voci manuali sotto "Altro", F6b) ed eliminarla. Nella riga della
+ * lista restano la spunta e il nome, così le righe sono basse e in corsia non
+ * si cancella niente per sbaglio.
  *
  * È un `<dialog>` modale: il browser si occupa del fuoco, di Esc e del velo
  * sopra la lista. Ogni chiusura passa da `close()`, che avvisa con `onChiudi`.
  */
 export function AzioniVoce({
   voce,
-  elementi,
   alternative,
-  alternativeDi,
   onElimina,
   onRinomina,
   onSostituisci,
-  onSostituisciElemento,
   onChiudi,
 }: Props) {
   const finestra = useRef<HTMLDialogElement>(null)
@@ -50,10 +42,6 @@ export function AzioniVoce({
   }, [])
 
   const chiudi = () => finestra.current?.close()
-
-  const conAlternative = elementi
-    .map((nome) => ({ nome, diStagione: alternativeDi(nome) }))
-    .filter((e) => e.diStagione.length > 0)
 
   return (
     <dialog
@@ -83,26 +71,6 @@ export function AzioniVoce({
                   }}
                 />
               </label>
-            )}
-
-            {conAlternative.length > 0 && (
-              <div className="azioni-voce__campo">
-                <span className="azioni-voce__etichetta">Alternative di stagione</span>
-                <ul className="azioni-voce__elementi">
-                  {conAlternative.map(({ nome, diStagione }) => (
-                    <li className="azioni-voce__elemento" key={nome}>
-                      <span>{nome}</span>
-                      <Alternative
-                        etichetta={`Sostituisci ${nome}`}
-                        testo="Cambia…"
-                        alternative={diStagione}
-                        // Resta aperto: si possono cambiare più tipi di fila.
-                        onScegli={(nuovo) => onSostituisciElemento(nome, nuovo)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
             )}
 
             {rinominabile(voce) && (
@@ -179,12 +147,10 @@ export function AzioniVoce({
  * valore scelto diventa il nome della voce, non la selezione della dropdown.
  */
 function Alternative({
-  etichetta,
   testo,
   alternative,
   onScegli,
 }: {
-  etichetta?: string
   testo: string
   alternative: string[]
   onScegli: (nome: string) => void
@@ -192,7 +158,6 @@ function Alternative({
   return (
     <select
       className="azioni-voce__scelta"
-      aria-label={etichetta}
       value=""
       onChange={(evento) => {
         if (evento.target.value !== '') onScegli(evento.target.value)

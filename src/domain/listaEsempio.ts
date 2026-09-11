@@ -10,32 +10,22 @@ export const listaEsempio: Lista = {
   creataIl: '2026-09-07T08:00:00.000Z',
   stato: 'corrente',
   voci: [
-    {
-      id: 'verdura',
-      nome: 'Verdura',
-      reparto: 'ortofrutta',
-      origine: 'generata',
+    ...(['zucchine', 'melanzane', 'spinaci', 'peperoni'] as const).map((nome, i) => ({
+      id: `verdura-${i + 1}`,
+      nome,
+      reparto: 'ortofrutta' as const,
+      categoria: 'verdura' as const,
+      origine: 'generata' as const,
       comprata: false,
-      elementi: [
-        { nome: 'zucchine', comprato: false },
-        { nome: 'melanzane', comprato: false },
-        { nome: 'spinaci', comprato: false },
-        { nome: 'peperoni', comprato: false },
-      ],
-    },
-    {
-      id: 'frutta',
-      nome: 'Frutta',
-      reparto: 'ortofrutta',
-      origine: 'generata',
+    })),
+    ...(['uva', 'pere', 'fichi', 'mele'] as const).map((nome, i) => ({
+      id: `frutta-${i + 1}`,
+      nome,
+      reparto: 'ortofrutta' as const,
+      categoria: 'frutta' as const,
+      origine: 'generata' as const,
       comprata: false,
-      elementi: [
-        { nome: 'uva', comprato: false },
-        { nome: 'pere', comprato: false },
-        { nome: 'fichi', comprato: false },
-        { nome: 'mele', comprato: false },
-      ],
-    },
+    })),
     {
       id: 'carne_rossa-1',
       nome: 'manzo (fettine)',

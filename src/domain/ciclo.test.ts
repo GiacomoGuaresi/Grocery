@@ -44,12 +44,12 @@ const detersivo: Voce = {
   comprata: true,
 }
 
-function nomi(l: Lista): string[] {
-  return l.voci.map((voce) => voce.nome)
+function verdura(id: string, nome: string, comprata = false): Voce {
+  return { id, nome, reparto: 'ortofrutta', categoria: 'verdura', origine: 'generata', comprata }
 }
 
-function elementi(l: Lista, id: 'verdura' | 'frutta'): string[] {
-  return (l.voci.find((voce) => voce.id === id)?.elementi ?? []).map((e) => e.nome)
+function nomi(l: Lista): string[] {
+  return l.voci.map((voce) => voce.nome)
 }
 
 describe('vociDaRiportare', () => {
@@ -57,21 +57,11 @@ describe('vociDaRiportare', () => {
     expect(vociDaRiportare(lista([caffe, detersivo]))).toEqual([caffe])
   })
 
-  it('di una voce raggruppata restano i soli tipi non presi', () => {
-    const verdura: Voce = {
-      id: 'verdura',
-      nome: 'Verdura',
-      reparto: 'ortofrutta',
-      origine: 'generata',
-      comprata: false,
-      elementi: [
-        { nome: 'zucchine', comprato: true },
-        { nome: 'spinaci', comprato: false },
-      ],
-    }
-    expect(vociDaRiportare(lista([verdura]))[0].elementi).toEqual([
-      { nome: 'spinaci', comprato: false },
-    ])
+  it('della verdura restano i soli tipi non presi', () => {
+    const rimaste = vociDaRiportare(
+      lista([verdura('verdura-1', 'zucchine', true), verdura('verdura-2', 'spinaci')]),
+    )
+    expect(rimaste.map((voce) => voce.nome)).toEqual(['spinaci'])
   })
 
   it('senza lista precedente non c’è niente da riportare', () => {
@@ -117,7 +107,7 @@ describe('nuovoCiclo', () => {
 
   it('non raddoppia quello che il nuovo ciclo propone già', () => {
     const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
-    const primaVoce = senzaRiporto.voci.find((voce) => !voce.elementi)!
+    const primaVoce = senzaRiporto.voci[0]
     const doppione: Voce = { ...primaVoce, id: 'doppione', nome: primaVoce.nome.toUpperCase() }
 
     const ciclo = nuovoCiclo({
@@ -129,32 +119,22 @@ describe('nuovoCiclo', () => {
     expect(ciclo.lista.voci).toHaveLength(senzaRiporto.voci.length)
   })
 
-  it('i tipi rimasti di verdura entrano nella voce raggruppata, senza crearne un\'altra', () => {
+  it('un tipo di verdura rimasto torna come voce a sé, se il ciclo nuovo non lo propone già', () => {
     const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
-    const verdura: Voce = {
-      id: 'verdura',
-      nome: 'Verdura',
-      reparto: 'ortofrutta',
-      origine: 'generata',
-      comprata: false,
-      elementi: [
-        { nome: 'cavolo nero', comprato: false },
-        { nome: elementi(senzaRiporto, 'verdura')[0], comprato: false },
-      ],
-    }
+    const giaProposta = senzaRiporto.voci.find((voce) => voce.categoria === 'verdura')!
 
     const ciclo = nuovoCiclo({
       ...stessaGenerazione(),
-      precedente: lista([verdura]),
+      precedente: lista([verdura('verdura-1', 'cavolo nero'), verdura('verdura-2', giaProposta.nome)]),
       portaAvanti: true,
     })
 
-    expect(ciclo.lista.voci.filter((voce) => voce.id === 'verdura')).toHaveLength(1)
     // Il tipo rimasto si aggiunge, quello già proposto dal ciclo nuovo no.
-    expect(elementi(ciclo.lista, 'verdura')).toEqual([
-      ...elementi(senzaRiporto, 'verdura'),
-      'cavolo nero',
-    ])
+    expect(ciclo.lista.voci).toHaveLength(senzaRiporto.voci.length + 1)
+    expect(nomi(ciclo.lista).filter((nome) => nome === 'cavolo nero')).toHaveLength(1)
+    expect(nomi(ciclo.lista).filter((nome) => nome === giaProposta.nome)).toHaveLength(1)
+    const ids = ciclo.lista.voci.map((voce) => voce.id)
+    expect(new Set(ids).size).toBe(ids.length)
   })
 
   it('quello che si porta avanti arriva da prendere, non spuntato', () => {
@@ -169,7 +149,7 @@ describe('nuovoCiclo', () => {
 
   it('una voce riportata non ruba l\'id a una voce del ciclo nuovo', () => {
     const senzaRiporto = nuovoCiclo(stessaGenerazione()).lista
-    const occupato = senzaRiporto.voci.find((voce) => !voce.elementi)!.id
+    const occupato = senzaRiporto.voci[0].id
     const vecchia: Voce = { ...caffe, id: occupato }
 
     const ciclo = nuovoCiclo({

@@ -4,6 +4,7 @@ import { listaEsempio } from '../domain/listaEsempio'
 import { spuntaVoce } from '../domain/spunta'
 import type { Lista, Rotazione } from '../domain/tipi'
 import { PersistenzaMemoria } from './memoria'
+import { SCHEMA } from './schema'
 import { apriStorageSqlite } from './sqlite'
 import type { Persistenza, Storage } from './tipi'
 
@@ -24,16 +25,13 @@ const lista: Lista = {
   stato: 'corrente',
   voci: [
     {
-      id: 'verdura',
-      nome: 'Verdura',
+      id: 'verdura-1',
+      nome: 'zucchine',
       reparto: 'ortofrutta',
+      categoria: 'verdura',
       origine: 'generata',
       comprata: false,
       alternative: ['cavolfiore', 'finocchi'],
-      elementi: [
-        { nome: 'zucchine', comprato: false },
-        { nome: 'spinaci', comprato: true },
-      ],
     },
     {
       id: 'pesce-1',
@@ -65,21 +63,20 @@ describe('lettura e scrittura della lista', () => {
     expect(await storage.leggiListaCorrente()).toEqual(lista)
   })
 
-  it('tiene l ordine delle voci e degli elementi', async () => {
+  it('tiene l ordine delle voci', async () => {
     const { storage } = await apri()
     await storage.salvaLista(listaEsempio)
     const riletta = await storage.leggiListaCorrente()
     expect(riletta?.voci.map((v) => v.id)).toEqual(listaEsempio.voci.map((v) => v.id))
-    expect(riletta?.voci[0].elementi?.map((e) => e.nome)).toEqual(['zucchine', 'melanzane', 'spinaci', 'peperoni'])
   })
 
   it('non inventa i campi opzionali assenti', async () => {
     const { storage } = await apri()
     await storage.salvaLista(lista)
-    const voce = (await storage.leggiListaCorrente())?.voci[1]
-    expect(voce).not.toHaveProperty('elementi')
-    expect(voce).not.toHaveProperty('alternative')
-    expect(voce?.categoria).toBe('pesce')
+    const [, pesce, manuale] = (await storage.leggiListaCorrente())!.voci
+    expect(pesce).not.toHaveProperty('alternative')
+    expect(pesce.categoria).toBe('pesce')
+    expect(manuale).not.toHaveProperty('categoria')
   })
 
   it('salvando di nuovo aggiorna invece di duplicare', async () => {
@@ -91,13 +88,12 @@ describe('lettura e scrittura della lista', () => {
     expect(riletta?.voci.find((v) => v.id === 'pesce-1')?.comprata).toBe(true)
   })
 
-  it('le voci tolte dalla lista spariscono col loro elementi', async () => {
+  it('le voci tolte dalla lista spariscono', async () => {
     const { storage } = await apri()
     await storage.salvaLista(lista)
     await storage.salvaLista({ ...lista, voci: [lista.voci[1]] })
     const riletta = await storage.leggiListaCorrente()
     expect(riletta?.voci.map((v) => v.id)).toEqual(['pesce-1'])
-    expect(riletta?.voci[0].elementi).toBeUndefined()
   })
 
   it('tiene una sola lista corrente: la precedente viene archiviata', async () => {
@@ -168,6 +164,57 @@ describe('archivio', () => {
     const dopo = await apri(persistenza)
     expect((await dopo.storage.leggiArchivio()).map((s) => s.id)).toEqual(['lista-1'])
     expect((await dopo.storage.leggiLista('lista-1'))?.voci).toHaveLength(3)
+  })
+})
+
+describe('liste salvate con frutta e verdura raggruppate', () => {
+  /** Un database com'era prima: Verdura una voce sola, coi tipi in `elementi`. */
+  async function databaseVecchio(): Promise<Persistenza> {
+    const vecchio = new SQL.Database()
+    vecchio.run(SCHEMA)
+    vecchio.run(`CREATE TABLE elementi (
+      lista_id TEXT NOT NULL, voce_id TEXT NOT NULL, posizione INTEGER NOT NULL,
+      nome TEXT NOT NULL, comprato INTEGER NOT NULL,
+      PRIMARY KEY (lista_id, voce_id, nome),
+      FOREIGN KEY (lista_id, voce_id) REFERENCES voci(lista_id, id) ON DELETE CASCADE
+    )`)
+    vecchio.run(`INSERT INTO liste VALUES
+      ('vecchia', '2026-08-24T08:00:00.000Z', 'archiviata'),
+      ('adesso', '2026-09-07T08:00:00.000Z', 'corrente')`)
+    vecchio.run(`INSERT INTO voci (lista_id, id, posizione, nome, reparto, categoria, origine, comprata) VALUES
+      ('vecchia', 'frutta', 0, 'Frutta', 'ortofrutta', NULL, 'generata', 1),
+      ('adesso', 'verdura', 0, 'Verdura', 'ortofrutta', NULL, 'generata', 0),
+      ('adesso', 'pesce-1', 1, 'orata', 'pescheria', 'pesce', 'generata', 0)`)
+    vecchio.run(`INSERT INTO elementi VALUES
+      ('vecchia', 'frutta', 0, 'mele', 1), ('vecchia', 'frutta', 1, 'pere', 1),
+      ('adesso', 'verdura', 0, 'zucchine', 1), ('adesso', 'verdura', 1, 'spinaci', 0)`)
+    const persistenza = new PersistenzaMemoria()
+    await persistenza.salva(vecchio.export())
+    vecchio.close()
+    return persistenza
+  }
+
+  it('si riaprono con una voce per tipo, spunte comprese', async () => {
+    const { storage } = await apri(await databaseVecchio())
+    expect((await storage.leggiListaCorrente())?.voci).toEqual([
+      { id: 'verdura-1', nome: 'zucchine', reparto: 'ortofrutta', categoria: 'verdura', origine: 'generata', comprata: true },
+      { id: 'verdura-2', nome: 'spinaci', reparto: 'ortofrutta', categoria: 'verdura', origine: 'generata', comprata: false },
+      { id: 'pesce-1', nome: 'orata', reparto: 'pescheria', categoria: 'pesce', origine: 'generata', comprata: false },
+    ])
+  })
+
+  it('anche l archivio conta un tipo per voce', async () => {
+    const { storage } = await apri(await databaseVecchio())
+    expect(await storage.leggiArchivio()).toEqual([
+      { id: 'vecchia', creataIl: '2026-08-24T08:00:00.000Z', quanteVoci: 2, quanteComprate: 2 },
+    ])
+  })
+
+  it('la migrazione si fa una volta sola: riaprendo resta tutto com era', async () => {
+    const persistenza = await databaseVecchio()
+    const prima = await (await apri(persistenza)).storage.leggiListaCorrente()
+    const dopo = await (await apri(persistenza)).storage.leggiListaCorrente()
+    expect(dopo).toEqual(prima)
   })
 })
 

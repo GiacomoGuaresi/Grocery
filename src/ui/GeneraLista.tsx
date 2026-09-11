@@ -71,10 +71,7 @@ export function ConfermaGenera({
           </p>
           <ul className="genera__rimaste">
             {rimaste.map((voce) => (
-              <li key={voce.id}>
-                {voce.nome}
-                {voce.elementi && `: ${voce.elementi.map((e) => e.nome).join(', ')}`}
-              </li>
+              <li key={voce.id}>{voce.nome}</li>
             ))}
           </ul>
         </>

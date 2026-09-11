@@ -4,15 +4,8 @@
 // refresh della pagina.
 
 import type { Database, SqlJsStatic } from 'sql.js'
-import type {
-  Elemento,
-  IdCategoria,
-  IdReparto,
-  Lista,
-  Rotazione,
-  SintesiLista,
-  Voce,
-} from '../domain/tipi'
+import { eGruppoFisso } from '../domain/dati'
+import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
 import { MIGRAZIONE_ROTAZIONI, SCHEMA } from './schema'
 import type { Persistenza, Storage } from './tipi'
 
@@ -29,7 +22,9 @@ export async function apriStorageSqlite(
   db.run('PRAGMA foreign_keys = ON')
   if (rotazioniDaMigrare(db)) db.run(MIGRAZIONE_ROTAZIONI)
   db.run(SCHEMA)
-  return new StorageSqlite(db, persistenza)
+  const storage = new StorageSqlite(db, persistenza)
+  if (tabellaEsiste(db, 'elementi')) await storage.migraElementi()
+  return storage
 }
 
 /** Vero se il database porta ancora la tabella `rotazioni` a indici. */
@@ -37,6 +32,11 @@ function rotazioniDaMigrare(db: Database): boolean {
   return interroga(db, "PRAGMA table_info('rotazioni')").some(
     (colonna) => colonna.name === 'ultimo_indice',
   )
+}
+
+function tabellaEsiste(db: Database, nome: string): boolean {
+  return interroga(db, "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?", [nome])
+    .length > 0
 }
 
 export class StorageSqlite implements Storage {
@@ -78,9 +78,9 @@ export class StorageSqlite implements Storage {
   }
 
   /**
-   * Riscrive la lista da zero: le voci e gli elementi spariti dall'oggetto
-   * spariscono anche dal database. Salvando una lista `corrente` le altre
-   * correnti passano ad archiviate: ce n'è sempre una sola (doc/06).
+   * Riscrive la lista da zero: le voci sparite dall'oggetto spariscono anche
+   * dal database. Salvando una lista `corrente` le altre correnti passano ad
+   * archiviate: ce n'è sempre una sola (doc/06).
    */
   async salvaLista(lista: Lista): Promise<void> {
     this.inTransazione(() => {
@@ -112,12 +112,6 @@ export class StorageSqlite implements Storage {
             voce.alternative ? JSON.stringify(voce.alternative) : null,
           ],
         )
-        voce.elementi?.forEach((elemento, posizioneElemento) => {
-          this.db.run(
-            `INSERT INTO elementi (lista_id, voce_id, posizione, nome, comprato) VALUES (?, ?, ?, ?, ?)`,
-            [lista.id, voce.id, posizioneElemento, elemento.nome, elemento.comprato ? 1 : 0],
-          )
-        })
       })
     })
     await this.salvaSuDisco()
@@ -145,6 +139,41 @@ export class StorageSqlite implements Storage {
     await this.salvaSuDisco()
   }
 
+  /**
+   * Fino al 2026-09-11 frutta e verdura erano una voce sola ciascuna, coi tipi
+   * nella tabella `elementi`. Le liste salvate così si riscrivono con una voce
+   * per tipo, come le genera l'app adesso, spunte comprese; poi la tabella si
+   * butta. Tocca anche l'archivio, così i conteggi dell'elenco tornano.
+   */
+  async migraElementi(): Promise<void> {
+    const righe = interroga(
+      this.db,
+      'SELECT lista_id, voce_id, nome, comprato FROM elementi ORDER BY lista_id, voce_id, posizione',
+    )
+    for (const listaId of new Set(righe.map((riga) => riga.lista_id as string))) {
+      const lista = await this.leggiLista(listaId)
+      if (!lista) continue
+      const voci = lista.voci.flatMap((voce) => {
+        const tipi = righe.filter((riga) => riga.lista_id === listaId && riga.voce_id === voce.id)
+        if (tipi.length === 0) return [voce]
+        const gruppo = voce.nome.toLowerCase()
+        return tipi.map(
+          (riga, posizione): Voce => ({
+            id: `${voce.id}-${posizione + 1}`,
+            nome: riga.nome as string,
+            reparto: voce.reparto,
+            ...(eGruppoFisso(gruppo) ? { categoria: gruppo } : {}),
+            origine: voce.origine,
+            comprata: riga.comprato === 1,
+          }),
+        )
+      })
+      await this.salvaLista({ ...lista, voci })
+    }
+    this.db.run('DROP TABLE elementi')
+    await this.salvaSuDisco()
+  }
+
   /** Chiude il database e libera la memoria del WASM. */
   chiudi(): void {
     this.db.close()
@@ -165,37 +194,21 @@ export class StorageSqlite implements Storage {
   }
 
   private leggiVoci(listaId: string): Voce[] {
-    const elementi = new Map<string, Elemento[]>()
-    for (const riga of interroga(
-      this.db,
-      'SELECT voce_id, nome, comprato FROM elementi WHERE lista_id = ? ORDER BY posizione',
-      [listaId],
-    )) {
-      const voceId = riga.voce_id as string
-      const elemento = { nome: riga.nome as string, comprato: riga.comprato === 1 }
-      const gruppo = elementi.get(voceId)
-      if (gruppo) gruppo.push(elemento)
-      else elementi.set(voceId, [elemento])
-    }
-
     return interroga(
       this.db,
       `SELECT id, nome, reparto, categoria, origine, comprata, alternative
        FROM voci WHERE lista_id = ? ORDER BY posizione`,
       [listaId],
     ).map((riga) => {
-      const id = riga.id as string
       const voce: Voce = {
-        id,
+        id: riga.id as string,
         nome: riga.nome as string,
         reparto: riga.reparto as IdReparto,
         origine: riga.origine as Voce['origine'],
         comprata: riga.comprata === 1,
       }
-      if (riga.categoria !== null) voce.categoria = riga.categoria as IdCategoria
+      if (riga.categoria !== null) voce.categoria = riga.categoria as Voce['categoria']
       if (riga.alternative !== null) voce.alternative = JSON.parse(riga.alternative as string)
-      const suoiElementi = elementi.get(id)
-      if (suoiElementi) voce.elementi = suoiElementi
       return voce
     })
   }
