@@ -4,6 +4,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { describe, expect, it, vi } from 'vitest'
 import { StorageSupabase } from './supabase'
+import { ErroreRete } from './tipi'
 
 /** Il minimo di client che il realtime tocca: un canale per volta, comandato dal test. */
 function clientFinto() {
@@ -80,20 +81,42 @@ describe('quandoCambia', () => {
 })
 
 describe('salvaVoci', () => {
-  it('manda a salva_voci solo le voci toccate', async () => {
+  const voce = {
+    id: 'pesce-1',
+    nome: 'orata',
+    reparto: 'pescheria' as const,
+    origine: 'generata' as const,
+    comprata: true,
+  }
+  const quando = '2026-09-12T10:00:00.000Z'
+
+  it('manda a salva_voci solo le voci toccate, con l ora della modifica', async () => {
     const { storage, client } = clientFinto()
-    const voce = {
-      id: 'pesce-1',
-      nome: 'orata',
-      reparto: 'pescheria' as const,
-      origine: 'generata' as const,
-      comprata: true,
-    }
-    await storage.salvaVoci('lista-1', { voci: [voce], eliminate: ['verdura-1'] })
+    await storage.salvaVoci('lista-1', { voci: [voce], eliminate: ['verdura-1'] }, quando)
     expect(client.rpc).toHaveBeenCalledWith('salva_voci', {
       id_lista: 'lista-1',
       modificate: [voce],
       eliminate: ['verdura-1'],
+      quando,
     })
+  })
+
+  it('una richiesta rimasta senza risposta è un errore di rete', async () => {
+    const { storage, client } = clientFinto()
+    client.rpc.mockResolvedValueOnce({
+      error: { message: 'TypeError: Failed to fetch', code: '' },
+      status: 0,
+    } as never)
+    await expect(
+      storage.salvaVoci('lista-1', { voci: [voce], eliminate: [] }, quando),
+    ).rejects.toBeInstanceOf(ErroreRete)
+  })
+
+  it('un rifiuto del database resta com è', async () => {
+    const { storage, client } = clientFinto()
+    const rifiuto = { message: 'permission denied', code: '42501' }
+    client.rpc.mockResolvedValueOnce({ error: rifiuto, status: 401 } as never)
+    const esito = storage.salvaVoci('lista-1', { voci: [voce], eliminate: [] }, quando)
+    await expect(esito).rejects.toBe(rifiuto)
   })
 })

@@ -5,7 +5,9 @@
 //
 // I conflitti si risolvono *last-write-wins* per singola voce (doc/07): si
 // scrivono solo le voci toccate, quindi due persone che spuntano cose diverse
-// non si pestano i piedi, e sulla stessa voce vince l'ultima scrittura.
+// non si pestano i piedi, e sulla stessa voce vince la modifica più recente.
+// Da quando le scritture fatte senza rete aspettano in coda (Step 16), "più
+// recente" è l'ora della modifica, non l'ordine di arrivo al database.
 
 import type { Lista, Voce } from './tipi'
 
@@ -13,6 +15,28 @@ import type { Lista, Voce } from './tipi'
 export interface Modifiche {
   voci: Voce[]
   eliminate: string[]
+}
+
+/** Una modifica fatta su questo dispositivo, in coda verso il database (Step 16). */
+export interface Scrittura {
+  listaId: string
+  modifiche: Modifiche
+  /** L'ora della modifica, ISO: decide chi vince sulla stessa voce. */
+  quando: string
+}
+
+/**
+ * Le voci della lista con una scrittura ancora in coda: finché non è arrivata,
+ * rileggendo vale la versione di questo dispositivo (vedi `unisci`).
+ */
+export function vociInAttesa(coda: readonly Scrittura[], listaId: string): Set<string> {
+  const ids = new Set<string>()
+  for (const { listaId: lista, modifiche } of coda) {
+    if (lista !== listaId) continue
+    for (const voce of modifiche.voci) ids.add(voce.id)
+    for (const id of modifiche.eliminate) ids.add(id)
+  }
+  return ids
 }
 
 /**

@@ -75,5 +75,11 @@
 | 2026-09-09 | **Uova**: voce fissa senza quantità | deciso |
 | 2026-09-11 | Le voci **non si ripetono mai**: uova una voce sola; aggiungere a mano una voce già da prendere avvisa, una già presa torna da prendere | deciso |
 | 2026-09-09 | Si passa allo **sviluppo**: struttura del progetto e dati JSON | deciso |
-| 2026-09-11 | *Last-write-wins* per voce: ogni modifica scrive **solo le voci toccate**; l'"ultima" è l'ultima arrivata al database. Da rivedere con l'offline (Step 16) | deciso |
+| 2026-09-11 | ~~*Last-write-wins* per voce: ogni modifica scrive **solo le voci toccate**; l'"ultima" è l'ultima arrivata al database. Da rivedere con l'offline (Step 16)~~ | superata |
 | 2026-09-11 | Realtime come **campanello** sulla tabella `liste`: arriva l'avviso e la lista si rilegge. Le voci restano fuori dal canale, perché le cancellazioni viaggiano senza policy | deciso |
+| 2026-09-11 | *Last-write-wins* per voce sull'**ora della modifica** (orologio del dispositivo), non sull'ordine di arrivo: una coda offline svuotata tardi non copre modifiche più nuove | deciso |
+| 2026-09-11 | Una voce **eliminata non torna**, qualunque sia l'ora della modifica che arriva dopo | deciso |
+| 2026-09-11 | Lista e coda delle scritture offline in **`localStorage`**, non IndexedDB: sono piccole e con una lettura sincrona la lista è a schermo subito | deciso |
+| 2026-09-11 | Una scrittura **rifiutata dal database** (non per la rete) si scarta: riprovarla darebbe lo stesso errore e bloccherebbe la coda | deciso |
+| 2026-09-11 | La **generazione vuole la rete**; spunte, aggiunte, eliminazioni e sostituzioni no | deciso |
+| 2026-09-11 | Icona dell'app: il **cesto** delle icone, panna su terracotta | deciso |

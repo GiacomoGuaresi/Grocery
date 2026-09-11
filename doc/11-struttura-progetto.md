@@ -9,8 +9,10 @@ Grocery/
 │   ├── config.toml      config del Supabase locale: registrazione pubblica spenta
 │   └── migrations/      schema, funzioni e policy del database
 ├── index.html           entry point di Vite
+├── public/              icona.svg e le icone PWA generate da lì (npm run icone)
+├── pwa-assets.config.ts come generare le icone: tagli e sfondo terracotta
 ├── package.json         React + TypeScript + Vite + Vitest
-├── vite.config.ts       base: '/Grocery/' per GitHub Pages + config Vitest
+├── vite.config.ts       base: '/Grocery/' per GitHub Pages + PWA + config Vitest
 ├── tsconfig.json
 └── src/
     ├── main.tsx         monta React su #root
@@ -21,6 +23,9 @@ Grocery/
     │   ├── tipi.ts      l'interfaccia `Storage`
     │   ├── supabase.ts  implementazione su Supabase
     │   ├── accesso.ts   l'interfaccia `Accesso`: passphrase e sessione
+    │   ├── sincronizzatore.ts  la lista in pari tra schermo, dispositivo e database
+    │   ├── memoriaLocale.ts    lista e coda delle scritture sul dispositivo
+    │   ├── inMemoria.ts        database finto in memoria, per i test
     │   ├── contratto.ts i test dell'interfaccia
     │   └── index.ts     apertura del client, una volta sola
     └── ui/              componenti e schermate
@@ -142,7 +147,10 @@ riapplica a una lista (le toccate al loro posto, le nuove in fondo), come fa
 `salva_voci` sul database. `unisci()` mette insieme la lista riletta dal database con
 quella a schermo: per le voci con una scrittura ancora in volo vale la versione
 locale, per tutte le altre quella riletta; se nel frattempo è nata una lista nuova
-vale quella. `sincronia.test.ts` copre le tre funzioni, compresi i due casi del
+vale quella. Una `Scrittura` è una modifica in coda verso il database, con la
+lista a cui va e l'ora in cui è stata fatta; `vociInAttesa()` dice quali voci
+hanno ancora una scrittura in coda, ed è quello che `unisci()` protegge.
+`sincronia.test.ts` copre queste funzioni, compresi i due casi del
 *last-write-wins* per singola voce: spunte su voci diverse che si sommano e, sulla
 stessa voce, l'ultima che vince.
 
@@ -189,6 +197,36 @@ il lock sulla riga della lista, e questo mette in fila le scritture concorrenti.
 Non scrive su una lista che non è più la corrente: un dispositivo rimasto indietro
 non tocca l'archivio.
 
+Con l'offline (Step 16, migrazione `20260911200000_offline.sql`) `salvaVoci` riceve
+anche `quando`, l'ora della modifica sul dispositivo. `salva_voci` la scrive nella
+colonna `modificata_il` della voce e non tocca una voce già scritta da una modifica
+più recente (quelle scritte da `salva_lista` ne sono senza, e perdono contro
+qualunque modifica). Le voci eliminate lasciano il loro id nella tabella
+`voci_eliminate`, e da lì nessuna scrittura le ricrea. Una richiesta rimasta senza
+risposta — PostgREST la restituisce con stato 0 — diventa `ErroreRete`, l'errore di
+`tipi.ts` che dice "riprova quando torna la rete"; se il browser sa già di essere
+offline non si prova nemmeno, perché le letture ritenterebbero per qualche secondo.
+`quandoCambia` avvisa anche quando torna la rete (evento `online`).
+
+`sincronizzatore.ts` tiene la lista corrente in pari tra schermo, dispositivo e
+database, senza React così si prova nei test. All'apertura mostra subito la lista
+rimasta sul dispositivo, poi si mette in ascolto e rilegge. Ogni modifica va a
+schermo, in `memoriaLocale.ts` (`localStorage`: l'ultima lista e la coda delle
+scritture) e poi in coda verso il database; senza rete la coda aspetta e parte al
+primo avviso dello storage. Una scrittura che il database rifiuta per altri motivi
+si scarta, per non bloccare le altre. Tutto quello che parla col database passa da
+una sola fila, così le scritture arrivano in ordine e una rilettura parte dopo le
+scritture già avviate. L'istantanea che pubblica dice anche quante modifiche sono in
+coda e se l'ultimo tentativo è fallito per la rete.
+
+`inMemoria.ts` è un database finto con le stesse regole delle funzioni di Supabase,
+e `Collegamento` ci attacca un dispositivo con la sua rete da staccare a comando.
+`inMemoria.test.ts` gli fa passare il contratto di Storage, così è sicuro che si
+comporti come quello vero; `sincronizzatore.test.ts` ci prova il ciclo offline →
+online con più dispositivi: le modifiche che restano a schermo e sopravvivono alla
+chiusura, la coda che parte al ritorno della rete, la spunta vecchia che non vince
+su una più nuova, la voce eliminata che non torna, la lista generata altrove.
+
 Le policy (RLS) aprono le tre tabelle alla sola sessione autenticata, senza
 filtri per utente perché l'account è uno solo; al ruolo `anon` sono tolti anche i
 permessi su tabelle, vista e funzioni. In `supabase/config.toml` la registrazione
@@ -217,13 +255,15 @@ la lista (R7), l'archivio che elenca le liste
 passate ma non quella corrente, nell'ordine giusto e con i conteggi giusti, la
 lista archiviata riletta identica a com'era. Per `salvaVoci`: le voci non toccate
 che restano come sono, le spunte di due dispositivi su voci diverse che si sommano,
-l'ultima scrittura che vince sulla stessa voce, le nuove in fondo, l'archivio che
+la modifica più recente che vince sulla stessa voce anche quando arriva prima di
+una più vecchia, la voce eliminata che non torna, le nuove in fondo, l'archivio che
 non si tocca.
 
 `realtime.test.ts` prova `quandoCambia` e `salvaVoci` di Supabase su un client
 finto, come `accesso.test.ts`, quindi gira sempre: si ascolta la sola tabella
 `liste`, si avvisa a ogni cambio e a ogni connessione, ogni ascolto ha il suo canale
-e smettendo il canale si chiude.
+e smettendo il canale si chiude; `salvaVoci` manda l'ora della modifica, una
+richiesta senza risposta diventa `ErroreRete` e un rifiuto del database resta com'è.
 
 `supabase.test.ts` li esegue contro un Supabase vero e
 verifica le policy: senza sessione non si legge e non si scrive niente, e una spunta
@@ -244,20 +284,21 @@ zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemen
 toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
 stesso. Nessuna libreria di stili.
 
-La lista corrente arriva dallo storage: `useLista.ts` la legge all'apertura, mostra
-"Apro la lista…" finché non c'è e alla prima apertura salva una lista vuota, che
-da lì in poi è la lista corrente vera. Ogni modifica va prima nello stato React
-(l'interfaccia risponde subito) e poi in coda verso il database, con `salvaVoci` e
-le sole voci toccate, così i tocchi rapidi arrivano nell'ordine in cui sono stati
-fatti.
+La lista corrente arriva dal `Sincronizzatore` (vedi `src/storage`): `useLista.ts`
+lo apre, ne ascolta le istantanee e lo chiude. Si vede "Apro la lista…" solo alla
+prima apertura su un dispositivo; da lì in poi la lista è a schermo subito, quella
+rimasta sul dispositivo, e si aggiorna appena arriva quella del database. Quando il
+database non ha ancora una lista corrente gli si salva una lista vuota, che da lì in
+poi è la lista corrente vera. Ogni modifica va prima a schermo (l'interfaccia
+risponde subito) e poi in coda verso il database, con `salvaVoci` e le sole voci
+toccate, così i tocchi rapidi arrivano nell'ordine in cui sono stati fatti.
 
-Quando lo storage avvisa che la lista è cambiata altrove, `useLista` aspetta un
-attimo (una generazione arriva come una raffica di avvisi) e la rilegge. La
-rilettura passa dalla stessa coda delle scritture, quindi ritrova sul database le
-modifiche già partite. Per quelle non ancora scritte tiene la versione di qui (vedi
-`unisci()`): tiene il conto delle scritture in volo per ogni voce. Anche l'eco
-delle proprie scritture arriva come avviso, e rileggere la propria spunta non la fa
-tremare.
+Quando lo storage avvisa che la lista è cambiata altrove, il `Sincronizzatore`
+aspetta un attimo (una generazione arriva come una raffica di avvisi), manda
+quello che è rimasto in coda e rilegge. Per le voci con una scrittura ancora in
+coda tiene la versione di qui (vedi `unisci()`). Anche l'eco delle proprie scritture
+arriva come avviso, e rileggere la propria spunta non la fa tremare. Senza rete, in
+cima alla lista, una riga discreta lo dice e conta le modifiche che aspettano.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
 voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Frutta e

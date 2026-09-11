@@ -54,17 +54,25 @@ nessuna registrazione pubblica è abilitata.
 Requisito: funzionare **offline in lettura e in scrittura**, con sincronizzazione
 successiva.
 
-- **Shell dell'app** in cache (service worker) → si apre senza rete.
-- **Stato locale** persistito sul dispositivo (IndexedDB / localStorage) e usato come
-  sorgente per il rendering: la lista è sempre visibile.
-- **Scritture offline** (spunte, aggiunte) applicate subito in locale e messe in coda;
-  al ritorno della rete vengono inviate a Supabase.
+- **Shell dell'app** in cache (service worker di `vite-plugin-pwa`) → si apre senza
+  rete. Il service worker non tocca le chiamate a Supabase.
+- **Stato locale** persistito sul dispositivo in `localStorage` (l'ultima lista vista)
+  e usato come sorgente per il rendering: la lista è sempre visibile, anche aprendo
+  l'app senza rete. Solo la prima apertura su un dispositivo vuole la rete.
+- **Scritture offline** (spunte, aggiunte, eliminazioni) applicate subito in locale e
+  messe in coda, anche lei in `localStorage`; al ritorno della rete vengono inviate a
+  Supabase, nell'ordine in cui sono state fatte (Step 16).
 - **Realtime** quando c'è rete: le modifiche di un dispositivo compaiono sull'altro.
 - **Conflitti**: lo scenario reale è due persone nello stesso supermercato che
   spuntano cose diverse. Si applica *last-write-wins* per singola voce, che è
   sufficiente e non richiede merge complessi. In pratica ogni modifica scrive solo
-  le voci che ha toccato, e sulla stessa voce vince l'ultima scrittura arrivata al
-  database (Step 15).
+  le voci che ha toccato, e sulla stessa voce vince la **modifica più recente**:
+  ogni scrittura porta l'ora in cui è stata fatta sul dispositivo, così una coda
+  offline svuotata tardi non copre modifiche più nuove (Step 16). Si conta
+  sull'orologio dei telefoni, che è sincronizzato dalla rete.
+- **Eliminazioni**: una voce eliminata non torna, nemmeno per una modifica più
+  recente rimasta in coda sull'altro dispositivo.
+- **Generazione**: vuole la rete, perché parte dalle rotazioni salvate sul database.
 - **Come arriva il realtime**: Supabase avvisa quando la riga della lista corrente
   cambia, e l'app rilegge la lista. Dal canale non passa il contenuto delle voci.
 

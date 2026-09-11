@@ -69,6 +69,18 @@
   cursor: default;
 }
 
+/* Senza rete: una riga discreta in cima, non un allarme. La lista funziona
+   lo stesso, le modifiche partono quando torna. */
+.lista__rete {
+  margin: 0;
+  padding: 6px var(--spazio);
+  border-radius: var(--raggio);
+  background: var(--crema-scura);
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  text-align: center;
+}
+
 /* Caricamento dallo storage ed errore di apertura del database. */
 .lista__messaggio {
   margin: 0;

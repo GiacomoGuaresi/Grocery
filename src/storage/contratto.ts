@@ -41,6 +41,11 @@ export const lista: Lista = {
   ],
 }
 
+/** L'ora di una modifica fatta il giorno della spesa, nella forma di `toISOString()`. */
+export function alle(ora: string): string {
+  return `2026-09-12T${ora}:00.000Z`
+}
+
 /** `apriVuoto` dà uno storage senza niente dentro, uno nuovo a ogni test. */
 export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
   describe('lettura e scrittura della lista', () => {
@@ -110,7 +115,7 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       const spuntata = spuntaVoce(lista, 'pesce-1')
-      await storage.salvaVoci(lista.id, differenze(lista, spuntata))
+      await storage.salvaVoci(lista.id, differenze(lista, spuntata), alle('10:00'))
       expect(await storage.leggiListaCorrente()).toEqual(spuntata)
     })
 
@@ -118,29 +123,44 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       // Tutti e due partono dalla stessa lista, nessuno vede la spunta dell'altro.
-      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
-      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'verdura-1')))
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')), alle('10:00'))
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'verdura-1')), alle('10:01'))
       const riletta = await storage.leggiListaCorrente()
       expect(riletta?.voci.map((v) => v.comprata)).toEqual([true, true, true])
     })
 
-    it('sulla stessa voce vince l ultima scrittura', async () => {
+    it('sulla stessa voce vince la modifica più recente', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
-      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
-      await storage.salvaVoci(lista.id, {
-        voci: [{ ...lista.voci[1], comprata: false }],
-        eliminate: [],
-      })
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')), alle('10:00'))
+      await storage.salvaVoci(lista.id, { voci: [lista.voci[1]], eliminate: [] }, alle('10:05'))
+      expect((await storage.leggiListaCorrente())?.voci[1].comprata).toBe(false)
+    })
+
+    // Step 16: una modifica fatta senza rete arriva quando torna, magari dopo
+    // una più nuova fatta dall'altro dispositivo. Non deve coprirla.
+    it('una modifica più vecchia arrivata dopo non copre quella più recente', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')), alle('10:05'))
+      await storage.salvaVoci(lista.id, { voci: [lista.voci[1]], eliminate: [] }, alle('10:00'))
+      expect((await storage.leggiListaCorrente())?.voci[1].comprata).toBe(true)
+    })
+
+    it('una voce eliminata non torna per una modifica rimasta indietro', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] }, alle('10:00'))
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')), alle('10:05'))
       const riletta = await storage.leggiListaCorrente()
-      expect(riletta?.voci[1].comprata).toBe(false)
+      expect(riletta?.voci.map((v) => v.id)).toEqual(['verdura-1', 'manuale-1'])
     })
 
     it('le voci nuove vanno in fondo, le tolte spariscono', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       const nuova: Voce = { id: 'manuale-2', nome: 'sale', reparto: 'dispensa', origine: 'manuale', comprata: false }
-      await storage.salvaVoci(lista.id, { voci: [nuova], eliminate: ['verdura-1'] })
+      await storage.salvaVoci(lista.id, { voci: [nuova], eliminate: ['verdura-1'] }, alle('10:00'))
       const riletta = await storage.leggiListaCorrente()
       expect(riletta?.voci.map((v) => v.id)).toEqual(['pesce-1', 'manuale-1', 'manuale-2'])
       expect(riletta?.voci[2]).toEqual(nuova)
@@ -150,7 +170,7 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       await storage.salvaLista({ ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' })
-      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] })
+      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] }, alle('10:00'))
       expect((await storage.leggiLista(lista.id))?.voci).toHaveLength(lista.voci.length)
     })
   })

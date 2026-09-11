@@ -198,16 +198,29 @@ Da qui in poi l'app diventa condivisa.
 
 ## Step 16 — PWA e offline
 
-- [ ] `vite-plugin-pwa`, manifest e icone
-- [ ] Installabile sul telefono
-- [ ] Shell in cache: l'app si apre senza rete
-- [ ] Scritture offline messe in coda e sincronizzate al ritorno della connessione.
-      Oggi una scrittura fallita per mancanza di rete resta a schermo solo fino
-      alla rilettura successiva, poi vince il database
-- [ ] Rivedere il *last-write-wins*: oggi l'"ultima" scrittura è l'ultima arrivata
-      al database, e una coda offline svuotata tardi vincerebbe su modifiche più
-      recenti. Probabilmente serve l'ora della modifica su ogni voce
-- [ ] Test del ciclo offline → online
+- [x] `vite-plugin-pwa`, manifest e icone. Le icone escono da `public/icona.svg`
+      con `npm run icone` e sono versionate in `public/`
+- [ ] Installabile sul telefono — manifest, icone e service worker ci sono, ma
+      **non ancora provato su un telefono vero**
+- [x] Shell in cache: il service worker della build mette in precache HTML, JS,
+      CSS e icone. Verificato sull'output della build, non ancora a rete staccata
+      sul telefono
+- [x] La lista resta sul dispositivo (`localStorage`): l'app si apre e la mostra
+      anche senza rete. Solo la primissima apertura su un dispositivo vuole la rete
+- [x] Scritture offline messe in coda, anche lei in `localStorage`: sopravvive
+      alla chiusura dell'app e parte al ritorno della rete (evento `online`,
+      riconnessione del realtime, app in primo piano). In cima alla lista una riga
+      dice che si è senza rete e quante modifiche aspettano
+- [x] *Last-write-wins* rivisto: ogni scrittura porta l'ora della modifica
+      (`quando`), e sulla voce resta in `modificata_il`; una modifica più vecchia
+      arrivata tardi non copre una più nuova. Una voce eliminata non torna più
+      (`voci_eliminate`). Migrazione `20260911200000_offline.sql` — **da applicare
+      al progetto con `supabase db push`**: finché non c'è, `salva_voci` rifiuta le
+      chiamate e le modifiche non arrivano al database
+- [x] Test del ciclo offline → online in `sincronizzatore.test.ts`, su un database
+      in memoria che passa lo stesso contratto di Supabase. Il contratto nuovo
+      contro il Supabase locale non è ancora girato (vuole Docker)
+- La generazione vuole la rete: legge le rotazioni dal database
 
 ## Step 17 — Pubblicazione
 

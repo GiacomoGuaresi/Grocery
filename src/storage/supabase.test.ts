@@ -88,7 +88,11 @@ describe.skipIf(!url || !chiave || !segreta)('StorageSupabase', () => {
         new StorageSupabase(createClient(url, chiave, SENZA_SESSIONE_SALVATA)),
       )
 
-      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')))
+      await storage.salvaVoci(
+        lista.id,
+        differenze(lista, spuntaVoce(lista, 'pesce-1')),
+        new Date().toISOString(),
+      )
       await vi.waitFor(() => expect(dentro.cambi()).toBeGreaterThan(0), { timeout: 5000 })
       // L'evento è partito: se chi è senza sessione dovesse riceverlo, ormai l'avrebbe.
       await new Promise((pronto) => setTimeout(pronto, 1000))

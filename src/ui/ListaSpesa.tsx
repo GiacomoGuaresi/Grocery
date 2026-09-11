@@ -19,17 +19,19 @@ import './ListaSpesa.css'
  * lista la tiene App (useLista), perché serve anche a "Genera lista": arriva
  * dallo storage e ogni modifica ci torna, così resta anche dopo un refresh.
  */
-export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
+export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: ListaPersistita) {
   if (stato.fase === 'caricamento') return <Caricamento />
   if (stato.fase === 'errore') return <Errore />
 
   const { lista } = stato
   const aggiungi = (nome: string) => modifica((corrente) => aggiungiVoce(corrente, nome))
   const giaPresente = (nome: string) => voceGiaPresente(lista, nome)
+  const rete = senzaRete && <SenzaRete inAttesa={inAttesa} />
 
   if (lista.voci.length === 0) {
     return (
       <div className="lista">
+        {rete}
         <ListaVuota onGenera={genera} />
         <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
       </div>
@@ -60,6 +62,7 @@ export function ListaSpesa({ stato, modifica, genera }: ListaPersistita) {
 
   return (
     <div className="lista">
+      {rete}
       {attive.length > 0 ? (
         attive.map((gruppo) => (
           <GruppoReparto
@@ -99,7 +102,25 @@ function Caricamento() {
 function Errore() {
   return (
     <p className="lista__messaggio" role="alert">
-      Non riesco ad aprire la lista salvata su questo dispositivo.
+      Non riesco ad aprire la lista. La prima volta, su questo dispositivo, serve la rete.
+    </p>
+  )
+}
+
+/**
+ * Senza rete la lista funziona lo stesso (Step 16): lo si dice in una riga,
+ * con quante modifiche aspettano di partire.
+ */
+function SenzaRete({ inAttesa }: { inAttesa: number }) {
+  const coda =
+    inAttesa === 0
+      ? 'La lista è quella salvata qui.'
+      : inAttesa === 1
+        ? 'Una modifica parte appena torna.'
+        : `${inAttesa} modifiche partono appena torna.`
+  return (
+    <p className="lista__rete" role="status">
+      Senza rete. {coda}
     </p>
   )
 }

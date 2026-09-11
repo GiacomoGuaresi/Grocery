@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { aggiungiVoce } from './aggiunta'
 import { eliminaVoce, rinominaVoce } from './modifica'
-import { applicaModifiche, differenze, nessunaModifica, unisci } from './sincronia'
+import {
+  applicaModifiche,
+  differenze,
+  nessunaModifica,
+  unisci,
+  vociInAttesa,
+  type Scrittura,
+} from './sincronia'
 import { despuntaVoce, spuntaVoce } from './spunta'
 import type { Lista } from './tipi'
 
@@ -72,6 +79,23 @@ describe('applicaModifiche', () => {
       'verdura-1',
       'manuale-1',
     ])
+  })
+})
+
+describe('vociInAttesa', () => {
+  const quando = '2026-09-12T10:00:00.000Z'
+
+  it('raccoglie le voci toccate e tolte dalle scritture in coda per quella lista', () => {
+    const coda: Scrittura[] = [
+      { listaId: 'lista-1', modifiche: differenze(lista, spuntaVoce(lista, 'pesce-1')), quando },
+      { listaId: 'lista-1', modifiche: { voci: [], eliminate: ['verdura-1'] }, quando },
+      { listaId: 'lista-0', modifiche: { voci: [], eliminate: ['manuale-1'] }, quando },
+    ]
+    expect(vociInAttesa(coda, 'lista-1')).toEqual(new Set(['pesce-1', 'verdura-1']))
+  })
+
+  it('con la coda vuota non c e niente in attesa', () => {
+    expect(vociInAttesa([], 'lista-1').size).toBe(0)
   })
 })
 

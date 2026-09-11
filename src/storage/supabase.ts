@@ -3,11 +3,11 @@
 // composte da funzioni Postgres, perché il client non apre transazioni.
 
 import { createBrowserClient } from '@supabase/ssr'
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Modifiche } from '../domain/sincronia'
 import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
 import { AccessoSupabase } from './accesso'
-import type { Storage } from './tipi'
+import { ErroreRete, type Storage } from './tipi'
 
 /**
  * Storage e accesso sullo stesso client, così le letture viaggiano con la
@@ -55,12 +55,13 @@ export class StorageSupabase implements Storage {
 
   /** Dalla vista `archivio`, che conta le voci senza tirarle su (F11). */
   async leggiArchivio(): Promise<SintesiLista[]> {
-    const { data, error } = await this.client
+    senzaRete()
+    const { data, error, status } = await this.client
       .from('archivio')
       .select('id, creata_il, quante_voci, quante_comprate')
       .order('creata_il', { ascending: false })
-    if (error) throw error
-    return data.map((riga) => ({
+    controlla(error, status)
+    return data!.map((riga) => ({
       id: riga.id,
       creataIl: dataIso(riga.creata_il),
       quanteVoci: riga.quante_voci,
@@ -70,18 +71,24 @@ export class StorageSupabase implements Storage {
 
   /** Tutto in una transazione, dentro `salva_lista`: vedi la migrazione. */
   async salvaLista(lista: Lista): Promise<void> {
-    const { error } = await this.client.rpc('salva_lista', { lista })
-    if (error) throw error
+    senzaRete()
+    const { error, status } = await this.client.rpc('salva_lista', { lista })
+    controlla(error, status)
   }
 
-  /** In `salva_voci`: si scrivono solo le voci toccate, e vince l'ultima scrittura. */
-  async salvaVoci(listaId: string, { voci, eliminate }: Modifiche): Promise<void> {
-    const { error } = await this.client.rpc('salva_voci', {
+  /**
+   * In `salva_voci`: si scrivono solo le voci toccate, e sulla stessa voce
+   * vince la modifica più recente; le eliminate non tornano.
+   */
+  async salvaVoci(listaId: string, { voci, eliminate }: Modifiche, quando: string): Promise<void> {
+    senzaRete()
+    const { error, status } = await this.client.rpc('salva_voci', {
       id_lista: listaId,
       modificate: voci,
       eliminate,
+      quando,
     })
-    if (error) throw error
+    controlla(error, status)
   }
 
   /**
@@ -92,8 +99,9 @@ export class StorageSupabase implements Storage {
    * cancellate, che Postgres manderebbe senza guardare le policy.
    *
    * Il realtime non ripete quello che si è perso: si avvisa anche a ogni
-   * (ri)connessione del canale e quando l'app torna in primo piano, perché il
-   * telefono in tasca chiude il socket senza dirlo a nessuno.
+   * (ri)connessione del canale, quando l'app torna in primo piano e quando
+   * torna la rete, perché il telefono in tasca chiude il socket senza dirlo a
+   * nessuno.
    */
   quandoCambia(avvisa: () => void): () => void {
     const canale = this.client
@@ -108,11 +116,17 @@ export class StorageSupabase implements Storage {
     const tornando = () => {
       if (document.visibilityState === 'visible') avvisa()
     }
-    const conDocumento = typeof document !== 'undefined'
-    if (conDocumento) document.addEventListener('visibilitychange', tornando)
+    const nelBrowser = typeof window !== 'undefined'
+    if (nelBrowser) {
+      document.addEventListener('visibilitychange', tornando)
+      window.addEventListener('online', avvisa)
+    }
 
     return () => {
-      if (conDocumento) document.removeEventListener('visibilitychange', tornando)
+      if (nelBrowser) {
+        document.removeEventListener('visibilitychange', tornando)
+        window.removeEventListener('online', avvisa)
+      }
       void this.client.removeChannel(canale)
     }
   }
@@ -120,28 +134,31 @@ export class StorageSupabase implements Storage {
   private static canali = 0
 
   async leggiRotazioni(): Promise<Rotazione[]> {
-    const { data, error } = await this.client
+    senzaRete()
+    const { data, error, status } = await this.client
       .from('rotazioni')
       .select('categoria, ultimi')
       .order('categoria')
-    if (error) throw error
+    controlla(error, status)
     return data as Rotazione[]
   }
 
   async salvaRotazioni(rotazioni: Rotazione[]): Promise<void> {
-    const { error } = await this.client.rpc('salva_rotazioni', { rotazioni })
-    if (error) throw error
+    senzaRete()
+    const { error, status } = await this.client.rpc('salva_rotazioni', { rotazioni })
+    controlla(error, status)
   }
 
   /** La lista con la colonna uguale al valore, voci comprese; `null` se non c'è. */
   private async lista(colonna: 'id' | 'stato', valore: string): Promise<Lista | null> {
-    const { data, error } = await this.client
+    senzaRete()
+    const { data, error, status } = await this.client
       .from('liste')
       .select(COLONNE_LISTA)
       .eq(colonna, valore)
       .order('posizione', { referencedTable: 'voci' })
       .maybeSingle()
-    if (error) throw error
+    controlla(error, status)
     if (!data) return null
 
     const riga = data as RigaLista
@@ -152,6 +169,25 @@ export class StorageSupabase implements Storage {
       voci: riga.voci.map(daRigaVoce),
     }
   }
+}
+
+/**
+ * Se il browser sa già di essere senza rete non si prova nemmeno: le letture
+ * di PostgREST, prima di arrendersi, ritentano per qualche secondo. Il
+ * contrario non vale: `onLine` vero non garantisce che la rete ci sia.
+ */
+function senzaRete(): void {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) throw new ErroreRete()
+}
+
+/**
+ * Gli errori del database passano come sono. Una richiesta che non ha avuto
+ * risposta — PostgREST la restituisce con stato 0 — diventa `ErroreRete`.
+ */
+function controlla(error: PostgrestError | null, status: number): void {
+  if (!error) return
+  if (status === 0) throw new ErroreRete(error)
+  throw error
 }
 
 /** I campi opzionali assenti restano assenti, non `null`. */
