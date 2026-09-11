@@ -8,6 +8,18 @@ ampi, testo leggibile, poche schermate, nessun passaggio inutile.
 - **Tema chiaro** soltanto (nessun tema scuro).
 - **Colori caldi**, **terracotta** su fondo **panna chiara**, con un leggero tema
   **culinario**.
+- **Intestazione terracotta** piena con le **scritte bianche**; la barra di stato
+  del telefono (theme-color) è dello stesso terracotta. Nell'intestazione solo
+  il **cesto dell'icona dell'app** e il titolo **Grocery**, nessun sottotitolo.
+- **Fondo della schermata panna** (`--crema`), **sidebar bianca**.
+- **Sfondo a tema cucina**: sul panna, poche icone grandi e bianche, sparse e
+  ruotate, ripetute senza giunture (stile doodle di WhatsApp). Sono le icone
+  dell'app stessa, mai un set esterno; lo sfondo si rigenera con
+  `npm run sfondo` (scripts/genera-sfondo.ts).
+- **Anche da PC, a tutto schermo**: l'app occupa l'intera finestra, senza bordi
+  né fondo diverso ai lati; l'intestazione va da bordo a bordo. Solo il
+  contenuto resta centrato, largo al massimo 720px, per non allungare troppo
+  le righe.
 - Lingua: **solo italiano**.
 - **Scala 0.8**: testi, spazi e tocchi sono ridotti all'80% della prima versione,
   che sul telefono era troppo grande. I campi di testo restano a 16px, altrimenti
@@ -20,7 +32,9 @@ ampi, testo leggibile, poche schermate, nessun passaggio inutile.
 
 ## Navigazione
 Un **menu laterale a scomparsa**, aperto dal bottone ☰ nell'intestazione, contiene
-tutte le sezioni e le azioni:
+tutte le sezioni e le azioni. **Da desktop** (finestra larga almeno 1024px) il menu
+è **sempre aperto**: una colonna fissa a sinistra sotto l'intestazione, senza ☰ e
+senza X.
 - **Lista**
 - **Piano**
 - **Archivio**
@@ -69,7 +83,9 @@ volta inserita, non viene più richiesta sul dispositivo.
   **Fuori stagione**. Nessuna voce "Frutta" o "Verdura" che li raggruppa.
 - **Aggiunta rapida** sempre raggiungibile (serve anche mentre si è al supermercato):
   campo di testo con **autocompletamento case-insensitive**; se il prodotto è nel
-  catalogo eredita il reparto, altrimenti finisce sotto **"Altro"**.
+  catalogo eredita il reparto, altrimenti finisce sotto **"Altro"**. Sta **sempre in
+  fondo allo schermo**, anche con la lista corta, in una **card galleggiante** (bordo,
+  angoli arrotondati, ombra) staccata dal bordo, sopra lo sfondo a icone.
 
 ### 3. Genera lista
 Azione per generare il nuovo ciclo di due settimane. Da confermare, perché archivia

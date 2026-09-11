@@ -1,13 +1,20 @@
 /* Barra di aggiunta rapida, incollata in fondo allo schermo: si raggiunge col
    pollice mentre si spinge il carrello. I suggerimenti crescono verso l'alto,
-   sopra il campo, per non finire sotto la tastiera del telefono. */
+   sopra il campo, per non finire sotto la tastiera del telefono.
+   È una card staccata dal bordo, con la sua ombra: sopra lo sfondo a icone
+   si legge come un pannello, non come un pezzo di fondo tagliato. */
 .aggiungi {
   position: sticky;
-  bottom: 0;
+  bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
   z-index: 1;
-  margin-top: 19px;
-  padding-bottom: env(safe-area-inset-bottom);
+  /* In fondo alla colonna anche con la lista corta: lo stacco dalle voci lo
+     dà già il gap di .lista. */
+  margin-top: auto;
+  padding: 6px;
+  border: 1px solid var(--bordo);
+  border-radius: calc(var(--raggio) + 4px);
   background: var(--panna);
+  box-shadow: 0 4px 16px rgb(59 44 38 / 0.1);
 }
 
 .aggiungi__proposte {
@@ -54,8 +61,6 @@
 .aggiungi__riga {
   display: flex;
   gap: 6px;
-  padding: 6px 0 10px;
-  border-top: 1px solid var(--bordo);
 }
 
 .aggiungi__campo {

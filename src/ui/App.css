@@ -1,18 +1,20 @@
 /* Layout mobile-first: header fisso in alto, contenuto scorrevole sotto.
-   Su schermi larghi la colonna resta stretta, come sul telefono. */
+   L'app occupa sempre tutta la finestra, anche da PC: niente bordi né fondo
+   diverso ai lati. Solo il contenuto resta centrato e largo al massimo quanto
+   la colonna, così le righe non si allungano da un lato all'altro dello schermo. */
 .app {
-  --colonna: 448px;
+  --colonna: 720px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  max-width: var(--colonna);
-  margin: 0 auto;
-  background: var(--panna);
-  border-inline: 1px solid var(--bordo);
+  /* Poche icone grandi di cucina, bianche sul panna, ripetute senza giunture:
+     generate da scripts/genera-sfondo.ts con le icone dell'app. */
+  background: var(--crema) url('./sfondo-cucina.svg') 0 0 / 480px 480px repeat;
 }
 
-/* L'intestazione resta in alto: a sinistra il bottone che apre il menu. */
+/* L'intestazione resta in alto: a sinistra il bottone che apre il menu.
+   Terracotta pieno con le scritte bianche. */
 .app__intestazione {
   position: sticky;
   top: 0;
@@ -21,15 +23,23 @@
   align-items: center;
   gap: 4px;
   padding: env(safe-area-inset-top) var(--spazio) 0 4px;
-  background: var(--crema-scura);
-  border-bottom: 1px solid var(--bordo);
+  background: var(--terracotta);
+  color: #fff;
+  border-bottom: 1px solid var(--terracotta-scura);
 }
 
+/* Il logo è lo stesso cesto della favicon, in bianco come il titolo. */
 .app__titoli {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   min-width: 0;
+}
+
+.app__logo {
+  flex: none;
+  width: 22px;
+  height: 22px;
 }
 
 .app__titolo {
@@ -39,21 +49,15 @@
   letter-spacing: 0.01em;
 }
 
-.app__sottotitolo {
-  margin: 0;
-  overflow: hidden;
-  font-size: var(--testo-piccolo);
-  color: var(--inchiostro-tenue);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* Colonna flessibile: le schermate possono allungarsi fino al fondo (la lista
    vuota spinge giù la barra di aggiunta anche quando c'è poco contenuto). */
 .app__contenuto {
   flex: 1;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: var(--colonna);
+  margin-inline: auto;
   padding: var(--spazio);
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
 }
@@ -69,11 +73,36 @@
   border: none;
   border-radius: var(--raggio);
   background: none;
-  color: var(--inchiostro);
+  color: inherit;
   font-size: 22px;
   cursor: pointer;
 }
 
 .app__menu-apri:active {
-  background: var(--bordo);
+  background: var(--terracotta-scura);
+}
+
+/* Da desktop il menu è sempre aperto: una colonna a sinistra sotto
+   l'intestazione, che resta da bordo a bordo. Il bottone ☰ non serve più.
+   La soglia è la stessa di MenuLaterale.tsx. */
+@media (min-width: 1024px) {
+  .app {
+    display: grid;
+    grid-template-columns: 256px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+  }
+
+  .app__intestazione {
+    grid-column: 1 / -1;
+    min-height: var(--tocco);
+    padding-left: var(--spazio);
+  }
+
+  .app__menu-apri {
+    display: none;
+  }
+
+  .app__contenuto {
+    grid-column: 2;
+  }
 }

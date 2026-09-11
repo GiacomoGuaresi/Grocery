@@ -15,11 +15,11 @@ import { useLista } from './useLista'
 
 /** Le sezioni raggiungibili dal menu laterale (doc/08-ui-ux.md). */
 const sezioni = [
-  { id: 'lista', etichetta: 'Lista', sottotitolo: 'Lista della spesa', icona: 'carrello' },
-  { id: 'piano', etichetta: 'Piano', sottotitolo: 'Piano settimanale', icona: 'calendario' },
-  { id: 'archivio', etichetta: 'Archivio', sottotitolo: 'Spese passate', icona: 'archivio' },
-  { id: 'frutta', etichetta: 'Frutta', sottotitolo: 'Frutta di stagione', icona: 'mela' },
-  { id: 'verdura', etichetta: 'Verdura', sottotitolo: 'Verdura di stagione', icona: 'carota' },
+  { id: 'lista', etichetta: 'Lista', icona: 'carrello' },
+  { id: 'piano', etichetta: 'Piano', icona: 'calendario' },
+  { id: 'archivio', etichetta: 'Archivio', icona: 'archivio' },
+  { id: 'frutta', etichetta: 'Frutta', icona: 'mela' },
+  { id: 'verdura', etichetta: 'Verdura', icona: 'carota' },
 ] as const
 
 /**
@@ -27,7 +27,7 @@ const sezioni = [
  * fatta la scelta (o annullata), riporta alla lista.
  */
 const azioni = [
-  { id: 'genera', etichetta: 'Genera lista', sottotitolo: 'Nuova lista', icona: 'scintille' },
+  { id: 'genera', etichetta: 'Genera lista', icona: 'scintille' },
 ] as const
 
 /**
@@ -37,7 +37,6 @@ const azioni = [
 const installazione = {
   id: 'installa',
   etichetta: "Installa l'app",
-  sottotitolo: "Installa l'app",
   icona: 'scarica',
 } as const
 
@@ -53,8 +52,6 @@ export function App() {
   const lista = useLista()
   const statoInstallazione = useInstallazione()
 
-  const corrente =
-    [...sezioni, ...azioni, installazione].find((s) => s.id === schermata) ?? sezioni[0]
   const chiudiMenu = useCallback(() => setMenuAperto(false), [])
 
   const vai = (id: IdSchermata) => {
@@ -80,8 +77,8 @@ export function App() {
           <Icona nome="menu" />
         </button>
         <div className="app__titoli">
+          <Icona nome="cesto" className="app__logo" />
           <h1 className="app__titolo">Grocery</h1>
-          <p className="app__sottotitolo">{corrente.sottotitolo}</p>
         </div>
       </header>
       <MenuLaterale

@@ -37,6 +37,13 @@
   box-sizing: border-box;
 }
 
+/* L'attributo hidden nasconde sempre, anche gli elementi a cui il loro CSS dà
+   un display (flex, grid...), che altrimenti vincerebbe e li lascerebbe
+   visibili: così si ripiega "Già presi". */
+[hidden] {
+  display: none !important;
+}
+
 html,
 body {
   margin: 0;

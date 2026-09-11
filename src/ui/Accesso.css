@@ -1,16 +1,13 @@
-/* La porta d'ingresso: solo la passphrase, al centro della stessa colonna
-   dell'app. */
+/* La porta d'ingresso: solo la passphrase, al centro della finestra. Come
+   l'app, occupa tutto lo schermo senza bordi ai lati. */
 .accesso {
   display: grid;
   place-items: center;
   min-height: 100vh;
   min-height: 100dvh;
-  max-width: 448px;
-  margin: 0 auto;
   padding: var(--spazio);
   padding-top: calc(var(--spazio) + env(safe-area-inset-top));
-  background: var(--panna);
-  border-inline: 1px solid var(--bordo);
+  background: var(--crema);
 }
 
 .accesso__modulo {

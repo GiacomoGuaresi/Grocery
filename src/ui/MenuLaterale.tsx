@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { Icona, type NomeIcona } from './Icona'
 import './MenuLaterale.css'
 
+/** Da questa larghezza il menu è sempre aperto: la stessa soglia dei CSS. */
+const SEMPRE_APERTO = '(min-width: 1024px)'
+
 export interface VoceMenu<Id extends string> {
   id: Id
   etichetta: string
@@ -37,6 +40,17 @@ export function MenuLaterale<Id extends string>({
   onChiudi,
 }: Props<Id>) {
   const pannello = useRef<HTMLElement>(null)
+
+  // Da desktop il menu è sempre visibile (MenuLaterale.css): se la finestra si
+  // allarga col menu aperto, lo si chiude, così la pagina torna a scorrere.
+  useEffect(() => {
+    const desktop = window.matchMedia(SEMPRE_APERTO)
+    const chiudi = () => {
+      if (desktop.matches) onChiudi()
+    }
+    desktop.addEventListener('change', chiudi)
+    return () => desktop.removeEventListener('change', chiudi)
+  }, [onChiudi])
 
   useEffect(() => {
     if (!aperto) return

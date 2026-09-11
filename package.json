@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icone": "pwa-assets-generator"
+    "icone": "pwa-assets-generator",
+    "sfondo": "vite-node scripts/genera-sfondo.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

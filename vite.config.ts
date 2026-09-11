@@ -22,7 +22,7 @@ export default defineConfig({
         lang: 'it',
         display: 'standalone',
         // Come l'intestazione e lo sfondo dell'app (tema.css).
-        theme_color: '#f3e4d6',
+        theme_color: '#b05a3c',
         background_color: '#fbf4ec',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },

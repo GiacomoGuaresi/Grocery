@@ -333,5 +333,5 @@ di righe con la striscia dei dodici mesi di ogni tipo, col bordo attorno ai mesi
 periodo; in testa le iniziali dei mesi, evidenziata quella di adesso. La scelta non
 si salva: riaprendo la pagina si riparte dalla stagione di adesso.
 
-Il layout è una colonna larga al massimo 448px, centrata: sul telefono occupa tutto,
-sul desktop resta stretta come sul telefono.
+Il layout occupa sempre tutta la finestra, senza bordi ai lati: l'intestazione va da
+bordo a bordo, il contenuto è centrato e largo al massimo 720px (`--colonna`).
