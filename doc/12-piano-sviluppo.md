@@ -138,29 +138,38 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
       quello di tutto l'anno a parte
 - [x] Nelle iniziali dei mesi è evidenziato solo il mese corrente
 
-## Step 13 — Supabase
+## Step 13 — Supabase ✅
 
 Da qui in poi l'app diventa condivisa.
 
 - [x] Schema equivalente a quello SQLite, come migrazione in `supabase/migrations`
 - [x] Progetto Supabase creato (*GiacomoGuaresi's Project Grocery*, ref
       `fvsohjlrulwabvfvcfxo`) e migrazione applicata con `supabase db push`
-- [ ] `supabase login` + `supabase link`, per lavorare sul progetto dalla CLI senza
+- [x] `supabase login` + `supabase link`, per lavorare sul progetto dalla CLI senza
       connection string
-- [ ] Registrazione pubblica spenta anche sul progetto (dashboard → Authentication)
 - [x] Seconda implementazione dell'interfaccia `Storage`
-- [x] Stessi test di contratto per le due implementazioni (quelli di Supabase girano
-      contro il Supabase locale)
+- [x] Stessi test di contratto per le due implementazioni. Finora eseguiti solo su
+      SQLite: `supabase.test.ts` gira contro il Supabase locale, che vuole Docker
 - [x] Selezione dell'implementazione per ambiente (dev → SQLite, prod → Supabase;
       `VITE_STORAGE` la forza)
-- [x] Policy: lettura e scrittura solo per la sessione autenticata
-- [x] Registrazione pubblica disattivata in `supabase/config.toml`
+- [x] Policy: lettura e scrittura solo per la sessione autenticata. Verificate sul
+      progetto: senza sessione tabelle, vista e funzioni rispondono "permission denied"
+- [x] Registrazione pubblica disattivata in `supabase/config.toml`, che vale solo per
+      il Supabase locale. **Sul progetto è ancora aperta**: rimandata allo Step 14
 
 ## Step 14 — Accesso con passphrase
 
 - [ ] Schermata con il solo campo passphrase
 - [ ] Sessione conservata nei cookie: non viene richiesta a ogni apertura
-- [ ] Nessuna registrazione pubblica abilitata
+- [ ] Nessuna registrazione pubblica abilitata — **buco di sicurezza aperto**: sul
+      progetto Supabase le registrazioni sono ancora attive. Con la chiave
+      publishable, che è pubblica, chiunque può crearsi un account, diventare
+      `authenticated` e leggere, modificare e cancellare tutto, perché le policy non
+      filtrano per utente. Da spegnere in dashboard → Authentication → Sign In /
+      Providers → *Allow new users to sign up* (il 2026-09-11 il salvataggio dalla
+      dashboard dava "Failed to fetch"; in alternativa si fa con la Management API,
+      `disable_signup: true`)
+- [ ] Creazione dell'unico utente dalla dashboard (Authentication → Users → Add user)
 
 ## Step 15 — Realtime
 
@@ -178,6 +187,9 @@ Da qui in poi l'app diventa condivisa.
 
 ## Step 17 — Pubblicazione
 
+- [ ] **Prima di pubblicare**: verificare che le registrazioni pubbliche sul progetto
+      Supabase siano spente (Step 14). Con il sito online la chiave publishable
+      circola, e con le registrazioni aperte i dati sono di chiunque
 - [ ] Workflow GitHub Actions: build e deploy su Pages
 - [ ] Repository pubblicato
 - [ ] README con qualche screenshot
