@@ -48,8 +48,12 @@
   white-space: nowrap;
 }
 
+/* Colonna flessibile: le schermate possono allungarsi fino al fondo (la lista
+   vuota spinge giù la barra di aggiunta anche quando c'è poco contenuto). */
 .app__contenuto {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: var(--spazio);
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
 }

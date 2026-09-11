@@ -1,6 +1,7 @@
 /* Schermata principale: i gruppi per reparto uno sotto l'altro, oppure lo
    stato vuoto quando non c'è nessuna lista. */
 .lista {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 19px;
@@ -14,13 +15,15 @@
   text-align: center;
 }
 
+/* Occupa tutto lo spazio libero: resta centrato e la barra di aggiunta finisce
+   in fondo alla finestra anche se la sticky non ha niente da scorrere. */
 .lista-vuota {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 60vh;
   padding: var(--spazio);
   text-align: center;
 }
