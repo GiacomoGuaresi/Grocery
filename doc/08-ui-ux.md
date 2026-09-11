@@ -43,11 +43,16 @@ volta inserita, non viene più richiesta sul dispositivo.
   attiva. Si spunta **esclusivamente dalla checkbox**: il tap sul testo non spunta.
 - Nelle voci manuali sotto **"Altro"** (senza categoria) il tap sul testo rende il
   nome **modificabile nella riga stessa**: Invio o tap fuori salvano, Esc annulla.
+  Una **matita** semitrasparente accanto al nome dice che si può correggere.
+- Nelle voci con alternative (frutta, verdura, carne, pesce e ogni altra categoria
+  con più tipologie) il tap sul testo **apre subito la select** delle alternative,
+  senza passare dal popup. Una freccina accanto al nome dice che si può toccare.
 - Sezione ripiegata **"Già presi"** in fondo, per rivedere e **de-spuntare**.
 - Nella riga della voce ci sono la **spunta** e il nome. Le funzioni della voce
   (alternative, rinomina, elimina) stanno in un **popup**, che si apre col ⋯ a lato
   e sale dal fondo dello schermo.
-- Ogni voce generata ha, nel popup, una **dropdown** con le tipologie alternative.
+- Ogni voce generata ha una **dropdown** con le tipologie alternative, che si apre
+  dal nome e c'è anche nel popup.
   Nessuna quantità né grammatura viene mostrata.
 - Ogni voce si può **eliminare**; solo le voci manuali sotto "Altro" si possono
   anche **rinominare**.

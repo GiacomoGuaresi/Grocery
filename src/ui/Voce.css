@@ -53,6 +53,9 @@
 
 /* Il nome delle voci manuali sotto "Altro": toccandolo lo si corregge. */
 .voce__nome--rinomina {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   align-self: stretch;
   padding: 0;
   border: none;
@@ -62,6 +65,46 @@
   font-weight: 500;
   text-align: left;
   cursor: text;
+}
+
+/* Il nome delle voci con alternative: sopra c'è la select, trasparente, che
+   prende il tocco su tutta l'altezza della riga e apre la ruota nativa. */
+.voce__nome--sostituisci {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: stretch;
+}
+
+/* Accanto al nome, dice cosa fa il tocco: la matita per rinominare, la freccia
+   per aprire le alternative. Semitrasparente, per non pesare quanto il nome. */
+.voce__nome-icona {
+  flex: none;
+  font-size: 14px;
+  color: var(--inchiostro-tenue);
+  opacity: 0.6;
+}
+
+/* A 16px anche se invisibile, altrimenti iOS zooma al tocco. */
+.voce__scelta {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  font-size: var(--testo-campo);
+  cursor: pointer;
+  appearance: none;
+}
+
+.voce__nome--sostituisci:has(.voce__scelta:focus-visible) {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.voce__nome--sostituisci:active {
+  color: var(--terracotta-scura);
 }
 
 /* Il nome mentre lo si scrive: a 16px, altrimenti iOS zooma al tocco. */

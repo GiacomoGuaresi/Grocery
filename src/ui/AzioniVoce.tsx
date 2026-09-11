@@ -149,20 +149,29 @@ export function AzioniVoce({
  *
  * Per frutta e verdura le opzioni sono in due sezioni: prima quelle di
  * stagione, da preferire, poi le altre. Per le altre categorie è un elenco solo.
+ *
+ * La usa anche la riga della voce (Voce), sopra il nome: lì il tocco sul testo
+ * apre subito la ruota, senza passare dal popup.
  */
-function SceltaAlternativa({
+export function SceltaAlternativa({
   testo,
   alternative,
   onScegli,
+  className = 'azioni-voce__scelta',
+  etichetta,
 }: {
   testo: string
   alternative: Alternative
   onScegli: (nome: string) => void
+  className?: string
+  /** Serve quando la dropdown non sta dentro una label. */
+  etichetta?: string
 }) {
   const { consigliate, fuoriStagione } = alternative
   return (
     <select
-      className="azioni-voce__scelta"
+      className={className}
+      aria-label={etichetta}
       value=""
       onChange={(evento) => {
         if (evento.target.value !== '') onScegli(evento.target.value)

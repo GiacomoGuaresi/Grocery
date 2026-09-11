@@ -227,8 +227,8 @@ Da qui in poi l'app diventa condivisa.
       verificate il 2026-09-11 su `/auth/v1/settings` (`disable_signup: true`)
 - [x] Workflow GitHub Actions `.github/workflows/pubblica.yml`: a ogni push su
       `main` (o a mano) installa, controlla che ci siano le variabili di Supabase,
-      fa girare i test e la build e pubblica `dist` su Pages. Test e build
-      verificati in locale; su GitHub non è ancora partito → Step 18
+      fa girare i test e la build e pubblica `dist` su Pages. Il primo giro è
+      fallito per le variabili mancanti; da quando ci sono gira (2026-09-11)
 - [x] Repository pubblicato: `github.com/GiacomoGuaresi/Grocery`, pubblico
 - [x] README con gli screenshot, in `doc/immagini`: accesso, menu, piano, frutta di
       stagione. Fatti con Chrome headless sull'app in sviluppo, larga 390px. Manca
@@ -253,8 +253,9 @@ Prima di mettere il sito online, in quest'ordine:
 - [x] Pages attivato con sorgente *GitHub Actions* (Settings → Pages). Era già
       acceso ma su *Deploy from a branch*, che pubblicava il sorgente del repo;
       passato a `workflow` il 2026-09-11
-- [ ] Commit e push su `main`, primo giro del workflow e sito aperto su
-      `giacomoguaresi.github.io/Grocery/`
+- [x] Commit e push su `main`, primo giro del workflow e sito aperto su
+      `giacomoguaresi.github.io/Grocery/`. Workflow riuscito il 2026-09-11; il
+      sito risponde e il bundle ha dentro la configurazione di Supabase
 
 Da provare sui telefoni veri:
 
@@ -275,6 +276,13 @@ Test e documentazione:
       segnate come superate; restano senza risposta quelle sui cataloghi (Q1)
 
 ---
+
+Modifiche chieste dalla lista vera:
+
+- [x] Tap sul nome di una voce con alternative (frutta, verdura, carne, pesce…) =
+      si apre subito la select per sostituirla, senza passare dal ⋯ (2026-09-11)
+- [x] Matita semitrasparente accanto al nome delle voci rinominabili ("Altro"),
+      come la freccia ⌄ accanto a quelle con alternative (2026-09-11)
 
 ## Dopo l'MVP
 

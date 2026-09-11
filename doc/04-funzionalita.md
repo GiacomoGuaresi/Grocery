@@ -84,7 +84,8 @@ stagione** nel mese, poi quelli **fuori stagione**. Si possono scegliere tutti, 
 vede sempre quali alternative è meglio preferire.
 
 La dropdown è **l'unico modo di modificare una voce generata**: i nomi degli alimenti
-vengono dal catalogo e non si rinominano.
+vengono dal catalogo e non si rinominano. Si apre **toccando il nome** della voce
+nella lista, oltre che dal popup.
 
 ## F6b — Rinomina ed eliminazione
 

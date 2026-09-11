@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import type { Alternative } from '../domain/alternative'
+import { tutteLeAlternative, type Alternative } from '../domain/alternative'
 import { rinominabile } from '../domain/modifica'
 import type { Voce as VoceLista } from '../domain/tipi'
-import { AzioniVoce } from './AzioniVoce'
+import { AzioniVoce, SceltaAlternativa } from './AzioniVoce'
 import { Icona } from './Icona'
 import './Voce.css'
 
@@ -26,8 +26,10 @@ interface Props {
  * è una voce a sé, come tutte le altre.
  *
  * Si spunta solo dalla casella: il nome non spunta. Nelle voci manuali sotto
- * "Altro" toccare il nome lo rende modificabile lì dove sta. Tutto il resto —
- * alternative, rinomina, elimina — sta nel popup che si apre col ⋯ (AzioniVoce).
+ * "Altro" toccare il nome lo rende modificabile lì dove sta; nelle voci che
+ * hanno alternative (frutta, verdura, carne, pesce…) apre subito la dropdown
+ * per sostituirle. Tutto il resto — rinomina, elimina, e di nuovo le
+ * alternative — sta nel popup che si apre col ⋯ (AzioniVoce).
  */
 export function Voce({ voce, alternative, onAlterna, onElimina, onRinomina, onSostituisci }: Props) {
   const [azioniAperte, setAzioniAperte] = useState(false)
@@ -79,7 +81,22 @@ export function Voce({ voce, alternative, onAlterna, onElimina, onRinomina, onSo
             onClick={() => setNomeInCorso(voce.nome)}
           >
             {voce.nome}
+            <Icona nome="matita" className="voce__nome-icona" />
           </button>
+        ) : tutteLeAlternative(alternative).length > 0 ? (
+          // La select è trasparente e copre il nome: il tocco sul testo apre la
+          // ruota nativa. Il nome resta uno span, così la barra dei già presi c'è.
+          <span className="voce__nome voce__nome--sostituisci">
+            {voce.nome}
+            <Icona nome="giu" className="voce__nome-icona" />
+            <SceltaAlternativa
+              className="voce__scelta"
+              etichetta={`Sostituisci ${voce.nome}`}
+              testo={voce.nome}
+              alternative={alternative}
+              onScegli={(nome) => onSostituisci(voce.id, nome)}
+            />
+          </span>
         ) : (
           <span className="voce__nome">{voce.nome}</span>
         )}
