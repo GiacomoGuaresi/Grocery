@@ -14,6 +14,7 @@
 | F9 | Funzionamento offline in lettura e scrittura | ✅ |
 | F10 | Vista piano settimanale con giorno corrente evidenziato | ➖ |
 | F11 | Archivio delle liste passate | ➖ |
+| F11b | Vista della frutta e della verdura di stagione, per stagione o per mese | ➖ |
 | F12 | Modalità demo per il portfolio | ❌ futuro |
 | F13 | Gestione dei pasti saltati (cene fuori) | ❌ futuro |
 
@@ -118,3 +119,8 @@ Alla generazione di una nuova lista, la precedente viene **archiviata** (non
 sovrascritta), dopo aver chiesto se portare avanti le voci non spuntate.
 L'interesse principale resta la lista corrente; le statistiche sullo storico sono da
 valutare.
+
+## F11b — Frutta e verdura di stagione
+Due pagine del menu laterale, **Frutta** e **Verdura**, che mostrano cosa è di
+stagione, dalla tabella di stagionalità. Parte dalla **stagione corrente** e permette di cambiare **stagione**
+o di restringere a un **mese**. In sola consultazione.

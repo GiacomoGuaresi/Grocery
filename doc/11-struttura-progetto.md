@@ -121,6 +121,14 @@ data per esteso ("7 settembre 2026"), `riepilogo()` dice com'è andata quella sp
 una riga ("12 voci · 10 prese") e `sintesi()` conta le voci di una lista già
 caricata, così l'elenco e la lista aperta dicono le stesse cose.
 
+`stagioni.ts` regge le pagine di frutta e verdura di stagione: le quattro `stagioni`
+meteorologiche (tre mesi interi, come la granularità della tabella), `meseDi()` e
+`stagioneDi()` per partire da quella corrente, e `diStagioneNelPeriodo(gruppo, mesi)`
+che dà i tipi del gruppo presenti in almeno uno dei mesi, in ordine alfabetico, con a
+parte quelli che ci sono tutto l'anno. `stagioni.test.ts` verifica che le stagioni
+coprano i dodici mesi una volta sola, che i gruppi non si mescolino e che nessun tipo
+si perda o si duplichi.
+
 `ciclo.ts` sta intorno all'algoritmo: `vociDaRiportare()` dice cosa è rimasto da
 prendere e `nuovoCiclo()` mette insieme lista nuova, rotazioni da salvare e lista
 precedente da archiviare, portando avanti le voci non spuntate se lo si è chiesto
@@ -198,8 +206,9 @@ col conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
 de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
 quel percorso ormai è alle spalle.
 
-Il menu laterale a scomparsa, aperto dal bottone ☰ dell'intestazione, tiene le tre
-sezioni *Lista*, *Piano* e *Archivio* e, sotto, l'azione *Genera lista*. Per questo
+Il menu laterale a scomparsa, aperto dal bottone ☰ dell'intestazione, tiene le
+sezioni *Lista*, *Piano*, *Archivio*, *Frutta* e *Verdura* e, sotto, l'azione
+*Genera lista*. Per questo
 `useLista` sta in `App.tsx` e non dentro la schermata della lista: la conferma della
 generazione ha bisogno della lista corrente anche quando si è altrove.
 
@@ -208,6 +217,13 @@ letture separate, perché l'elenco non ha bisogno delle voci. La schermata mostr
 riga per spesa — data per esteso e riepilogo — e aprendone una rivede le sue voci
 per reparto, barrate quelle che erano finite nel carrello. Non c'è niente da toccare
 oltre alla riga che apre e a quella che riporta indietro: quel ciclo è chiuso (F11).
+
+`DiStagione.tsx` è la pagina della frutta o della verdura di stagione, a seconda
+del `gruppo` che riceve: una barra a segmenti per le quattro stagioni, aperta su
+quella corrente, le pastiglie dei suoi mesi per restringere il periodo, e un blocco
+di righe con la striscia dei dodici mesi di ogni tipo, col bordo attorno ai mesi del
+periodo; in testa le iniziali dei mesi, evidenziata quella di adesso. La scelta non
+si salva: riaprendo la pagina si riparte dalla stagione di adesso.
 
 Il layout è una colonna larga al massimo 448px, centrata: sul telefono occupa tutto,
 sul desktop resta stretta come sul telefono.

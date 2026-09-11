@@ -24,6 +24,8 @@ tutte le sezioni e le azioni:
 - **Lista**
 - **Piano**
 - **Archivio**
+- **Frutta** (di stagione)
+- **Verdura** (di stagione)
 - **Genera lista** (azione, staccata dalle sezioni)
 
 Si chiude toccando fuori, con la ✕ o scegliendo una voce. Non c'è più la barra
@@ -77,6 +79,21 @@ mercoledì è irrilevante e l'app non lo traccia.
 
 ### 5. Archivio
 Elenco delle liste passate, in sola lettura.
+
+### 6. Frutta e verdura di stagione
+Viste di consultazione della tabella di stagionalità: due pagine del menu, una per
+la **frutta** e una per la **verdura**, fatte allo stesso modo.
+- Si apre sulla **stagione corrente**; in alto si passa a un'altra delle quattro
+  stagioni (inverno dicembre–febbraio, primavera marzo–maggio, estate giugno–agosto,
+  autunno settembre–novembre) e si può **restringere a un mese** della stagione.
+- Un tipo è della stagione se c'è in **almeno uno** dei suoi mesi.
+- Una riga per tipo, in ordine alfabetico, con la **striscia dei 12 mesi**: pieni
+  quelli in cui c'è, più scuri e **racchiusi da un bordo** quelli del periodo scelto.
+  Si vede se un tipo sta arrivando o sta finendo.
+- In testa alla colonna le iniziali dei mesi: è evidenziata solo quella del **mese
+  corrente**.
+- Quello che c'è **tutto l'anno** (mele, limoni, banane, ananas; carote, cipolle,
+  funghi coltivati, patate, songino) sta a parte, in una riga sola in fondo.
 
 ## Configurazione
 La routine, i cataloghi di rotazione e le regole **non sono modificabili

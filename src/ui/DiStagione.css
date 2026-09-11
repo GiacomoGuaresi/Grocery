@@ -1,0 +1,206 @@
+/* Frutta e verdura di stagione: in cima la scelta del periodo, sotto un blocco
+   di righe compatte, una per tipo, con la striscia dell'anno allineata in
+   colonna. */
+.stagione {
+  --cella: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Le quattro stagioni: una barra a segmenti, quella scelta piena. */
+.stagione__stagioni {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  overflow: hidden;
+}
+
+.stagione__stagione {
+  min-height: var(--tocco);
+  padding: 0 4px;
+  border: none;
+  background: var(--panna);
+  color: var(--inchiostro);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stagione__stagione + .stagione__stagione {
+  border-left: 1px solid var(--bordo);
+}
+
+.stagione__stagione[aria-pressed='true'] {
+  background: var(--terracotta);
+  color: var(--panna);
+}
+
+/* I mesi della stagione: pastiglie più discrete, per restringere il periodo. */
+.stagione__mesi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.stagione__mese {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--bordo);
+  border-radius: 999px;
+  background: var(--panna);
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stagione__mese[aria-pressed='true'] {
+  border-color: var(--terracotta-scura);
+  background: var(--crema-scura);
+  color: var(--terracotta-scura);
+}
+
+.stagione__titolo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 6px 0 0;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--terracotta-scura);
+}
+
+.stagione__conteggio {
+  color: var(--inchiostro-tenue);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+/* Righe attaccate come le voci della lista: un unico blocco. */
+.stagione__voci {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stagione__voce,
+.stagione__intestazione {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--spazio);
+}
+
+.stagione__intestazione {
+  padding-bottom: 4px;
+}
+
+.stagione__voce {
+  min-height: var(--riga);
+  border: 1px solid var(--bordo);
+  background: var(--panna);
+}
+
+.stagione__voce + .stagione__voce {
+  border-top: none;
+}
+
+.stagione__intestazione + .stagione__voce {
+  border-top-left-radius: var(--raggio);
+  border-top-right-radius: var(--raggio);
+}
+
+.stagione__voce:last-child {
+  border-bottom-left-radius: var(--raggio);
+  border-bottom-right-radius: var(--raggio);
+}
+
+.stagione__nome {
+  min-width: 0;
+  font-weight: 500;
+}
+
+.stagione__nome::first-letter {
+  text-transform: uppercase;
+}
+
+/* La striscia dell'anno: dodici celle, piene nei mesi in cui il tipo c'è.
+   Ogni cella ha la sua colonna fissata, così la cornice del periodo può
+   sovrapporsi alle celle che racchiude. */
+.striscia {
+  display: grid;
+  grid-template-columns: repeat(12, var(--cella));
+  gap: 3px;
+}
+
+.striscia__mese {
+  grid-row: 1;
+  height: var(--cella);
+  border-radius: 3px;
+  background: var(--crema-scura);
+}
+
+/* Il bordo attorno ai mesi del periodo scelto: sta nello spazio tra le
+   celle, senza toccare quelle accanto. */
+.striscia__cornice {
+  grid-row: 1;
+  margin: -3px;
+  border: 1.5px solid var(--terracotta-scura);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.striscia__mese--acceso {
+  background: var(--zucca);
+}
+
+/* Nel periodo scelto il colore si scalda: è lì che si guarda. */
+.striscia__mese--acceso.striscia__mese--periodo {
+  background: var(--terracotta);
+}
+
+/* Le iniziali in testa alla colonna, in evidenza solo il mese di adesso. */
+.striscia--lettere .striscia__mese {
+  height: auto;
+  background: none;
+  color: var(--inchiostro-tenue);
+  font-size: 9px;
+  line-height: 1;
+  text-align: center;
+}
+
+.striscia--lettere .striscia__mese--oggi {
+  color: var(--terracotta-scura);
+  font-weight: 700;
+}
+
+.stagione__sempre {
+  margin: 0;
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+}
+
+.stagione__sempre-titolo {
+  display: block;
+  font-weight: 600;
+  color: var(--inchiostro);
+}
+
+/* Testo solo per gli screen reader: i mesi del tipo detti a parole. */
+.solo-lettori {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

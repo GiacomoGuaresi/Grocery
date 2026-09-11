@@ -131,6 +131,14 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
       dal ⋯: nella riga resta solo la spunta
 - [x] Piano: via la pastiglia "oggi", il giorno corrente resta solo evidenziato
 
+## Step 12c — Frutta e verdura di stagione ✅
+
+- [x] Sezioni *Frutta* e *Verdura* nel menu laterale, stessa pagina per entrambe
+- [x] Parte dalla stagione corrente; si cambia stagione o si restringe a un mese
+- [x] Striscia dei 12 mesi per ogni tipo, col bordo attorno al periodo scelto;
+      quello di tutto l'anno a parte
+- [x] Nelle iniziali dei mesi è evidenziato solo il mese corrente
+
 ## Step 13 — Supabase
 
 Da qui in poi l'app diventa condivisa.

@@ -3,6 +3,7 @@ import { vociDaRiportare } from '../domain/ciclo'
 import './tema.css'
 import './App.css'
 import { Archivio } from './Archivio'
+import { DiStagione } from './DiStagione'
 import { ConfermaGenera } from './GeneraLista'
 import { Icona } from './Icona'
 import { ListaSpesa } from './ListaSpesa'
@@ -15,6 +16,8 @@ const sezioni = [
   { id: 'lista', etichetta: 'Lista', sottotitolo: 'Lista della spesa', icona: 'carrello' },
   { id: 'piano', etichetta: 'Piano', sottotitolo: 'Piano settimanale', icona: 'calendario' },
   { id: 'archivio', etichetta: 'Archivio', sottotitolo: 'Spese passate', icona: 'archivio' },
+  { id: 'frutta', etichetta: 'Frutta', sottotitolo: 'Frutta di stagione', icona: 'mela' },
+  { id: 'verdura', etichetta: 'Verdura', sottotitolo: 'Verdura di stagione', icona: 'carota' },
 ] as const
 
 /**
@@ -71,6 +74,8 @@ export function App() {
         {schermata === 'lista' && <ListaSpesa {...lista} />}
         {schermata === 'piano' && <PianoSettimanale />}
         {schermata === 'archivio' && <Archivio />}
+        {schermata === 'frutta' && <DiStagione gruppo="frutta" />}
+        {schermata === 'verdura' && <DiStagione gruppo="verdura" />}
         {schermata === 'genera' && lista.stato.fase === 'pronta' && (
           <ConfermaGenera
             rimaste={vociDaRiportare(lista.stato.lista)}
