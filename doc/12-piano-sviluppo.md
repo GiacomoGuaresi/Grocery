@@ -159,8 +159,14 @@ Da qui in poi l'app diventa condivisa.
 
 ## Step 14 — Accesso con passphrase
 
-- [ ] Schermata con il solo campo passphrase
-- [ ] Sessione conservata nei cookie: non viene richiesta a ogni apertura
+- [x] Schermata con il solo campo passphrase, davanti all'app finché non c'è una
+      sessione; in sviluppo, su SQLite, non compare
+- [x] Sessione conservata nei cookie (`@supabase/ssr`): non viene richiesta a ogni
+      apertura, nemmeno senza rete
+- [x] Se la sessione finisce con l'app aperta si torna alla passphrase
+- [x] Email dell'account in `.env.local` (`VITE_SUPABASE_EMAIL`)
+- [x] Unico account creato dalla dashboard; verificato sul progetto: con la
+      passphrase giusta si entra e si leggono le tabelle, con quella sbagliata no
 - [ ] Nessuna registrazione pubblica abilitata — **buco di sicurezza aperto**: sul
       progetto Supabase le registrazioni sono ancora attive. Con la chiave
       publishable, che è pubblica, chiunque può crearsi un account, diventare
@@ -169,7 +175,6 @@ Da qui in poi l'app diventa condivisa.
       Providers → *Allow new users to sign up* (il 2026-09-11 il salvataggio dalla
       dashboard dava "Failed to fetch"; in alternativa si fa con la Management API,
       `disable_signup: true`)
-- [ ] Creazione dell'unico utente dalla dashboard (Authentication → Users → Add user)
 
 ## Step 15 — Realtime
 

@@ -1,0 +1,70 @@
+/* La porta d'ingresso: solo la passphrase, al centro della stessa colonna
+   dell'app. */
+.accesso {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-width: 448px;
+  margin: 0 auto;
+  padding: var(--spazio);
+  padding-top: calc(var(--spazio) + env(safe-area-inset-top));
+  background: var(--panna);
+  border-inline: 1px solid var(--bordo);
+}
+
+.accesso__modulo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.accesso__icona {
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  color: var(--terracotta);
+}
+
+.accesso__titolo {
+  margin: 0 0 13px;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+  text-align: center;
+}
+
+.accesso__etichetta {
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+/* Come il campo di aggiunta: 16px, altrimenti iOS zooma al tocco. */
+.accesso__campo {
+  min-height: var(--tocco);
+  padding: 0 11px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  font-size: var(--testo-campo);
+}
+
+.accesso__campo:focus {
+  outline: 2px solid var(--terracotta);
+  outline-offset: -1px;
+}
+
+.accesso__avviso {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  color: var(--pomodoro);
+}
+
+.accesso__messaggio {
+  margin: 0;
+  color: var(--inchiostro-tenue);
+  text-align: center;
+}

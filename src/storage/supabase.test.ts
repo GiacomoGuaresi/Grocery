@@ -5,6 +5,7 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { beforeAll, describe, expect, it } from 'vitest'
+import { AccessoSupabase } from './accesso'
 import { lista, verificaContratto } from './contratto'
 import { StorageSupabase } from './supabase'
 
@@ -46,6 +47,23 @@ describe.skipIf(!url || !chiave || !segreta)('StorageSupabase', () => {
     verificaContratto(async () => {
       await svuota()
       return new StorageSupabase(autenticato)
+    })
+  })
+
+  describe('accesso con passphrase', () => {
+    const porta = () =>
+      new AccessoSupabase(createClient(url, chiave, SENZA_SESSIONE_SALVATA), UTENTE.email)
+
+    it('con la passphrase giusta si entra e la sessione resta', async () => {
+      const accesso = porta()
+      expect(await accesso.entra(UTENTE.password)).toBe('dentro')
+      expect(await accesso.haSessione()).toBe(true)
+    })
+
+    it('con quella sbagliata no', async () => {
+      const accesso = porta()
+      expect(await accesso.entra('passphrase-sbagliata')).toBe('passphrase-sbagliata')
+      expect(await accesso.haSessione()).toBe(false)
     })
   })
 

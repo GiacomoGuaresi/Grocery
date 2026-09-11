@@ -2,13 +2,22 @@
 // sono in supabase/migrations. Le letture passano dalle tabelle; le scritture
 // composte da funzioni Postgres, perché il client non apre transazioni.
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
+import { AccessoSupabase } from './accesso'
 import type { Storage } from './tipi'
 
-/** Lo storage su un progetto Supabase, con la chiave pubblica del progetto. */
-export function apriStorageSupabase(url: string, chiave: string): StorageSupabase {
-  return new StorageSupabase(createClient(url, chiave))
+/**
+ * Storage e accesso sullo stesso client, così le letture viaggiano con la
+ * sessione aperta dalla passphrase. `createBrowserClient` tiene la sessione nei
+ * cookie (400 giorni, rinnovati a ogni uso), limitati al percorso dell'app.
+ */
+export function connettiSupabase(url: string, chiave: string, email: string) {
+  const client = createBrowserClient(url, chiave, {
+    cookieOptions: { path: import.meta.env.BASE_URL },
+  })
+  return { storage: new StorageSupabase(client), accesso: new AccessoSupabase(client, email) }
 }
 
 interface RigaVoce {

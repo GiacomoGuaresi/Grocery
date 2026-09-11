@@ -22,12 +22,15 @@ Grocery/
     │   ├── schema.ts    lo schema SQL di liste, voci, rotazioni
     │   ├── sqlite.ts    implementazione su sql.js
     │   ├── supabase.ts  implementazione su Supabase
+    │   ├── accesso.ts   l'interfaccia `Accesso`: passphrase e sessione
     │   ├── contratto.ts i test dell'interfaccia, comuni alle due implementazioni
     │   ├── indexeddb.ts il blob del database dentro IndexedDB
     │   ├── memoria.ts   persistenza volatile, per i test
     │   └── index.ts     scelta dell'implementazione per ambiente e apertura
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
+        ├── ConAccesso.tsx     il cancello: passphrase finché non c'è una sessione
+        ├── Accesso.tsx        la schermata col solo campo passphrase
         ├── App.tsx      layout: header fisso col bottone del menu, contenuto
         ├── MenuLaterale.tsx   menu a scomparsa con sezioni e azioni
         ├── useLista.ts  la lista corrente, letta e salvata sullo storage
@@ -201,6 +204,17 @@ build, e `VITE_STORAGE=sqlite|supabase` forza la scelta. URL e chiave publishabl
 del progetto arrivano da `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`
 (vedi `.env.example`, da copiare in `.env.local`).
 
+L'accesso (F8, Step 14) segue lo stesso schema: l'interfaccia `Accesso` di
+`accesso.ts` — `haSessione()`, `entra(passphrase)`, `quandoEsce()` — ha due
+implementazioni. `accessoLibero` è quella di SQLite: lo stato non esce dal
+dispositivo, e si entra sempre. `AccessoSupabase` fa della passphrase la password
+dell'unico account, la cui email arriva da `VITE_SUPABASE_EMAIL`: chi entra scrive
+solo la passphrase. Storage e accesso condividono un solo client, creato con
+`createBrowserClient` di `@supabase/ssr`, che tiene la sessione nei **cookie**
+(400 giorni, limitati al percorso dell'app). Se il rinnovo del token fallisce per
+mancanza di rete la sessione resta valida: in corsia non si chiede la passphrase a
+chi è già entrato. `accesso.test.ts` verifica tutto questo su un client finto.
+
 I test dell'interfaccia stanno in `contratto.ts` e girano su entrambe le
 implementazioni: la lista riletta identica a quella salvata, l'ordine delle voci
 (anche dopo un riordino), i campi opzionali che restano assenti, il salvataggio
@@ -218,6 +232,12 @@ tabelle a ogni test, quindi va puntato solo sul Supabase locale: gira se trova
 (i valori li stampa `supabase status`), altrimenti si salta.
 
 ## `src/ui`
+Davanti a tutto c'è `ConAccesso`, montato in `main.tsx` attorno ad `App`: finché
+non c'è una sessione mostra `Accesso`, la schermata col solo campo passphrase
+(doc/08, §1), poi l'app. Mentre legge i cookie non mostra niente, per non far
+lampeggiare la passphrase a chi è già entrato; se la sessione finisce con l'app
+aperta torna alla passphrase. In sviluppo, su SQLite, passa senza fermarsi.
+
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
 zucca, pomodoro), raggi, spaziature e `--tocco`, l'altezza minima di ogni elemento
 toccabile. Ogni componente ha il suo `.css` accanto, importato dal componente
