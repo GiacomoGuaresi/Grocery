@@ -142,10 +142,19 @@ Il cuore del progetto. Solo logica, nessuna UI: tutto coperto da test.
 
 Da qui in poi l'app diventa condivisa.
 
-- [ ] Progetto Supabase e schema equivalente a quello SQLite
-- [ ] Seconda implementazione dell'interfaccia `Storage`
-- [ ] Selezione dell'implementazione per ambiente (dev → SQLite, prod → Supabase)
-- [ ] Policy: lettura e scrittura solo per la sessione autenticata
+- [x] Schema equivalente a quello SQLite, come migrazione in `supabase/migrations`
+- [x] Progetto Supabase creato (*GiacomoGuaresi's Project Grocery*, ref
+      `fvsohjlrulwabvfvcfxo`) e migrazione applicata con `supabase db push`
+- [ ] `supabase login` + `supabase link`, per lavorare sul progetto dalla CLI senza
+      connection string
+- [ ] Registrazione pubblica spenta anche sul progetto (dashboard → Authentication)
+- [x] Seconda implementazione dell'interfaccia `Storage`
+- [x] Stessi test di contratto per le due implementazioni (quelli di Supabase girano
+      contro il Supabase locale)
+- [x] Selezione dell'implementazione per ambiente (dev → SQLite, prod → Supabase;
+      `VITE_STORAGE` la forza)
+- [x] Policy: lettura e scrittura solo per la sessione autenticata
+- [x] Registrazione pubblica disattivata in `supabase/config.toml`
 
 ## Step 14 — Accesso con passphrase
 

@@ -4,6 +4,10 @@
 Grocery/
 ├── doc/                 documentazione (questi file)
 ├── Q&A.md               domande aperte in corso
+├── .env.example         variabili d'ambiente: quale storage, URL e chiave di Supabase
+├── supabase/            progetto Supabase (CLI)
+│   ├── config.toml      config del Supabase locale: registrazione pubblica spenta
+│   └── migrations/      schema, funzioni e policy del database di produzione
 ├── index.html           entry point di Vite
 ├── package.json         React + TypeScript + Vite + Vitest
 ├── vite.config.ts       base: '/Grocery/' per GitHub Pages + config Vitest
@@ -17,9 +21,11 @@ Grocery/
     │   ├── tipi.ts      l'interfaccia `Storage` e la porta `Persistenza`
     │   ├── schema.ts    lo schema SQL di liste, voci, rotazioni
     │   ├── sqlite.ts    implementazione su sql.js
+    │   ├── supabase.ts  implementazione su Supabase
+    │   ├── contratto.ts i test dell'interfaccia, comuni alle due implementazioni
     │   ├── indexeddb.ts il blob del database dentro IndexedDB
     │   ├── memoria.ts   persistenza volatile, per i test
-    │   └── index.ts     apertura dello storage dell'app (WASM + IndexedDB)
+    │   └── index.ts     scelta dell'implementazione per ambiente e apertura
     └── ui/              componenti e schermate
         ├── tema.css     palette pastello, tipografia, misure dei tocchi
         ├── App.tsx      layout: header fisso col bottone del menu, contenuto
@@ -174,14 +180,42 @@ sopravvivere la lista al refresh — e `PersistenzaMemoria` non li fa sopravvive
 niente, ed è quella dei test. `index.ts` mette insieme i pezzi per l'app in
 esecuzione: carica il WASM di SQLite e apre lo storage una volta sola.
 
-`sqlite.test.ts` lavora contro l'interfaccia, non contro i dettagli: la lista
-riletta identica a quella salvata, l'ordine delle voci, i campi opzionali che restano
-assenti, il salvataggio che aggiorna invece di duplicare, le voci tolte che
-spariscono, l'unica lista corrente, le rotazioni sostituite e non accumulate,
-l'archivio che elenca le liste passate ma non quella corrente, nell'ordine giusto e
-con i conteggi giusti, la lista archiviata riletta identica a com'era e la
-migrazione delle liste con frutta e verdura raggruppate. Il refresh si simula
-riaprendo il database sulla stessa `Persistenza`.
+`supabase.ts` è la seconda implementazione, per la produzione (Step 13). Lo schema
+sta in `supabase/migrations`: le stesse tre tabelle, coi tipi di Postgres — date
+`timestamptz`, `comprata` booleano, `alternative` e `ultimi` come `text[]` invece
+che JSON in una colonna di testo. Un indice unico parziale garantisce che la lista
+`corrente` sia una sola, e la vista `archivio` fa i conteggi dell'elenco. Il client
+di Supabase non apre transazioni, quindi le scritture composte sono funzioni
+Postgres chiamate via RPC: `salva_lista` aggiorna le voci sul posto e cancella solo
+quelle sparite (non riscrive tutto, così al realtime arriveranno solo le voci
+toccate) e `salva_rotazioni` sostituisce la memoria. Le date tornano da Postgres
+come `+00:00` e si rimettono nella forma di `toISOString()`.
+
+Le policy (RLS) aprono le tre tabelle alla sola sessione autenticata, senza
+filtri per utente perché l'account è uno solo; al ruolo `anon` sono tolti anche i
+permessi su tabelle, vista e funzioni. In `supabase/config.toml` la registrazione
+pubblica è spenta.
+
+`index.ts` sceglie l'implementazione: SQLite con `npm run dev`, Supabase nella
+build, e `VITE_STORAGE=sqlite|supabase` forza la scelta. URL e chiave publishable
+del progetto arrivano da `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`
+(vedi `.env.example`, da copiare in `.env.local`).
+
+I test dell'interfaccia stanno in `contratto.ts` e girano su entrambe le
+implementazioni: la lista riletta identica a quella salvata, l'ordine delle voci
+(anche dopo un riordino), i campi opzionali che restano assenti, il salvataggio
+che aggiorna invece di duplicare, le voci tolte che spariscono, l'unica lista
+corrente, le rotazioni sostituite e non accumulate, l'archivio che elenca le liste
+passate ma non quella corrente, nell'ordine giusto e con i conteggi giusti, la
+lista archiviata riletta identica a com'era.
+
+`sqlite.test.ts` li esegue su SQLite e ci aggiunge quello che è solo di SQLite: le
+migrazioni dei database vecchi e il refresh, simulato riaprendo il database sulla
+stessa `Persistenza`. `supabase.test.ts` li esegue contro un Supabase vero e
+verifica le policy (senza sessione non si legge e non si scrive niente). Svuota le
+tabelle a ogni test, quindi va puntato solo sul Supabase locale: gira se trova
+`SUPABASE_TEST_URL`, `SUPABASE_TEST_PUBLISHABLE_KEY` e `SUPABASE_TEST_SECRET_KEY`
+(i valori li stampa `supabase status`), altrimenti si salta.
 
 ## `src/ui`
 Il tema sta tutto in `tema.css` come variabili CSS: colori pastello (crema, salvia,
