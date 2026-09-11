@@ -10,10 +10,10 @@ privilegiando cose gratuite, semplici da mantenere e presentabili in un portfoli
 | Linguaggio | **TypeScript** | Tipizza cataloghi e modello dati; buon segnale in portfolio |
 | UI | **React** | Ecosistema ampio, ottimo supporto PWA, familiare a chi legge il codice |
 | Build | **Vite** | Build statica veloce, deploy immediato su Pages |
-| Stile | **Tailwind CSS** | Rapido per una UI mobile-first, nessun file CSS da gestire |
+| Stile | **CSS a mano**, un file accanto a ogni componente (`src/ui/*.css`), palette in `tema.css` | Pochi componenti, nessuna dipendenza in più |
 | PWA | **vite-plugin-pwa** (Workbox) | Installabile e offline con poca configurazione |
 | DB | **Supabase** (piano gratuito), in sviluppo e in produzione | Postgres gestito, realtime incluso, gratuito, poco codice |
-| Test | **Vitest** + Testing Library | Stessa toolchain di Vite |
+| Test | **Vitest**, su dominio e storage (nessun test dei componenti) | Stessa toolchain di Vite |
 | Hosting | **GitHub Pages** | Richiesto |
 | CI/CD | **GitHub Actions** | Build e deploy su push del branch principale |
 

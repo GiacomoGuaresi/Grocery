@@ -168,14 +168,12 @@ Da qui in poi l'app diventa condivisa.
 - [x] Email dell'account in `.env.local` (`VITE_SUPABASE_EMAIL`)
 - [x] Unico account creato dalla dashboard; verificato sul progetto: con la
       passphrase giusta si entra e si leggono le tabelle, con quella sbagliata no
-- [ ] Nessuna registrazione pubblica abilitata — **buco di sicurezza aperto**: sul
-      progetto Supabase le registrazioni sono ancora attive. Con la chiave
-      publishable, che è pubblica, chiunque può crearsi un account, diventare
-      `authenticated` e leggere, modificare e cancellare tutto, perché le policy non
-      filtrano per utente. Da spegnere in dashboard → Authentication → Sign In /
-      Providers → *Allow new users to sign up* (il 2026-09-11 il salvataggio dalla
-      dashboard dava "Failed to fetch"; in alternativa si fa con la Management API,
-      `disable_signup: true`) → Step 18
+- [x] Nessuna registrazione pubblica abilitata. Spenta il 2026-09-11 con la
+      Management API (`PATCH /v1/projects/{ref}/config/auth`, `disable_signup:
+      true`), perché il salvataggio dalla dashboard dava "Failed to fetch".
+      Verificato su `/auth/v1/settings`: `disable_signup: true`. Serviva: le policy
+      non filtrano per utente, quindi con le registrazioni aperte chiunque avesse la
+      chiave publishable poteva crearsi un account e fare di tutto sui dati
 
 ## Step 15 — Realtime
 
@@ -214,9 +212,8 @@ Da qui in poi l'app diventa condivisa.
 - [x] *Last-write-wins* rivisto: ogni scrittura porta l'ora della modifica
       (`quando`), e sulla voce resta in `modificata_il`; una modifica più vecchia
       arrivata tardi non copre una più nuova. Una voce eliminata non torna più
-      (`voci_eliminate`). Migrazione `20260911200000_offline.sql` — **da applicare
-      al progetto con `supabase db push`**: finché non c'è, `salva_voci` rifiuta le
-      chiamate e le modifiche non arrivano al database → Step 18
+      (`voci_eliminate`). Migrazione `20260911200000_offline.sql`, applicata al
+      progetto con `supabase db push` il 2026-09-11
 - [x] Test del ciclo offline → online in `sincronizzatore.test.ts`, su un database
       in memoria che passa lo stesso contratto di Supabase. Il contratto nuovo
       contro il Supabase locale non è ancora girato (vuole Docker)
@@ -224,11 +221,10 @@ Da qui in poi l'app diventa condivisa.
 
 ## Step 17 — Pubblicazione
 
-- [ ] **Prima di pubblicare**: verificare che le registrazioni pubbliche sul progetto
+- [x] **Prima di pubblicare**: verificare che le registrazioni pubbliche sul progetto
       Supabase siano spente (Step 14). Con il sito online la chiave publishable
-      circola, e con le registrazioni aperte i dati sono di chiunque. Verificato il
-      2026-09-11 su `/auth/v1/settings` del progetto: **sono ancora aperte**
-      (`disable_signup: false`) → Step 18
+      circola, e con le registrazioni aperte i dati sono di chiunque. Spente e
+      verificate il 2026-09-11 su `/auth/v1/settings` (`disable_signup: true`)
 - [x] Workflow GitHub Actions `.github/workflows/pubblica.yml`: a ogni push su
       `main` (o a mano) installa, controlla che ci siano le variabili di Supabase,
       fa girare i test e la build e pubblica `dist` su Pages. Test e build
@@ -244,17 +240,16 @@ Le cose aperte degli step prima, raccolte in un posto solo.
 
 Prima di mettere il sito online, in quest'ordine:
 
-- [ ] Spegnere le registrazioni pubbliche sul progetto Supabase (Step 14, 17):
-      dashboard → Authentication → Sign In / Providers → *Allow new users to sign
-      up*, oppure Management API `PATCH /v1/projects/{ref}/config/auth` con
-      `disable_signup: true`. Si controlla su `/auth/v1/settings`, che deve dire
-      `disable_signup: true`
-- [ ] Applicare al progetto la migrazione `20260911200000_offline.sql` con
-      `supabase db push` (Step 16). Vale anche per `npm run dev`, che gira sullo
-      stesso progetto: finché manca, le modifiche non arrivano al database
-- [ ] Variabili del repository per la build (Settings → Secrets and variables →
+- [x] Spegnere le registrazioni pubbliche sul progetto Supabase (Step 14, 17):
+      fatto con la Management API, `PATCH /v1/projects/{ref}/config/auth` con
+      `disable_signup: true`. `/auth/v1/settings` dice `disable_signup: true`
+- [x] Applicare al progetto la migrazione `20260911200000_offline.sql` con
+      `supabase db push` (Step 16)
+- [x] Variabili del repository per la build (Settings → Secrets and variables →
       Actions → Variables): `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`,
-      `VITE_SUPABASE_EMAIL`, gli stessi valori di `.env.local`
+      `VITE_SUPABASE_EMAIL`, gli stessi valori di `.env.local`. Impostate il
+      2026-09-11 con `gh variable set`. Il primo giro del workflow, partito prima,
+      era fallito proprio per queste
 - [ ] Pages attivato con sorgente *GitHub Actions* (Settings → Pages)
 - [ ] Commit e push su `main`, primo giro del workflow e sito aperto su
       `giacomoguaresi.github.io/Grocery/`
@@ -272,11 +267,10 @@ Test e documentazione:
 - [ ] `supabase.test.ts` contro il Supabase locale, compreso il contratto nuovo
       dell'offline (Step 13, 15, 16): vuole Docker acceso e `supabase start`
 - [ ] Screenshot della lista piena nel README, appena c'è una lista corrente
-- [ ] [07](07-architettura-stack.md) e [10](10-decisioni.md) danno ancora Tailwind
-      e Testing Library nello stack, ma l'app non li usa: gli stili sono CSS a
-      mano accanto ai componenti
-- [ ] [Q&A.md](../Q&A.md): le domande del giro 5 sono senza risposta, e quelle
-      sulla rotazione sono superate dalla pesca casuale
+- [x] [07](07-architettura-stack.md) e [10](10-decisioni.md) allineati allo stack
+      reale: CSS a mano accanto ai componenti, niente Tailwind né Testing Library
+- [ ] [Q&A.md](../Q&A.md): le domande sulla rotazione e sul prossimo passo sono
+      segnate come superate; restano senza risposta quelle sui cataloghi (Q1)
 
 ---
 

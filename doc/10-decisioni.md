@@ -27,7 +27,8 @@
 | 2026-09-09 | Nessuna registrazione pubblica; niente tracciamento di chi fa cosa | deciso |
 | 2026-09-09 | Configurazioni statiche in **JSON versionati nel repo**, aggiornabili con un commit | deciso |
 | 2026-09-09 | DB: servizio gratuito per pochi dati non sensibili → **Supabase** | deciso |
-| 2026-09-09 | Stack delegato allo sviluppo → **React + TypeScript + Vite + Tailwind** | deciso |
+| 2026-09-09 | ~~Stack delegato allo sviluppo → **React + TypeScript + Vite + Tailwind**~~ | superata |
+| 2026-09-11 | Stack reale: **React + TypeScript + Vite**, stili in **CSS a mano** accanto ai componenti. Niente Tailwind né Testing Library: i test coprono dominio e storage | deciso |
 | 2026-09-09 | **PWA installabile**, offline in lettura **e scrittura** con sync postuma | deciso |
 | 2026-09-09 | **Test automatici** richiesti | deciso |
 | 2026-09-09 | UI: solo **italiano**, solo **tema chiaro**, colori pastello a tema culinario | deciso |
