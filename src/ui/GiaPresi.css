@@ -37,13 +37,9 @@
   text-align: center;
 }
 
-/* Triangolino che ruota quando la sezione si apre. */
+/* La freccia che ruota verso il basso quando la sezione si apre. */
 .gia-presi__freccia {
-  width: 0;
-  height: 0;
-  border-left: 6px solid currentColor;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+  font-size: 16px;
   transition: transform 120ms ease-out;
 }
 

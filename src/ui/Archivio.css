@@ -55,11 +55,8 @@
 .archivio__freccia {
   grid-column: 2;
   grid-row: 1 / span 2;
-  width: 0;
-  height: 0;
-  border-left: 6px solid var(--inchiostro-tenue);
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+  font-size: 16px;
+  color: var(--inchiostro-tenue);
 }
 
 .archivio__messaggio {
@@ -82,7 +79,8 @@
 
 .archivio-vuoto__icona {
   font-size: 45px;
-  line-height: 1;
+  color: var(--terracotta);
+  stroke-width: 1.5;
 }
 
 .archivio-vuoto__titolo {
@@ -108,7 +106,7 @@
 .passata__indietro {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   align-self: flex-start;
   min-height: var(--tocco);
   padding: 0 6px 0 0;
@@ -121,11 +119,7 @@
 }
 
 .passata__freccia {
-  width: 0;
-  height: 0;
-  border-right: 6px solid currentColor;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+  font-size: 18px;
 }
 
 .passata__titolo {

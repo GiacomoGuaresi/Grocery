@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Voce as VoceLista } from '../domain/tipi'
+import { Icona } from './Icona'
 import { Voce } from './Voce'
 import './GiaPresi.css'
 
@@ -45,7 +46,7 @@ export function GiaPresi({
         aria-controls="gia-presi-voci"
         onClick={() => setAperta((era) => !era)}
       >
-        <span className="gia-presi__freccia" aria-hidden="true" />
+        <Icona nome="avanti" className="gia-presi__freccia" />
         <span className="gia-presi__titolo">Già presi</span>
         <span className="gia-presi__quanti">{voci.length}</span>
       </button>

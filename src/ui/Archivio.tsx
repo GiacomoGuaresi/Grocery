@@ -2,6 +2,7 @@ import { etichettaData, riepilogo, sintesi } from '../domain/archivio'
 import { raggruppaPerReparto } from '../domain/lista'
 import { eRaggruppata } from '../domain/spunta'
 import type { Lista, Voce } from '../domain/tipi'
+import { Icona } from './Icona'
 import { useArchivio } from './useArchivio'
 import './Archivio.css'
 
@@ -33,7 +34,7 @@ export function Archivio() {
             <button type="button" className="archivio__riga" onClick={() => apri(passata.id)}>
               <span className="archivio__data">{etichettaData(passata.creataIl)}</span>
               <span className="archivio__riepilogo">{riepilogo(passata)}</span>
-              <span className="archivio__freccia" aria-hidden="true" />
+              <Icona nome="avanti" className="archivio__freccia" />
             </button>
           </li>
         ))}
@@ -49,7 +50,7 @@ function ListaArchiviata({ lista, onChiudi }: { lista: Lista; onChiudi: () => vo
   return (
     <section className="passata" aria-labelledby="passata-titolo">
       <button type="button" className="passata__indietro" onClick={onChiudi}>
-        <span className="passata__freccia" aria-hidden="true" />
+        <Icona nome="indietro" className="passata__freccia" />
         Archivio
       </button>
       <h2 className="passata__titolo" id="passata-titolo">
@@ -97,9 +98,7 @@ function VoceArchiviata({ voce }: { voce: Voce }) {
 function ArchivioVuoto() {
   return (
     <section className="archivio-vuoto">
-      <p className="archivio-vuoto__icona" aria-hidden="true">
-        📚
-      </p>
+      <Icona nome="archivio" className="archivio-vuoto__icona" />
       <h2 className="archivio-vuoto__titolo">Nessuna spesa passata</h2>
       <p className="archivio-vuoto__testo">
         Le liste finiscono qui quando ne generi una nuova: quella di adesso resta
@@ -125,7 +124,7 @@ function Messaggio({
       </p>
       {onChiudi && (
         <button type="button" className="passata__indietro" onClick={onChiudi}>
-          <span className="passata__freccia" aria-hidden="true" />
+          <Icona nome="indietro" className="passata__freccia" />
           Archivio
         </button>
       )}

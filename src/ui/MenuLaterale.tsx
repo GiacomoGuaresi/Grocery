@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
+import { Icona, type NomeIcona } from './Icona'
 import './MenuLaterale.css'
 
 export interface VoceMenu<Id extends string> {
   id: Id
   etichetta: string
-  icona: string
+  icona: NomeIcona
 }
 
 interface Props<Id extends string> {
@@ -65,9 +66,7 @@ export function MenuLaterale<Id extends string>({
         aria-current={v.id === corrente ? 'page' : undefined}
         onClick={() => onVai(v.id)}
       >
-        <span className="menu__icona" aria-hidden="true">
-          {v.icona}
-        </span>
+        <Icona nome={v.icona} className="menu__icona" />
         {v.etichetta}
       </button>
     </li>
@@ -94,7 +93,7 @@ export function MenuLaterale<Id extends string>({
             aria-label="Chiudi il menu"
             onClick={onChiudi}
           >
-            <span aria-hidden="true">✕</span>
+            <Icona nome="chiudi" />
           </button>
         </div>
         <ul className="menu__gruppo">{sezioni.map((v) => voce(v))}</ul>

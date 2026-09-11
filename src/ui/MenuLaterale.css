@@ -69,6 +69,8 @@
 }
 
 .menu__chiudi {
+  display: grid;
+  place-items: center;
   width: var(--tocco);
   height: var(--tocco);
   padding: 0;
@@ -121,9 +123,15 @@
   font-weight: 600;
 }
 
+/* L'icona della voce: tenue, e piena di colore solo sulla sezione corrente. */
 .menu__icona {
-  width: 20px;
-  text-align: center;
+  font-size: 18px;
+  color: var(--inchiostro-tenue);
+}
+
+.menu__voce[aria-current='page'] .menu__icona,
+.menu__voce--azione .menu__icona {
+  color: var(--terracotta-scura);
 }
 
 /* Le azioni stanno sotto le sezioni, staccate da una riga. */

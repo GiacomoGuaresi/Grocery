@@ -13,6 +13,7 @@ import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
+import { Icona } from './Icona'
 import type { ListaPersistita } from './useLista'
 import './ListaSpesa.css'
 
@@ -124,7 +125,7 @@ function Errore() {
 function TuttoPreso() {
   return (
     <p className="lista__tutto-preso">
-      <span aria-hidden="true">🛒</span> Preso tutto.
+      <Icona nome="carrello" /> Preso tutto.
     </p>
   )
 }
@@ -132,9 +133,7 @@ function TuttoPreso() {
 function ListaVuota({ onGenera }: { onGenera: (portaAvanti: boolean) => void }) {
   return (
     <section className="lista-vuota">
-      <p className="lista-vuota__icona" aria-hidden="true">
-        🧺
-      </p>
+      <Icona nome="cesto" className="lista-vuota__icona" />
       <h2 className="lista-vuota__titolo">Nessuna lista</h2>
       <p className="lista-vuota__testo">
         Genera la lista del prossimo ciclo di due settimane, oppure aggiungi le

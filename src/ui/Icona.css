@@ -1,0 +1,8 @@
+/* Le icone stanno in riga col testo come una lettera: grandi 1em, colore del
+   testo. Chi le usa cambia solo font-size, color e, se serve, stroke-width. */
+.icona {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}

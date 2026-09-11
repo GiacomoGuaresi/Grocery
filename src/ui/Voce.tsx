@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { rinominabile } from '../domain/modifica'
 import { elementiAttivi, eRaggruppata } from '../domain/spunta'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { AzioniVoce } from './AzioniVoce'
+import { Icona } from './Icona'
 import './Voce.css'
 
 interface Props {
@@ -25,12 +27,13 @@ interface Props {
 }
 
 /**
- * Una voce della lista. Toccarla la segna comprata e la fa sparire dalla lista
- * attiva; nelle voci raggruppate (Frutta, Verdura) ogni elemento si spunta per
- * conto suo e sparisce da solo (doc/08-ui-ux.md).
+ * Una voce della lista. Toccare la sua casella la segna comprata e la fa
+ * sparire dalla lista attiva; nelle voci raggruppate (Frutta, Verdura) ogni
+ * elemento si spunta per conto suo e sparisce da solo (doc/08-ui-ux.md).
  *
- * Nella riga c'è solo la spunta. Tutto il resto — alternative, rinomina,
- * elimina — sta nel popup che si apre col ⋯ (AzioniVoce).
+ * Si spunta solo dalla casella: il nome non spunta. Nelle voci manuali sotto
+ * "Altro" toccare il nome lo rende modificabile lì dove sta. Tutto il resto —
+ * alternative, rinomina, elimina — sta nel popup che si apre col ⋯ (AzioniVoce).
  */
 export function Voce({
   voce,
@@ -44,6 +47,15 @@ export function Voce({
   onSostituisciElemento,
 }: Props) {
   const [azioniAperte, setAzioniAperte] = useState(false)
+  // Non nullo solo mentre si sta scrivendo il nome nuovo direttamente nella riga.
+  const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
+
+  // Invio o tocco fuori salvano; un nome vuoto o uguale lascia tutto com'era.
+  const salvaNome = () => {
+    const nome = nomeInCorso?.trim() ?? ''
+    if (nome !== '' && nome !== voce.nome) onRinomina(voce.id, nome)
+    setNomeInCorso(null)
+  }
 
   // Tra i già presi si rivede tutto quanto, per poterlo de-spuntare.
   const elementi = voce.comprata ? (voce.elementi ?? []) : elementiAttivi(voce)
@@ -52,14 +64,44 @@ export function Voce({
     <li className="voce">
       <div className="voce__testata">
         <button
-          className="voce__riga"
+          className="voce__spunta"
           type="button"
           aria-pressed={voce.comprata}
+          aria-label={`Spunta ${voce.nome}`}
           onClick={() => onAlterna(voce.id)}
         >
-          <span className="voce__segno" aria-hidden="true" />
-          <span className="voce__nome">{voce.nome}</span>
+          <span className="voce__segno" aria-hidden="true">
+            <Icona nome="spunta" className="voce__segno-spunta" />
+          </span>
         </button>
+        {nomeInCorso !== null ? (
+          <input
+            className="voce__campo"
+            type="text"
+            value={nomeInCorso}
+            onChange={(evento) => setNomeInCorso(evento.target.value)}
+            onBlur={salvaNome}
+            onKeyDown={(evento) => {
+              if (evento.key === 'Enter') evento.currentTarget.blur()
+              if (evento.key === 'Escape') setNomeInCorso(null)
+            }}
+            aria-label={`Nuovo nome per ${voce.nome}`}
+            autoComplete="off"
+            enterKeyHint="done"
+            autoFocus
+          />
+        ) : rinominabile(voce) ? (
+          <button
+            className="voce__nome voce__nome--rinomina"
+            type="button"
+            aria-label={`Rinomina ${voce.nome}`}
+            onClick={() => setNomeInCorso(voce.nome)}
+          >
+            {voce.nome}
+          </button>
+        ) : (
+          <span className="voce__nome">{voce.nome}</span>
+        )}
         <button
           className="voce__azioni-apri"
           type="button"
@@ -67,7 +109,7 @@ export function Voce({
           aria-label={`Azioni per ${voce.nome}`}
           onClick={() => setAzioniAperte(true)}
         >
-          <span aria-hidden="true">⋯</span>
+          <Icona nome="altro" />
         </button>
       </div>
 

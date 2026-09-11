@@ -63,6 +63,8 @@
 | 2026-09-09 | Spunta dei **singoli tipi** dentro le voci raggruppate Frutta e Verdura | deciso |
 | 2026-09-09 | Le voci generate **non si rinominano**: sono dati statici, si sostituiscono con la dropdown | deciso |
 | 2026-09-09 | Solo le voci manuali in "Altro" si rinominano; il reparto non è mai modificabile | deciso |
+| 2026-09-11 | Si spunta **solo dalla checkbox**; in "Altro" il tap sul testo rinomina la voce nella riga | deciso |
+| 2026-09-11 | **Icone SVG** a tratto al posto delle emoji, disegnate in casa (stile Lucide) senza librerie | deciso |
 | 2026-09-09 | Piano settimanale: mostra la **categoria**, non la tipologia del giorno | deciso |
 | 2026-09-09 | **Uova**: voce fissa senza quantità | deciso |
 | 2026-09-09 | Si passa allo **sviluppo**: struttura del progetto e dati JSON | deciso |

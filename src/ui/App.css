@@ -54,7 +54,7 @@
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
 }
 
-/* Il bottone del menu: le tre righe dentro un bersaglio pieno. */
+/* Il bottone del menu: l'icona delle tre righe dentro un bersaglio pieno. */
 .app__menu-apri {
   flex: none;
   display: grid;
@@ -66,38 +66,10 @@
   border-radius: var(--raggio);
   background: none;
   color: var(--inchiostro);
+  font-size: 22px;
   cursor: pointer;
 }
 
 .app__menu-apri:active {
   background: var(--bordo);
-}
-
-.app__hamburger,
-.app__hamburger::before,
-.app__hamburger::after {
-  display: block;
-  width: 18px;
-  height: 2px;
-  border-radius: 1px;
-  background: currentColor;
-}
-
-.app__hamburger {
-  position: relative;
-}
-
-.app__hamburger::before,
-.app__hamburger::after {
-  content: '';
-  position: absolute;
-  left: 0;
-}
-
-.app__hamburger::before {
-  top: -6px;
-}
-
-.app__hamburger::after {
-  top: 6px;
 }

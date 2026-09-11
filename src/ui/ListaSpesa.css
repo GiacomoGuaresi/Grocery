@@ -27,7 +27,8 @@
 
 .lista-vuota__icona {
   font-size: 45px;
-  line-height: 1;
+  color: var(--terracotta);
+  stroke-width: 1.5;
 }
 
 .lista-vuota__titolo {

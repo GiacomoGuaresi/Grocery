@@ -31,27 +31,61 @@
   gap: 4px;
 }
 
-/* Quasi tutta la riga è il bersaglio del tocco: si usa in piedi, con una mano. */
-.voce__riga {
+/* Si spunta solo dalla casella. Il bersaglio del tocco è più largo del segno
+   e alto quanto la riga, così col pollice lo si prende lo stesso. */
+.voce__spunta {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
+  flex: none;
   min-height: var(--riga);
+  margin-left: calc(var(--spazio) * -1);
+  padding: 0 6px 0 var(--spazio);
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.voce__nome {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+
+/* Il nome delle voci manuali sotto "Altro": toccandolo lo si corregge. */
+.voce__nome--rinomina {
+  align-self: stretch;
   padding: 0;
   border: none;
   background: none;
   color: inherit;
   font: inherit;
+  font-weight: 500;
   text-align: left;
-  cursor: pointer;
+  cursor: text;
 }
 
-.voce__nome {
-  font-weight: 500;
+/* Il nome mentre lo si scrive: a 16px, altrimenti iOS zooma al tocco. */
+.voce__campo {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--terracotta);
+  border-radius: 8px;
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  font-size: var(--testo-campo);
+}
+
+.voce__campo:focus {
+  outline: 2px solid var(--terracotta);
+  outline-offset: -1px;
 }
 
 .voce__segno {
+  display: grid;
+  place-items: center;
   flex: none;
   width: 17px;
   height: 17px;
@@ -59,31 +93,30 @@
   border-radius: 5px;
 }
 
+/* La spunta c'è sempre, ma si vede solo nei già presi. */
+.voce__segno-spunta {
+  font-size: 12px;
+  color: var(--panna);
+  stroke-width: 3.5;
+  visibility: hidden;
+}
+
 /* Nei già presi il segno è pieno, con la spunta. */
-.voce__riga[aria-pressed='true'] .voce__segno {
-  position: relative;
+.voce__spunta[aria-pressed='true'] .voce__segno {
   border-color: var(--terracotta-scura);
   background: var(--terracotta-scura);
 }
 
-.voce__riga[aria-pressed='true'] .voce__segno::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 4px;
-  width: 4px;
-  height: 8px;
-  border: solid var(--panna);
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+.voce__spunta[aria-pressed='true'] .voce__segno-spunta {
+  visibility: visible;
 }
 
-.voce__riga[aria-pressed='true'] .voce__nome {
+.voce__spunta[aria-pressed='true'] + .voce__nome {
   color: var(--inchiostro-tenue);
   text-decoration: line-through;
 }
 
-.voce__riga:active .voce__segno {
+.voce__spunta:active .voce__segno {
   background: var(--crema-scura);
 }
 
@@ -124,6 +157,8 @@
 /* Il tocco che apre il popup delle azioni: defilato, per non rubare spazio
    alla spunta. */
 .voce__azioni-apri {
+  display: grid;
+  place-items: center;
   flex: none;
   width: 34px;
   min-height: var(--riga);

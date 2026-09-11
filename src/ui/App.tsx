@@ -4,6 +4,7 @@ import './tema.css'
 import './App.css'
 import { Archivio } from './Archivio'
 import { ConfermaGenera } from './GeneraLista'
+import { Icona } from './Icona'
 import { ListaSpesa } from './ListaSpesa'
 import { MenuLaterale } from './MenuLaterale'
 import { PianoSettimanale } from './PianoSettimanale'
@@ -11,9 +12,9 @@ import { useLista } from './useLista'
 
 /** Le sezioni raggiungibili dal menu laterale (doc/08-ui-ux.md). */
 const sezioni = [
-  { id: 'lista', etichetta: 'Lista', sottotitolo: 'Lista della spesa', icona: '🛒' },
-  { id: 'piano', etichetta: 'Piano', sottotitolo: 'Piano settimanale', icona: '📅' },
-  { id: 'archivio', etichetta: 'Archivio', sottotitolo: 'Spese passate', icona: '🗂️' },
+  { id: 'lista', etichetta: 'Lista', sottotitolo: 'Lista della spesa', icona: 'carrello' },
+  { id: 'piano', etichetta: 'Piano', sottotitolo: 'Piano settimanale', icona: 'calendario' },
+  { id: 'archivio', etichetta: 'Archivio', sottotitolo: 'Spese passate', icona: 'archivio' },
 ] as const
 
 /**
@@ -21,7 +22,7 @@ const sezioni = [
  * fatta la scelta (o annullata), riporta alla lista.
  */
 const azioni = [
-  { id: 'genera', etichetta: 'Genera lista', sottotitolo: 'Nuova lista', icona: '✨' },
+  { id: 'genera', etichetta: 'Genera lista', sottotitolo: 'Nuova lista', icona: 'scintille' },
 ] as const
 
 type IdSchermata = (typeof sezioni)[number]['id'] | (typeof azioni)[number]['id']
@@ -51,7 +52,7 @@ export function App() {
           aria-controls="menu"
           onClick={() => setMenuAperto(true)}
         >
-          <span className="app__hamburger" aria-hidden="true" />
+          <Icona nome="menu" />
         </button>
         <div className="app__titoli">
           <h1 className="app__titolo">Grocery</h1>

@@ -34,7 +34,8 @@ Grocery/
         ├── PianoSettimanale.tsx  la tabella delle cene, in consultazione
         ├── Archivio.tsx       le spese passate e una di esse aperta
         ├── Voce.tsx           una voce, con gli elementi se è raggruppata
-        └── AzioniVoce.tsx     il popup con le azioni di una voce
+        ├── AzioniVoce.tsx     il popup con le azioni di una voce
+        └── Icona.tsx          le icone SVG dell'app, al posto delle emoji
 ```
 
 ## `src/data` — dati statici
