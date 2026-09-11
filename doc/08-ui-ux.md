@@ -27,6 +27,13 @@ tutte le sezioni e le azioni:
 - **Frutta** (di stagione)
 - **Verdura** (di stagione)
 - **Genera lista** (azione, staccata dalle sezioni)
+- **Installa l'app** (in fondo al menu, sparisce quando l'app è già installata)
+
+Il browser non propone più l'installazione con un popup (su iOS mai, su desktop
+solo un'icona nella barra degli indirizzi), quindi la voce serve a trovarla.
+Dove il browser lo permette (Chrome, Edge, Android) apre il suo prompt con un
+tocco; altrove (Safari, iOS) apre una schermata con i passi da fare a mano, scelti
+in base al dispositivo.
 
 Si chiude toccando fuori, con la ✕ o scegliendo una voce. Non c'è più la barra
 delle schede in alto.

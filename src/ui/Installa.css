@@ -1,0 +1,31 @@
+/* Le istruzioni per installare l'app a mano: una scheda come la conferma di
+   "Genera lista". */
+.installa {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--spazio);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema-scura);
+}
+
+.installa__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.installa__testo {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.installa__passi {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+}

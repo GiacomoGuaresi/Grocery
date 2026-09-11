@@ -198,8 +198,13 @@ Da qui in poi l'app diventa condivisa.
 
 - [x] `vite-plugin-pwa`, manifest e icone. Le icone escono da `public/icona.svg`
       con `npm run icone` e sono versionate in `public/`
-- [ ] Installabile sul telefono — manifest, icone e service worker ci sono, ma
-      **non ancora provato su un telefono vero** → Step 18
+- [ ] Installabile sul telefono — manifest, icone e service worker ci sono (e il
+      sito pubblicato li serve), ma **non ancora provato su un telefono vero** →
+      Step 18
+- [x] Voce "Installa l'app" in fondo al menu laterale (`src/ui/installazione.ts`):
+      i browser non mostrano un popup di installazione, quindi senza voce non si
+      trovava. Usa il prompt di Chrome/Edge/Android se c'è, altrimenti mostra le
+      istruzioni per iOS, Android o desktop
 - [x] Shell in cache: il service worker della build mette in precache HTML, JS,
       CSS e icone. Verificato sull'output della build, non ancora a rete staccata
       sul telefono

@@ -141,6 +141,13 @@
   border-top: 1px solid var(--bordo);
 }
 
+/* Le voci di servizio ("Installa l'app") stanno in fondo, lontane dall'uso di
+   tutti i giorni. */
+.menu__gruppo--piede {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
 .menu__voce--azione {
   color: var(--terracotta-scura);
   font-weight: 600;

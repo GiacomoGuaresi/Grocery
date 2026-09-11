@@ -14,6 +14,8 @@ interface Props<Id extends string> {
   sezioni: readonly VoceMenu<Id>[]
   /** Le azioni, sotto le sezioni e staccate da loro. */
   azioni: readonly VoceMenu<Id>[]
+  /** Le voci di servizio, in fondo al menu. */
+  piede?: readonly VoceMenu<Id>[]
   corrente: Id
   onVai: (id: Id) => void
   onChiudi: () => void
@@ -29,6 +31,7 @@ export function MenuLaterale<Id extends string>({
   aperto,
   sezioni,
   azioni,
+  piede = [],
   corrente,
   onVai,
   onChiudi,
@@ -99,6 +102,9 @@ export function MenuLaterale<Id extends string>({
         <ul className="menu__gruppo">{sezioni.map((v) => voce(v))}</ul>
         <hr className="menu__separatore" />
         <ul className="menu__gruppo">{azioni.map((v) => voce(v, true))}</ul>
+        {piede.length > 0 && (
+          <ul className="menu__gruppo menu__gruppo--piede">{piede.map((v) => voce(v))}</ul>
+        )}
       </nav>
     </>
   )
