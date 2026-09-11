@@ -250,7 +250,9 @@ Prima di mettere il sito online, in quest'ordine:
       `VITE_SUPABASE_EMAIL`, gli stessi valori di `.env.local`. Impostate il
       2026-09-11 con `gh variable set`. Il primo giro del workflow, partito prima,
       era fallito proprio per queste
-- [ ] Pages attivato con sorgente *GitHub Actions* (Settings → Pages)
+- [x] Pages attivato con sorgente *GitHub Actions* (Settings → Pages). Era già
+      acceso ma su *Deploy from a branch*, che pubblicava il sorgente del repo;
+      passato a `workflow` il 2026-09-11
 - [ ] Commit e push su `main`, primo giro del workflow e sito aperto su
       `giacomoguaresi.github.io/Grocery/`
 
