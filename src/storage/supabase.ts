@@ -5,7 +5,7 @@
 import { createBrowserClient } from '@supabase/ssr'
 import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Modifiche } from '../domain/sincronia'
-import type { IdReparto, Lista, Rotazione, SintesiLista, Voce } from '../domain/tipi'
+import type { IdReparto, Lista, Voce } from '../domain/tipi'
 import { AccessoSupabase } from './accesso'
 import { ErroreRete, type Storage } from './tipi'
 
@@ -28,45 +28,39 @@ interface RigaVoce {
   categoria: string | null
   origine: Voce['origine']
   comprata: boolean
-  alternative: string[] | null
+  quantita: number | null
+  presi: number | null
 }
 
 interface RigaLista {
   id: string
   creata_il: string
-  stato: Lista['stato']
   voci: RigaVoce[]
 }
 
 const COLONNE_LISTA =
-  'id, creata_il, stato, voci(id, nome, reparto, categoria, origine, comprata, alternative)'
+  'id, creata_il, voci(id, nome, reparto, categoria, origine, comprata, quantita, presi)'
 
 export class StorageSupabase implements Storage {
   constructor(private readonly client: SupabaseClient) {}
 
+  /** Di liste ce n'è al più una: la garantisce un indice unico. */
   async leggiListaCorrente(): Promise<Lista | null> {
-    // Di correnti ce n'è al più una: la garantisce un indice unico.
-    return this.lista('stato', 'corrente')
-  }
-
-  async leggiLista(id: string): Promise<Lista | null> {
-    return this.lista('id', id)
-  }
-
-  /** Dalla vista `archivio`, che conta le voci senza tirarle su (F11). */
-  async leggiArchivio(): Promise<SintesiLista[]> {
     senzaRete()
     const { data, error, status } = await this.client
-      .from('archivio')
-      .select('id, creata_il, quante_voci, quante_comprate')
-      .order('creata_il', { ascending: false })
+      .from('liste')
+      .select(COLONNE_LISTA)
+      .order('posizione', { referencedTable: 'voci' })
+      .maybeSingle()
     controlla(error, status)
-    return data!.map((riga) => ({
+    if (!data) return null
+
+    const riga = data as RigaLista
+    return {
       id: riga.id,
       creataIl: dataIso(riga.creata_il),
-      quanteVoci: riga.quante_voci,
-      quanteComprate: riga.quante_comprate,
-    }))
+      voci: riga.voci.map(daRigaVoce),
+    }
   }
 
   /** Tutto in una transazione, dentro `salva_lista`: vedi la migrazione. */
@@ -93,10 +87,10 @@ export class StorageSupabase implements Storage {
 
   /**
    * Il realtime ascolta solo la tabella `liste`: ogni scrittura sulla lista
-   * corrente ne aggiorna la riga (`aggiornata_il`), e la nascita di una lista
-   * nuova ne inserisce una. Le voci arrivano poi con la rilettura. Così dal
-   * canale non passa mai il contenuto della lista, nemmeno quello delle voci
-   * cancellate, che Postgres manderebbe senza guardare le policy.
+   * ne aggiorna la riga (`aggiornata_il`), e la nascita di una lista nuova ne
+   * inserisce una. Le voci arrivano poi con la rilettura. Così dal canale non
+   * passa mai il contenuto della lista, nemmeno quello delle voci cancellate,
+   * che Postgres manderebbe senza guardare le policy.
    *
    * Il realtime non ripete quello che si è perso: si avvisa anche a ogni
    * (ri)connessione del canale, quando l'app torna in primo piano e quando
@@ -132,43 +126,6 @@ export class StorageSupabase implements Storage {
   }
 
   private static canali = 0
-
-  async leggiRotazioni(): Promise<Rotazione[]> {
-    senzaRete()
-    const { data, error, status } = await this.client
-      .from('rotazioni')
-      .select('categoria, ultimi')
-      .order('categoria')
-    controlla(error, status)
-    return data as Rotazione[]
-  }
-
-  async salvaRotazioni(rotazioni: Rotazione[]): Promise<void> {
-    senzaRete()
-    const { error, status } = await this.client.rpc('salva_rotazioni', { rotazioni })
-    controlla(error, status)
-  }
-
-  /** La lista con la colonna uguale al valore, voci comprese; `null` se non c'è. */
-  private async lista(colonna: 'id' | 'stato', valore: string): Promise<Lista | null> {
-    senzaRete()
-    const { data, error, status } = await this.client
-      .from('liste')
-      .select(COLONNE_LISTA)
-      .eq(colonna, valore)
-      .order('posizione', { referencedTable: 'voci' })
-      .maybeSingle()
-    controlla(error, status)
-    if (!data) return null
-
-    const riga = data as RigaLista
-    return {
-      id: riga.id,
-      creataIl: dataIso(riga.creata_il),
-      stato: riga.stato,
-      voci: riga.voci.map(daRigaVoce),
-    }
-  }
 }
 
 /**
@@ -200,7 +157,8 @@ function daRigaVoce(riga: RigaVoce): Voce {
     comprata: riga.comprata,
   }
   if (riga.categoria !== null) voce.categoria = riga.categoria as Voce['categoria']
-  if (riga.alternative !== null) voce.alternative = riga.alternative
+  if (riga.quantita !== null) voce.quantita = riga.quantita
+  if (riga.presi !== null) voce.presi = riga.presi
   return voce
 }
 

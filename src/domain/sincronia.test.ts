@@ -15,7 +15,6 @@ import type { Lista } from './tipi'
 const lista: Lista = {
   id: 'lista-1',
   creataIl: '2026-09-07T08:00:00.000Z',
-  stato: 'corrente',
   voci: [
     { id: 'verdura-1', nome: 'zucchine', reparto: 'ortofrutta', categoria: 'verdura', origine: 'generata', comprata: false },
     { id: 'pesce-1', nome: 'orata', reparto: 'pescheria', categoria: 'pesce', origine: 'generata', comprata: false },

@@ -65,19 +65,27 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
       brevi, 4 tipi di verdura e frutta fissati nel codice) finché V3 e V6 non le
       sostituiscono (2026-09-12)
 
-### Step V2 — Modello dati e database
+### Step V2 — Modello dati e database ✅
 
-- [ ] `Voce`: aggiunti `quantita` e `presi`, tolto `alternative`
-- [ ] `Lista`: tolto `stato`; `SintesiLista` e `Rotazione` eliminati
-- [ ] Migrazione Supabase: colonne nuove su `voci`; via `rotazioni`, `salva_rotazioni`,
-      la vista `archivio` e le liste archiviate. Prima su *Grocery DEV*, poi in
-      produzione **dopo conferma**, perché cancella dati
-- [ ] La lista corrente di produzione **non si tocca**: le sue voci v1 restano con la
+- [x] `Voce`: aggiunti `quantita` e `presi`, tolto `alternative`
+- [x] `Lista`: tolto `stato`; `SintesiLista` e `Rotazione` eliminati
+- [x] Migrazione Supabase (`20260912000000_v2.sql`): colonne nuove su `voci` con il
+      vincolo `0 ≤ presi ≤ quantita`; via `alternative`, `stato`, `rotazioni`,
+      `salva_rotazioni`, la vista `archivio` e le liste archiviate; un indice tiene
+      una lista sola. Applicata su *Grocery DEV* (2026-09-12); in produzione
+      **dopo conferma** (V7), perché cancella dati
+- [x] La lista corrente di produzione **non si tocca**: le sue voci v1 restano con la
       spunta e senza popup
-- [ ] Contratto `Storage`, `inMemoria`, `memoriaLocale`, `sincronizzatore`: via
-      rotazioni e archivio; `presi` in *last-write-wins* per voce come la spunta
-- [ ] Coda offline: le scritture v1 rimaste in `localStorage` con campi vecchi non
-      devono bloccare la coda
+- [x] Contratto `Storage`, `inMemoria`, `memoriaLocale`, `sincronizzatore`: via
+      rotazioni, archivio e `leggiLista`; salvare una lista cancella le altre;
+      `presi` in *last-write-wins* per voce come la spunta
+- [x] Coda offline: le scritture v1 rimaste in `localStorage` perdono `alternative`,
+      quelle senza la forma giusta si scartano; una scrittura per una lista sparita
+      non fa niente e non blocca la coda
+- [x] Per lasciare l'app funzionante, anticipati da V6: tolti `archivio.ts`,
+      `useArchivio.ts`, `Archivio.tsx/.css`, il test e la voce *Archivio* del menu.
+      Generazione e ciclo v1 senza rotazioni né archiviazione (pesca casuale senza
+      memoria) finché V3 non li riscrive
 
 ### Step V3 — Generazione nuova
 
@@ -116,9 +124,9 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
 
 ### Step V6 — Pulizia
 
-- [ ] Codice tolto: `alternative.ts`, `ciclo.ts`, `archivio.ts`, `useArchivio.ts`,
-      `Archivio.tsx/.css` e i loro test; `listaEsempio.ts` se non serve più
-- [ ] Menu laterale senza *Archivio*
+- [ ] Codice tolto: `alternative.ts`, `ciclo.ts` e i loro test; `listaEsempio.ts` se
+      non serve più (l'archivio è già andato in V2)
+- [x] Menu laterale senza *Archivio* (fatto in V2)
 - [ ] [07](07-architettura-stack.md) (la generazione non vuole più la rete),
       [11](11-struttura-progetto.md) e il README allineati al codice nuovo
 - [ ] Screenshot del README rifatti, **lista compresa**, senza l'archivio

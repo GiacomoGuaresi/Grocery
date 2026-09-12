@@ -7,7 +7,7 @@
 // averla a schermo prima ancora di sentire il database.
 
 import type { Scrittura } from '../domain/sincronia'
-import type { Lista } from '../domain/tipi'
+import type { Lista, Voce } from '../domain/tipi'
 
 /** Il pezzo di `localStorage` che serve qui: nei test lo fa una Map. */
 export interface Scaffale {
@@ -23,16 +23,28 @@ export class MemoriaLocale {
 
   /** L'ultima lista mostrata, con le modifiche fatte qui; `null` alla prima apertura. */
   leggiLista(): Lista | null {
-    return this.leggi<Lista | null>(CHIAVE_LISTA, null)
+    const lista = this.leggi<Lista | null>(CHIAVE_LISTA, null)
+    if (!eLista(lista)) return null
+    return { id: lista.id, creataIl: lista.creataIl, voci: lista.voci.map(senzaCampiV1) }
   }
 
   salvaLista(lista: Lista): void {
     this.scrivi(CHIAVE_LISTA, lista)
   }
 
-  /** Le scritture non ancora arrivate al database, dalla più vecchia. */
+  /**
+   * Le scritture non ancora arrivate al database, dalla più vecchia. Quelle
+   * rimaste dalla v1 perdono i campi che non esistono più; una scrittura senza
+   * la forma giusta si lascia perdere, invece di bloccare le altre dietro.
+   */
   leggiCoda(): Scrittura[] {
-    return this.leggi<Scrittura[]>(CHIAVE_CODA, [])
+    const coda = this.leggi<unknown>(CHIAVE_CODA, [])
+    if (!Array.isArray(coda)) return []
+    return coda.filter(eScrittura).map(({ listaId, modifiche, quando }) => ({
+      listaId,
+      modifiche: { voci: modifiche.voci.map(senzaCampiV1), eliminate: modifiche.eliminate },
+      quando,
+    }))
   }
 
   salvaCoda(coda: Scrittura[]): void {
@@ -58,6 +70,27 @@ export class MemoriaLocale {
       console.warn(`Memoria locale non scrivibile: ${chiave}`, errore)
     }
   }
+}
+
+function eLista(valore: unknown): valore is Lista {
+  const lista = valore as Lista | null
+  return typeof lista?.id === 'string' && typeof lista.creataIl === 'string' && Array.isArray(lista.voci)
+}
+
+function eScrittura(valore: unknown): valore is Scrittura {
+  const scrittura = valore as Scrittura | null
+  return (
+    typeof scrittura?.listaId === 'string' &&
+    typeof scrittura.quando === 'string' &&
+    Array.isArray(scrittura.modifiche?.voci) &&
+    Array.isArray(scrittura.modifiche.eliminate)
+  )
+}
+
+/** Via `alternative`, che nella v2 non esiste più (doc/06). */
+function senzaCampiV1(voce: Voce): Voce {
+  const { alternative: _, ...resto } = voce as Voce & { alternative?: unknown }
+  return resto
 }
 
 /** La memoria di questo browser; senza `localStorage` non ricorda niente. */

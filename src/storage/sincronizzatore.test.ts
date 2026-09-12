@@ -171,7 +171,7 @@ describe('last-write-wins con la coda', () => {
     expect(ids(qui.lista())).toEqual(['pesce-1', 'manuale-1'])
   })
 
-  it('le modifiche rimaste in coda per una lista che altrove è stata sostituita non toccano l archivio', async () => {
+  it('le modifiche rimaste in coda per una lista che altrove è stata sostituita non toccano quella nuova', async () => {
     const db = await conLista()
     const qui = dispositivo(db)
     const la = dispositivo(db)
@@ -188,7 +188,9 @@ describe('last-write-wins con la coda', () => {
     await qui.sincronizzatore.finito()
     expect(qui.lista().id).toBe(la.lista().id)
     expect(qui.lista().id).not.toBe(lista.id)
-    expect(comprata(await db.leggiLista(lista.id), 'pesce-1')).toBe(false)
+    // La lista nuova ha anche lei un `pesce-1`: la spunta vecchia non ci arriva.
+    expect(comprata(await db.leggiListaCorrente(), 'pesce-1')).toBe(false)
+    expect(await db.leggiListaCorrente()).toEqual(la.lista())
   })
 })
 
@@ -237,5 +239,42 @@ describe('memoria locale', () => {
       },
     }
     expect(() => new MemoriaLocale(piena).salvaLista(lista)).not.toThrow()
+  })
+
+  // Step V2: un telefono aggiornato alla v2 con la lista e la coda della v1.
+  it('lista e scritture rimaste dalla v1 si leggono senza i campi vecchi', () => {
+    const memoria = scaffale()
+    const vecchia = { id: 'lista-1', creataIl: lista.creataIl, stato: 'corrente', voci: [{ ...lista.voci[1], alternative: ['branzino'] }] }
+    memoria.setItem('grocery.lista', JSON.stringify(vecchia))
+    memoria.setItem('grocery.coda', JSON.stringify([
+      { listaId: 'lista-1', modifiche: { voci: [{ ...lista.voci[1], alternative: ['branzino'] }], eliminate: [] }, quando: alle('09:00') },
+      { listaId: 'lista-1', quando: alle('09:01') },
+      'rotta',
+    ]))
+    const locale = new MemoriaLocale(memoria)
+    expect(locale.leggiLista()).toEqual({ id: 'lista-1', creataIl: lista.creataIl, voci: [lista.voci[1]] })
+    expect(locale.leggiCoda()).toEqual([
+      { listaId: 'lista-1', modifiche: { voci: [lista.voci[1]], eliminate: [] }, quando: alle('09:00') },
+    ])
+  })
+
+  it('la coda rimasta dalla v1 arriva al database e non blocca quelle nuove', async () => {
+    const db = await conLista()
+    const memoria = scaffale()
+    const spuntata = { ...lista.voci[1], comprata: true, alternative: ['branzino'] }
+    memoria.setItem('grocery.coda', JSON.stringify([
+      { listaId: lista.id, modifiche: { voci: [spuntata], eliminate: [] }, quando: alle('09:00') },
+      { listaId: 'lista-v1-sparita', modifiche: { voci: [spuntata], eliminate: [] }, quando: alle('09:00') },
+    ]))
+    const qui = dispositivo(db, memoria)
+    await qui.sincronizzatore.apri()
+    qui.sincronizzatore.modifica((l) => spuntaVoce(l, 'verdura-1'))
+    await qui.sincronizzatore.finito()
+
+    expect(qui.sincronizzatore.leggi().inAttesa).toBe(0)
+    const sulDatabase = await db.leggiListaCorrente()
+    expect(comprata(sulDatabase, 'pesce-1')).toBe(true)
+    expect(comprata(sulDatabase, 'verdura-1')).toBe(true)
+    expect(sulDatabase?.voci[1]).not.toHaveProperty('alternative')
   })
 })

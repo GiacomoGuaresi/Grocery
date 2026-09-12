@@ -42,7 +42,7 @@ const PAUSA_RILETTURA = 250
 /** La lista con cui parte un dispositivo quando il database non ne ha ancora una. */
 function listaVuota(adesso: Date): Lista {
   const quando = adesso.toISOString()
-  return { id: `lista-${quando}`, creataIl: quando, stato: 'corrente', voci: [] }
+  return { id: `lista-${quando}`, creataIl: quando, voci: [] }
 }
 
 export class Sincronizzatore {
@@ -137,24 +137,17 @@ export class Sincronizzatore {
   }
 
   /**
-   * Genera il ciclo nuovo: archivia la lista corrente e la sostituisce, con o
-   * senza le voci rimaste da prendere (Step 9). A differenza delle altre
-   * operazioni ha bisogno del database prima di calcolare qualcosa — le
-   * rotazioni sono la memoria dei cicli passati — quindi senza rete non parte,
-   * e lo stato cambia solo a scritture avvenute.
+   * Genera il ciclo nuovo: la lista nuova, con o senza le voci rimaste da
+   * prendere (Step 9), prende il posto di quella di adesso, che si cancella.
+   * Per ora passa ancora dal database e senza rete non parte: lo Step V3 la
+   * fa girare anche offline.
    */
   genera(portaAvanti: boolean): void {
     void this.inFila('Generazione fallita', async (storage) => {
       await this.svuotaCoda(storage)
-      const rotazioni = await storage.leggiRotazioni()
-      // Una lista ancora vuota non vale la pena di archiviarla.
-      const precedente = this.lista?.voci.length ? this.lista : null
-      const ciclo = nuovoCiclo({ precedente, portaAvanti, rotazioni })
-
-      if (ciclo.archiviata) await storage.salvaLista(ciclo.archiviata)
-      await storage.salvaLista(ciclo.lista)
-      await storage.salvaRotazioni(ciclo.rotazioni)
-      this.tieni(ciclo.lista)
+      const lista = nuovoCiclo({ precedente: this.lista, portaAvanti })
+      await storage.salvaLista(lista)
+      this.tieni(lista)
     })
   }
 

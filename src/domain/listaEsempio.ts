@@ -8,7 +8,6 @@ import type { Lista } from './tipi'
 export const listaEsempio: Lista = {
   id: 'esempio',
   creataIl: '2026-09-07T08:00:00.000Z',
-  stato: 'corrente',
   voci: [
     ...(['zucchine', 'melanzane', 'spinaci', 'peperoni'] as const).map((nome, i) => ({
       id: `verdura-${i + 1}`,

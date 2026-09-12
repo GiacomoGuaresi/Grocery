@@ -6,23 +6,24 @@ import { describe, expect, it } from 'vitest'
 import { listaEsempio } from '../domain/listaEsempio'
 import { differenze } from '../domain/sincronia'
 import { spuntaVoce } from '../domain/spunta'
-import type { Lista, Rotazione, Voce } from '../domain/tipi'
+import type { Lista, Voce } from '../domain/tipi'
 import type { Storage } from './tipi'
 
 export const lista: Lista = {
   id: 'lista-1',
   creataIl: '2026-09-07T08:00:00.000Z',
-  stato: 'corrente',
   voci: [
     {
       id: 'verdura-1',
-      nome: 'zucchine',
+      nome: 'Verdura',
       reparto: 'ortofrutta',
       categoria: 'verdura',
       origine: 'generata',
       comprata: false,
-      alternative: ['cavolfiore', 'finocchi'],
+      quantita: 14,
+      presi: 3,
     },
+    // Una voce generata dalla v1, rimasta nella lista al passaggio: niente contatore.
     {
       id: 'pesce-1',
       nome: 'orata',
@@ -46,10 +47,15 @@ export function alle(ora: string): string {
   return `2026-09-12T${ora}:00.000Z`
 }
 
+/** La lista con `presi` cambiato sulla voce: come farà il contatore (Step V4). */
+export function conPresi(l: Lista, id: string, presi: number): Lista {
+  return { ...l, voci: l.voci.map((voce) => (voce.id === id ? { ...voce, presi } : voce)) }
+}
+
 /** `apriVuoto` dà uno storage senza niente dentro, uno nuovo a ogni test. */
 export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
   describe('lettura e scrittura della lista', () => {
-    it('su un database vuoto non c e nessuna lista corrente', async () => {
+    it('su un database vuoto non c e nessuna lista', async () => {
       const storage = await apriVuoto()
       expect(await storage.leggiListaCorrente()).toBeNull()
     })
@@ -70,10 +76,13 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
     it('non inventa i campi opzionali assenti', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
-      const [, pesce, manuale] = (await storage.leggiListaCorrente())!.voci
-      expect(pesce).not.toHaveProperty('alternative')
+      const [verdura, pesce, manuale] = (await storage.leggiListaCorrente())!.voci
+      expect(verdura).toMatchObject({ quantita: 14, presi: 3 })
+      expect(pesce).not.toHaveProperty('quantita')
+      expect(pesce).not.toHaveProperty('presi')
       expect(pesce.categoria).toBe('pesce')
       expect(manuale).not.toHaveProperty('categoria')
+      expect(manuale).not.toHaveProperty('quantita')
     })
 
     it('salvando di nuovo aggiorna invece di duplicare', async () => {
@@ -101,12 +110,12 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       expect(await storage.leggiListaCorrente()).toEqual(rovesciata)
     })
 
-    it('tiene una sola lista corrente: la precedente viene archiviata', async () => {
+    it('tiene una sola lista: salvarne una nuova cancella la precedente', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       const nuova: Lista = { ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' }
       await storage.salvaLista(nuova)
-      expect((await storage.leggiListaCorrente())?.id).toBe('lista-2')
+      expect(await storage.leggiListaCorrente()).toEqual(nuova)
     })
   })
 
@@ -147,6 +156,14 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       expect((await storage.leggiListaCorrente())?.voci[1].comprata).toBe(true)
     })
 
+    it('presi segue la stessa regola: sulla stessa voce vince il numero più recente', async () => {
+      const storage = await apriVuoto()
+      await storage.salvaLista(lista)
+      await storage.salvaVoci(lista.id, differenze(lista, conPresi(lista, 'verdura-1', 5)), alle('10:05'))
+      await storage.salvaVoci(lista.id, differenze(lista, conPresi(lista, 'verdura-1', 4)), alle('10:00'))
+      expect((await storage.leggiListaCorrente())?.voci[0].presi).toBe(5)
+    })
+
     it('una voce eliminata non torna per una modifica rimasta indietro', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
@@ -166,109 +183,24 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       expect(riletta?.voci[2]).toEqual(nuova)
     })
 
-    it('una lista archiviata non si tocca', async () => {
-      const storage = await apriVuoto()
-      await storage.salvaLista(lista)
-      await storage.salvaLista({ ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' })
-      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] }, alle('10:00'))
-      expect((await storage.leggiLista(lista.id))?.voci).toHaveLength(lista.voci.length)
-    })
-  })
-
-  describe('archivio', () => {
-    /** Due generazioni di seguito: la prima lista finisce archiviata (F11). */
-    async function conDueSpese() {
+    it('le scritture per una lista già sostituita non toccano quella nuova', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
       const nuova: Lista = { ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' }
       await storage.salvaLista(nuova)
-      return storage
-    }
+      await storage.salvaVoci(lista.id, differenze(lista, spuntaVoce(lista, 'pesce-1')), alle('10:00'))
+      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['manuale-1'] }, alle('10:00'))
+      expect(await storage.leggiListaCorrente()).toEqual(nuova)
+    })
 
-    it('su un database senza liste passate e vuoto', async () => {
+    it('le eliminate della lista vecchia non valgono per quella nuova', async () => {
       const storage = await apriVuoto()
       await storage.salvaLista(lista)
-      expect(await storage.leggiArchivio()).toEqual([])
-    })
-
-    it('elenca le liste archiviate, non quella corrente', async () => {
-      const storage = await conDueSpese()
-      expect(await storage.leggiArchivio()).toEqual([
-        {
-          id: 'lista-1',
-          creataIl: '2026-09-07T08:00:00.000Z',
-          quanteVoci: 3,
-          quanteComprate: 1,
-        },
-      ])
-    })
-
-    it('mette per prima la spesa più recente', async () => {
-      const storage = await apriVuoto()
-      for (const [id, creataIl] of [
-        ['lista-1', '2026-08-10T08:00:00.000Z'],
-        ['lista-2', '2026-08-24T08:00:00.000Z'],
-        ['lista-3', '2026-09-07T08:00:00.000Z'],
-      ]) {
-        await storage.salvaLista({ ...lista, id, creataIl })
-      }
-      expect((await storage.leggiArchivio()).map((s) => s.id)).toEqual(['lista-2', 'lista-1'])
-    })
-
-    it('una lista archiviata si riapre intera, com era', async () => {
-      const storage = await conDueSpese()
-      expect(await storage.leggiLista('lista-1')).toEqual({ ...lista, stato: 'archiviata' })
-    })
-
-    it('per un id che non esiste non restituisce niente', async () => {
-      const storage = await conDueSpese()
-      expect(await storage.leggiLista('lista-mai-vista')).toBeNull()
-    })
-  })
-
-  describe('rotazioni', () => {
-    const rotazioni: Rotazione[] = [
-      { categoria: 'pesce', ultimi: ['orata', 'branzino', 'cozze', 'polpo'] },
-      { categoria: 'carne_rossa', ultimi: ['salsiccia', 'ossobuco di vitello'] },
-      { categoria: 'frutta', ultimi: ['mele', 'pere', 'uva', 'fichi'] },
-    ]
-
-    it('parte vuota', async () => {
-      const storage = await apriVuoto()
-      expect(await storage.leggiRotazioni()).toEqual([])
-    })
-
-    it('rilegge quello che ha salvato', async () => {
-      const storage = await apriVuoto()
-      await storage.salvaRotazioni(rotazioni)
-      expect(await storage.leggiRotazioni()).toEqual(
-        [...rotazioni].sort((a, b) => a.categoria.localeCompare(b.categoria)),
-      )
-    })
-
-    it('sostituisce la memoria precedente invece di accumularla', async () => {
-      const storage = await apriVuoto()
-      await storage.salvaRotazioni(rotazioni)
-      await storage.salvaRotazioni([{ categoria: 'pesce', ultimi: ['sgombro'] }])
-      expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'pesce', ultimi: ['sgombro'] }])
-    })
-
-    it('una memoria vuota resta un elenco vuoto', async () => {
-      const storage = await apriVuoto()
-      await storage.salvaRotazioni([{ categoria: 'uova', ultimi: [] }])
-      expect(await storage.leggiRotazioni()).toEqual([{ categoria: 'uova', ultimi: [] }])
-    })
-
-    // Scegliere un'alternativa salva solo la lista: la memoria del ciclo resta
-    // quella della generazione (R7).
-    it('salvare la lista non tocca le rotazioni', async () => {
-      const storage = await apriVuoto()
-      await storage.salvaLista(listaEsempio)
-      await storage.salvaRotazioni(rotazioni)
-      await storage.salvaLista({ ...listaEsempio, voci: listaEsempio.voci.slice(1) })
-      expect(await storage.leggiRotazioni()).toEqual(
-        [...rotazioni].sort((a, b) => a.categoria.localeCompare(b.categoria)),
-      )
+      await storage.salvaVoci(lista.id, { voci: [], eliminate: ['pesce-1'] }, alle('10:00'))
+      const nuova: Lista = { ...lista, id: 'lista-2', creataIl: '2026-09-21T08:00:00.000Z' }
+      await storage.salvaLista(nuova)
+      await storage.salvaVoci(nuova.id, differenze(nuova, spuntaVoce(nuova, 'pesce-1')), alle('10:05'))
+      expect((await storage.leggiListaCorrente())?.voci[1].comprata).toBe(true)
     })
   })
 }

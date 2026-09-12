@@ -2,7 +2,6 @@ import { useCallback, useState } from 'react'
 import { vociDaRiportare } from '../domain/ciclo'
 import './tema.css'
 import './App.css'
-import { Archivio } from './Archivio'
 import { DiStagione } from './DiStagione'
 import { ConfermaGenera } from './GeneraLista'
 import { Icona } from './Icona'
@@ -17,7 +16,6 @@ import { useLista } from './useLista'
 const sezioni = [
   { id: 'lista', etichetta: 'Lista', icona: 'carrello' },
   { id: 'piano', etichetta: 'Piano', icona: 'calendario' },
-  { id: 'archivio', etichetta: 'Archivio', icona: 'archivio' },
   { id: 'frutta', etichetta: 'Frutta', icona: 'mela' },
   { id: 'verdura', etichetta: 'Verdura', icona: 'carota' },
 ] as const
@@ -93,7 +91,6 @@ export function App() {
       <main className="app__contenuto">
         {schermata === 'lista' && <ListaSpesa {...lista} />}
         {schermata === 'piano' && <PianoSettimanale />}
-        {schermata === 'archivio' && <Archivio />}
         {schermata === 'frutta' && <DiStagione gruppo="frutta" />}
         {schermata === 'verdura' && <DiStagione gruppo="verdura" />}
         {schermata === 'installa' && <Installa stato={statoInstallazione} />}

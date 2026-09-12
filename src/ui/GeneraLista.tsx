@@ -41,8 +41,7 @@ export function GeneraLista({ rimaste, onGenera }: Props) {
 
 /**
  * La conferma che apre il ciclo nuovo di due settimane (doc/08-ui-ux.md, §3).
- * C'è sempre, perché archivia la lista corrente: quella di prima non si tocca
- * più, non esiste un "rigenera".
+ * C'è sempre, perché la lista di adesso si cancella: non esiste un "rigenera".
  *
  * Se è rimasto qualcosa da prendere la conferma diventa una domanda: portarlo
  * nella lista nuova oppure no. È così che quello che si è aggiunto a mano tra
@@ -57,7 +56,7 @@ export function ConfermaGenera({
     <section className="genera genera--conferma" role="dialog" aria-label="Genera una nuova lista">
       <h2 className="genera__titolo">Genero una lista nuova?</h2>
       <p className="genera__testo">
-        La lista di adesso viene archiviata: da lì in poi si compra su quella nuova.
+        La lista di adesso viene cancellata: da lì in poi si compra su quella nuova.
       </p>
 
       {rimaste.length > 0 && (

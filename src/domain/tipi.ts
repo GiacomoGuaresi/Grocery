@@ -14,38 +14,22 @@ export interface Voce {
   id: string
   nome: string
   reparto: IdReparto
-  /**
-   * Assente per le voci manuali. Ogni tipo di verdura e di frutta è una voce a
-   * sé, con categoria `verdura` o `frutta`.
-   */
+  /** Assente per le voci manuali. */
   categoria?: IdCategoria | IdGruppo
   origine: 'generata' | 'manuale'
   comprata: boolean
-  /** Tipologie sostitutive proposte nella dropdown. */
-  alternative?: string[]
+  /**
+   * Il totale di pasti da coprire, dalla routine (v2). Solo voci generate: le
+   * manuali, e le generate rimaste dalla v1, non ce l'hanno e si spuntano.
+   */
+  quantita?: number
+  /** Quanti pasti sono già stati presi, da 0 a `quantita`. C'è se c'è `quantita`. */
+  presi?: number
 }
 
+/** La lista della spesa: ce n'è una sola, generarne una nuova cancella la vecchia. */
 export interface Lista {
   id: string
   creataIl: string
-  stato: 'corrente' | 'archiviata'
   voci: Voce[]
-}
-
-/**
- * Una lista dell'archivio vista dall'elenco (F11): quanto basta a riconoscerla
- * e a sapere com'è andata, senza tirare su tutte le voci.
- */
-export interface SintesiLista {
-  id: string
-  creataIl: string
-  quanteVoci: number
-  quanteComprate: number
-}
-
-/** Memoria della rotazione tra un ciclo e l'altro. */
-export interface Rotazione {
-  categoria: IdCategoria | IdGruppo
-  /** Le tipologie proposte nell'ultimo ciclo: si evitano in quello nuovo (R3). */
-  ultimi: string[]
 }

@@ -4,9 +4,8 @@
 //
 // La scelta è **casuale**, non a giro fisso sul catalogo: scorrendo il catalogo
 // in ordine capitavano cicli interi sullo stesso animale, cambiando solo il
-// taglio (R2). L'unica memoria è l'elenco delle tipologie proposte l'ultima
-// volta, che l'algoritmo restituisce aggiornato perché venga salvato: quelle si
-// evitano al giro dopo (R3).
+// taglio (R2). Dalla v2 non c'è più memoria tra un ciclo e l'altro: le
+// rotazioni sono tolte, e lo Step V3 riscrive la generazione per categorie.
 
 import {
   categoria,
@@ -17,29 +16,18 @@ import {
   type GruppoFisso,
   type Mese,
 } from './dati'
-import type { IdCategoria, Lista, Rotazione, Voce } from './tipi'
+import type { IdCategoria, Lista, Voce } from './tipi'
 
 /** Tipi di verdura e di frutta per ciclo: resta finché lo Step V3 non riscrive la generazione. */
 const tipiPerCiclo = 4
 
-/** Le righe di rotazione hanno una chiave per categoria e una per gruppo fisso. */
-export type ChiaveRotazione = IdCategoria | GruppoFisso
-
 export interface OpzioniGenerazione {
   /** Determina il mese, e quindi la stagionalità. Default: adesso. */
   data?: Date
-  /** La memoria del ciclo precedente. Assente = si pesca da tutto il catalogo. */
-  rotazioni?: Rotazione[]
   /** Id della lista prodotta. Default: derivato dalla data. */
   id?: string
   /** La sorgente del caso, sostituibile nei test. Default: `Math.random`. */
   caso?: () => number
-}
-
-export interface Generazione {
-  lista: Lista
-  /** Le rotazioni da persistere: sostituiscono per intero quelle in ingresso. */
-  rotazioni: Rotazione[]
 }
 
 /** 1 = gennaio ... 12 = dicembre, dal fuso locale come il resto dell'app. */
@@ -60,11 +48,6 @@ export function occorrenzePerCiclo(): Map<IdCategoria, number> {
   return occorrenze
 }
 
-/** Le tipologie proposte l'ultima volta per questo catalogo, da evitare adesso. */
-function ultimi(rotazioni: Rotazione[], chiave: ChiaveRotazione): Set<string> {
-  return new Set(rotazioni.find((r) => r.categoria === chiave)?.ultimi ?? [])
-}
-
 /** Mescola una copia dell'elenco (Fisher-Yates), lasciando intatto l'originale. */
 function mescola<T>(elenco: T[], caso: () => number): T[] {
   const mescolato = [...elenco]
@@ -77,47 +60,22 @@ function mescola<T>(elenco: T[], caso: () => number): T[] {
 
 /**
  * Pesca a caso fino a `quanti` elementi dai candidati, mai due volte lo stesso
- * (R4). Quello che era uscito l'ultima volta passa in coda: si ripesca solo se
- * il catalogo di stagione è troppo corto per farne a meno (R3). Se i candidati
- * sono meno delle voci da riempire — le uova, che hanno una sola tipologia —
- * escono tutti una volta sola: nella lista una voce non si ripete mai (R8).
+ * (R4). Se i candidati sono meno delle voci da riempire — le uova, che hanno
+ * una sola tipologia — escono tutti una volta sola: nella lista una voce non si
+ * ripete mai (R8).
  */
-function pesca<T>(
-  candidati: T[],
-  quanti: number,
-  nome: (voce: T) => string,
-  daEvitare: Set<string>,
-  caso: () => number,
-): T[] {
-  const urna = [
-    ...mescola(
-      candidati.filter((voce) => !daEvitare.has(nome(voce))),
-      caso,
-    ),
-    ...mescola(
-      candidati.filter((voce) => daEvitare.has(nome(voce))),
-      caso,
-    ),
-  ]
-  return urna.slice(0, quanti)
+function pesca<T>(candidati: T[], quanti: number, caso: () => number): T[] {
+  return mescola(candidati, caso).slice(0, quanti)
 }
 
-/** Le voci di una categoria per il ciclo, con le tipologie da ricordare. */
-function vociCategoria(
-  id: IdCategoria,
-  quante: number,
-  daEvitare: Set<string>,
-  caso: () => number,
-): { voci: Voce[]; ultimi: string[] } {
+/** Le voci di una categoria per il ciclo. */
+function vociCategoria(id: IdCategoria, quante: number, caso: () => number): Voce[] {
   const catalogo = categorie.find((c) => c.id === id)
-  if (!catalogo) return { voci: [], ultimi: [] }
+  if (!catalogo) return []
 
-  // Le uova non hanno consigli: una voce sola col nome della categoria, e
-  // niente da evitare (R8).
-  const fisso = catalogo.consigli.length === 0
-  const candidati = fisso ? [catalogo.etichetta.toLowerCase()] : catalogo.consigli
-  const scelti = pesca(candidati, quante, (nome) => nome, daEvitare, caso)
-  const voci = scelti.map((nome, posizione) => ({
+  // Le uova non hanno consigli: una voce sola col nome della categoria (R8).
+  const candidati = catalogo.consigli.length === 0 ? [catalogo.etichetta.toLowerCase()] : catalogo.consigli
+  return pesca(candidati, quante, caso).map((nome, posizione) => ({
     id: `${id}-${posizione + 1}`,
     nome,
     reparto: catalogo.reparto,
@@ -125,23 +83,16 @@ function vociCategoria(
     origine: 'generata' as const,
     comprata: false,
   }))
-  return { voci, ultimi: fisso ? [] : scelti }
 }
 
 /**
  * Le voci di verdura o frutta: `tipiPerCiclo` tipi di stagione, diversi tra
  * loro, pescati a caso tra quelli del mese (R5, R5b). Ogni tipo è una voce a
- * sé, che si spunta e si sostituisce come le altre (R5d).
+ * sé, che si spunta come le altre (R5d).
  */
-function vociGruppo(
-  gruppo: GruppoFisso,
-  mese: Mese,
-  daEvitare: Set<string>,
-  caso: () => number,
-): { voci: Voce[]; ultimi: string[] } {
+function vociGruppo(gruppo: GruppoFisso, mese: Mese, caso: () => number): Voce[] {
   const reparto = categoria(gruppo)?.reparto ?? 'ortofrutta'
-  const scelti = pesca(diStagione(gruppo, mese), tipiPerCiclo, (nome) => nome, daEvitare, caso)
-  const voci = scelti.map((nome, posizione) => ({
+  return pesca(diStagione(gruppo, mese), tipiPerCiclo, caso).map((nome, posizione) => ({
     id: `${gruppo}-${posizione + 1}`,
     nome,
     reparto,
@@ -149,50 +100,31 @@ function vociGruppo(
     origine: 'generata' as const,
     comprata: false,
   }))
-  return { voci, ultimi: scelti }
 }
 
 /**
- * La lista di un ciclo di due settimane, con le rotazioni aggiornate da
- * salvare. Non tocca la lista precedente: archiviarla e riportare le voci non
- * spuntate è compito di chi chiama (R6, Step 9).
+ * La lista di un ciclo di due settimane. Non tocca la lista precedente:
+ * riportare le voci non spuntate è compito di chi chiama (R6, Step 9).
  */
-export function generaLista(opzioni: OpzioniGenerazione = {}): Generazione {
+export function generaLista(opzioni: OpzioniGenerazione = {}): Lista {
   const data = opzioni.data ?? new Date()
-  const rotazioniPrecedenti = opzioni.rotazioni ?? []
   const caso = opzioni.caso ?? Math.random
   const mese = meseDi(data)
 
   const voci: Voce[] = []
-  const rotazioni: Rotazione[] = []
-
   for (const gruppo of ['verdura', 'frutta'] as GruppoFisso[]) {
-    const scelta = vociGruppo(gruppo, mese, ultimi(rotazioniPrecedenti, gruppo), caso)
-    voci.push(...scelta.voci)
-    rotazioni.push({ categoria: gruppo, ultimi: scelta.ultimi })
+    voci.push(...vociGruppo(gruppo, mese, caso))
   }
 
   const occorrenze = occorrenzePerCiclo()
   for (const catalogo of categorie) {
     if (eGruppoFisso(catalogo.id)) continue
-    const quante = occorrenze.get(catalogo.id) ?? 0
-    const scelta = vociCategoria(
-      catalogo.id,
-      quante,
-      ultimi(rotazioniPrecedenti, catalogo.id),
-      caso,
-    )
-    voci.push(...scelta.voci)
-    rotazioni.push({ categoria: catalogo.id, ultimi: scelta.ultimi })
+    voci.push(...vociCategoria(catalogo.id, occorrenze.get(catalogo.id) ?? 0, caso))
   }
 
   return {
-    lista: {
-      id: opzioni.id ?? `ciclo-${data.toISOString()}`,
-      creataIl: data.toISOString(),
-      stato: 'corrente',
-      voci,
-    },
-    rotazioni,
+    id: opzioni.id ?? `ciclo-${data.toISOString()}`,
+    creataIl: data.toISOString(),
+    voci,
   }
 }

@@ -1,30 +1,20 @@
 // Passaggio da un ciclo di due settimane al successivo (Step 9 di
 // doc/12-piano-sviluppo.md). L'algoritmo (Step 8) sa solo produrre le voci del
-// nuovo ciclo; qui intorno c'è quello che riguarda la lista corrente:
-// archiviarla e, se lo si chiede, portare avanti quello che non è stato preso
-// (R6, F1).
+// nuovo ciclo; qui intorno c'è quello che riguarda la lista di prima: portare
+// avanti, se lo si chiede, quello che non è stato preso (R6, F1).
 //
-// Niente rigenerazione in place: la lista precedente non viene toccata nel
-// contenuto, passa in stato `archiviata` e resta consultabile (Step 12).
+// Dalla v2 la lista di prima non si archivia: salvando la nuova si cancella
+// (doc/13). Il riporto si riscrive nello Step V3.
 
 import { normalizza } from './aggiunta'
 import { generaLista, type OpzioniGenerazione } from './generazione'
-import type { Lista, Rotazione, Voce } from './tipi'
+import type { Lista, Voce } from './tipi'
 
 export interface OpzioniCiclo extends OpzioniGenerazione {
-  /** La lista corrente, che verrà archiviata. Assente alla prima generazione. */
+  /** La lista di adesso, che verrà sostituita. Assente alla prima generazione. */
   precedente?: Lista | null
   /** Se portare nella nuova lista le voci non spuntate della precedente (R6). */
   portaAvanti?: boolean
-}
-
-export interface Ciclo {
-  /** La nuova lista corrente. */
-  lista: Lista
-  /** Le rotazioni aggiornate da salvare. */
-  rotazioni: Rotazione[]
-  /** La lista di prima, ora archiviata: da salvare com'è. */
-  archiviata: Lista | null
 }
 
 /**
@@ -69,17 +59,12 @@ function riporta(nuova: Lista, precedente: Lista): Lista {
 }
 
 /**
- * Il nuovo ciclo: la lista generata (più, se richiesto, quello che era rimasto
- * da prendere), le rotazioni da salvare e la lista di prima da archiviare.
- * Funzione pura: chi chiama decide quando e in che ordine salvare.
+ * La lista del nuovo ciclo: quella generata più, se richiesto, quello che era
+ * rimasto da prendere. Funzione pura: chi chiama la salva, e salvandola
+ * cancella la precedente.
  */
-export function nuovoCiclo(opzioni: OpzioniCiclo = {}): Ciclo {
+export function nuovoCiclo(opzioni: OpzioniCiclo = {}): Lista {
   const { precedente = null, portaAvanti = false, ...generazione } = opzioni
-  const { lista, rotazioni } = generaLista(generazione)
-
-  return {
-    lista: portaAvanti && precedente ? riporta(lista, precedente) : lista,
-    rotazioni,
-    archiviata: precedente ? { ...precedente, stato: 'archiviata' } : null,
-  }
+  const lista = generaLista(generazione)
+  return portaAvanti && precedente ? riporta(lista, precedente) : lista
 }

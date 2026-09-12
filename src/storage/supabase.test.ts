@@ -41,8 +41,6 @@ describe.skipIf(!url || !chiave || !segreta)('StorageSupabase', () => {
     // Le voci se ne vanno con le loro liste (on delete cascade).
     const liste = await admin.from('liste').delete().neq('id', '')
     if (liste.error) throw liste.error
-    const rotazioni = await admin.from('rotazioni').delete().neq('categoria', '')
-    if (rotazioni.error) throw rotazioni.error
   }
 
   describe('contratto di Storage', () => {
@@ -110,17 +108,31 @@ describe.skipIf(!url || !chiave || !segreta)('StorageSupabase', () => {
       await svuota()
       await new StorageSupabase(autenticato).salvaLista(lista)
       await expect(anonimo().leggiListaCorrente()).rejects.toMatchObject(PERMESSO_NEGATO)
-      await expect(anonimo().leggiArchivio()).rejects.toMatchObject(PERMESSO_NEGATO)
-      await expect(anonimo().leggiRotazioni()).rejects.toMatchObject(PERMESSO_NEGATO)
     })
 
     it('non si scrive niente', async () => {
       await svuota()
       await expect(anonimo().salvaLista(lista)).rejects.toMatchObject(PERMESSO_NEGATO)
-      await expect(
-        anonimo().salvaRotazioni([{ categoria: 'uova', ultimi: [] }]),
-      ).rejects.toMatchObject(PERMESSO_NEGATO)
       expect(await new StorageSupabase(autenticato).leggiListaCorrente()).toBeNull()
+    })
+  })
+
+  describe('vincoli del database', () => {
+    it('presi non esce dal totale: la scrittura si rifiuta', async () => {
+      await svuota()
+      const storage = new StorageSupabase(autenticato)
+      await storage.salvaLista(lista)
+      const troppi = { ...lista.voci[0], presi: 15 }
+      await expect(
+        storage.salvaVoci(lista.id, { voci: [troppi], eliminate: [] }, new Date().toISOString()),
+      ).rejects.toMatchObject({ code: '23514' })
+    })
+
+    it('le liste sparite non esistono più', async () => {
+      for (const tabella of ['rotazioni', 'archivio']) {
+        const { error } = await autenticato.from(tabella).select('*').limit(1)
+        expect(error).not.toBeNull()
+      }
     })
   })
 })
