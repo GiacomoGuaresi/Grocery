@@ -52,7 +52,8 @@
 | 2026-09-09 | Nessuna **rigenerazione** della lista corrente | deciso |
 | 2026-09-09 | Ordine dei reparti confermato e fissato nel JSON | deciso |
 | 2026-09-09 | ~~Persistenza: **SQLite in sviluppo**, **Supabase in produzione**~~ | superata |
-| 2026-09-11 | **Solo Supabase**, in sviluppo e in produzione, sullo stesso progetto: SQLite tolto. Accettati i dati di prova mescolati a quelli veri e i rischi che ne vengono | deciso |
+| 2026-09-11 | ~~**Solo Supabase**, in sviluppo e in produzione, sullo stesso progetto: SQLite tolto. Accettati i dati di prova mescolati a quelli veri e i rischi che ne vengono~~ | superata |
+| 2026-09-12 | Solo Supabase, ma lo sviluppo su un **progetto separato** (*Grocery DEV*) con lo stesso schema e lo stesso account: lo sviluppo non sporca la produzione | deciso |
 | 2026-09-09 | Sessione conservata nei **cookie**: passphrase non richiesta ogni volta | deciso |
 | 2026-09-11 | Sessione **solo nei cookie** (400 giorni, rinnovati a ogni uso), nessuna copia in `localStorage`: nessuno usa Safari su iPhone, dove i cookie scritti da JavaScript durano al massimo 7 giorni. Da rivedere se entra un iPhone | deciso |
 | 2026-09-09 | Nome del repository: **`Grocery`** (mantenuto per ora) | deciso |

@@ -30,11 +30,21 @@ Lo stato passa da un'**interfaccia di storage** unica, implementata su
 **Supabase**. Il codice applicativo non conosce l'implementazione: si programma
 contro l'interfaccia.
 
-Sviluppo e produzione usano **lo stesso progetto Supabase**: `npm run dev` legge e
-scrive i dati veri. È una scelta consapevole (2026-09-11): i dati di prova si
-mescolano a quelli reali e un errore in sviluppo tocca la lista vera, in cambio di
-un solo database da tenere e di un ambiente di sviluppo che è quello che si usa.
-Fino al 2026-09-11 in sviluppo c'era SQLite nel browser (`sql.js`, su IndexedDB).
+Sviluppo e produzione usano **due progetti Supabase separati** (dal 2026-09-12),
+con lo stesso schema:
+
+| Ambiente | Progetto | Ref | Configurato in |
+|---|---|---|---|
+| Produzione (GitHub Pages) | *GiacomoGuaresi's Project Grocery* | `fvsohjlrulwabvfvcfxo` | variabili del repository GitHub |
+| Sviluppo (`npm run dev`) | *Grocery DEV* (org *GiacomoGuaresi's DEV TEST*) | `hbfpqrdvazbosfwqmbvy` | `.env.local` |
+
+Così i dati di prova non si mescolano a quelli veri. Il progetto di sviluppo ha lo
+stesso account (stessa email e passphrase) e le registrazioni spente. Una
+migrazione nuova va applicata a **tutti e due**: la CLI resta collegata alla
+produzione, per il dev si collega, si fa `supabase db push` e si ricollega. Le
+credenziali di entrambi stanno in `supabase/credenziali.local`.
+Dal 2026-09-11 al 2026-09-12 sviluppo e produzione hanno condiviso lo stesso
+progetto; prima ancora in sviluppo c'era SQLite nel browser (`sql.js`, su IndexedDB).
 
 Nessun backend proprio. Nessuna funzione serverless: non servendo l'IA, non c'è
 alcuna API key da nascondere. La chiave `anon` di Supabase è pubblica per

@@ -35,11 +35,12 @@ partire dalla routine alimentare seguita, e spuntarla al supermercato dal telefo
 ## Sviluppo
 
 ```bash
-cp .env.example .env.local   # URL, chiave publishable ed email di Supabase
+cp .env.example .env.local   # URL, chiave publishable ed email del Supabase di sviluppo
 npm install
 npm run dev
 npm test
 ```
 
-Sviluppo e produzione usano lo stesso progetto Supabase: `npm run dev` legge e
-scrive i dati veri.
+Lo sviluppo gira su un progetto Supabase a parte (*Grocery DEV*), con lo stesso
+schema: `npm run dev` non tocca i dati veri. Una migrazione nuova va applicata a
+tutti e due i progetti.
