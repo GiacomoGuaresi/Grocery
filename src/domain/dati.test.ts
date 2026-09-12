@@ -1,28 +1,33 @@
 import { describe, expect, it } from 'vitest'
 import {
+  categoria,
   categorie,
   diStagione,
   giorniRoutine,
-  gruppiFissi,
   mesi,
+  pastiPerGiorno,
   prodotti,
   reparti,
   stagionalita,
+  type IdVoceCatalogo,
 } from './dati'
 
 const idReparti = new Set(reparti.map((r) => r.id))
-const idCategorie = new Set(categorie.map((c) => c.id))
+
+/** Tutte le categorie che la routine mette in lista: le sere più verdura e frutta. */
+const categorieRoutine: IdVoceCatalogo[] = [
+  ...giorniRoutine.map((g) => g.categoria),
+  ...(Object.keys(pastiPerGiorno) as IdVoceCatalogo[]),
+]
 
 describe('coerenza dei dati statici', () => {
   it('i reparti hanno id unici', () => {
     expect(idReparti.size).toBe(reparti.length)
   })
 
-  it('ogni reparto citato nel catalogo esiste in reparti.json', () => {
-    for (const categoria of categorie) {
-      for (const tipo of categoria.tipi) {
-        expect(idReparti, `${categoria.id} → ${tipo.nome}`).toContain(tipo.reparto)
-      }
+  it('ogni categoria del catalogo sta in un reparto di reparti.json', () => {
+    for (const c of categorie) {
+      expect(idReparti, c.id).toContain(c.reparto)
     }
   })
 
@@ -32,15 +37,9 @@ describe('coerenza dei dati statici', () => {
     }
   })
 
-  it('ogni reparto dei gruppi fissi esiste in reparti.json', () => {
-    for (const gruppo of Object.values(gruppiFissi)) {
-      expect(idReparti).toContain(gruppo.reparto)
-    }
-  })
-
-  it('ogni categoria della routine esiste nel catalogo', () => {
-    for (const giorno of giorniRoutine) {
-      expect(idCategorie, giorno.nome).toContain(giorno.categoria)
+  it('ogni categoria della routine è nel catalogo, con un reparto', () => {
+    for (const id of categorieRoutine) {
+      expect(categoria(id)?.reparto, id).toBeDefined()
     }
   })
 
@@ -48,20 +47,31 @@ describe('coerenza dei dati statici', () => {
     expect(giorniRoutine.map((g) => g.giorno)).toEqual([1, 2, 3, 4, 5, 6, 7])
   })
 
-  it('ogni categoria ha almeno un tipo, e nomi non ripetuti', () => {
-    for (const categoria of categorie) {
-      expect(categoria.tipi.length, categoria.id).toBeGreaterThan(0)
-      const nomi = new Set(categoria.tipi.map((t) => t.nome))
-      expect(nomi.size, categoria.id).toBe(categoria.tipi.length)
+  it('verdura una volta al giorno, frutta due', () => {
+    expect(pastiPerGiorno).toEqual({ verdura: 1, frutta: 2 })
+  })
+
+  it('ogni categoria tranne le uova ha consigli, senza ripetizioni', () => {
+    for (const c of categorie) {
+      if (c.id === 'uova') continue
+      expect(c.consigli.length, c.id).toBeGreaterThan(0)
+      expect(new Set(c.consigli).size, c.id).toBe(c.consigli.length)
     }
   })
 
-  it('ogni mese ha almeno 4 verdure e 4 frutti di stagione', () => {
+  it('le uova non hanno consigli', () => {
+    expect(categoria('uova')?.consigli).toEqual([])
+  })
+
+  it('i consigli di verdura e frutta sono la tabella di stagionalità', () => {
+    expect(categoria('verdura')?.consigli).toEqual(Object.keys(stagionalita.verdura))
+    expect(categoria('frutta')?.consigli).toEqual(Object.keys(stagionalita.frutta))
+  })
+
+  it('ogni mese ha verdura e frutta di stagione', () => {
     for (const mese of mesi) {
-      expect(diStagione('verdura', mese).length, `verdura, mese ${mese}`)
-        .toBeGreaterThanOrEqual(gruppiFissi.verdura.tipiPerCiclo)
-      expect(diStagione('frutta', mese).length, `frutta, mese ${mese}`)
-        .toBeGreaterThanOrEqual(gruppiFissi.frutta.tipiPerCiclo)
+      expect(diStagione('verdura', mese).length, `verdura, mese ${mese}`).toBeGreaterThan(0)
+      expect(diStagione('frutta', mese).length, `frutta, mese ${mese}`).toBeGreaterThan(0)
     }
   })
 

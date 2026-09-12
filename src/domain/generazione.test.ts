@@ -93,11 +93,10 @@ describe('generaLista — copertura', () => {
     expect(lista.stato).toBe('corrente')
   })
 
-  it('ogni voce porta il reparto del suo catalogo', () => {
+  it('ogni voce porta il reparto della sua categoria', () => {
     for (const catalogo of categorie) {
-      const reparti = new Set(catalogo.tipi.map((tipo) => tipo.reparto))
       for (const voce of vociDi(lista, catalogo.id)) {
-        expect(reparti).toContain(voce.reparto)
+        expect(voce.reparto).toBe(catalogo.reparto)
       }
     }
   })
@@ -143,7 +142,7 @@ describe('generaLista — scelta casuale', () => {
 
   it('non segue l’ordine del catalogo: semi diversi, liste diverse', () => {
     const carne = categorie.find((c) => c.id === 'carne_rossa')!
-    const primi = [carne.tipi[0].nome, carne.tipi[1].nome]
+    const primi = carne.consigli.slice(0, 2)
     const uscite = [1, 2, 3, 4, 5].map((seme) =>
       nomi(vociDi(generaLista({ data: ilQuindici(3), caso: caso(seme) }).lista, 'carne_rossa')),
     )
@@ -160,7 +159,7 @@ describe('generaLista — scelta casuale', () => {
       const { lista } = generaLista({ data: ilQuindici(6), caso: caso(seme) })
       for (const nome of nomi(vociDi(lista, 'carne_rossa'))) scelte.add(nome)
     }
-    expect(scelte.size).toBeGreaterThan(15)
+    expect(scelte.size).toBe(categorie.find((c) => c.id === 'carne_rossa')!.consigli.length)
   })
 
   it('salva le tipologie proposte, che sono quelle della lista', () => {

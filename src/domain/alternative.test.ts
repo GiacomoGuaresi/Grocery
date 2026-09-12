@@ -15,7 +15,7 @@ describe('alternativeVoce', () => {
   it('propone le altre tipologie della categoria, in un elenco solo', () => {
     const alternative = alternativeVoce(listaEsempio, voce(listaEsempio, 'pesce-2'))
     expect(alternative.consigliate).toContain('branzino')
-    expect(alternative.consigliate.length).toBeGreaterThan(10)
+    expect(alternative.consigliate.length).toBeGreaterThan(5)
     expect(alternative.fuoriStagione).toEqual([])
   })
 
@@ -86,21 +86,21 @@ describe('alternativeVoce — frutta e verdura', () => {
 
 describe('sostituisciVoce', () => {
   it('mette al posto della voce la tipologia scelta', () => {
-    const dopo = sostituisciVoce(listaEsempio, 'carne_rossa-1', 'spezzatino di manzo')
-    expect(voce(dopo, 'carne_rossa-1').nome).toBe('spezzatino di manzo')
+    const dopo = sostituisciVoce(listaEsempio, 'carne_rossa-1', 'maiale')
+    expect(voce(dopo, 'carne_rossa-1').nome).toBe('maiale')
     expect(dopo.voci).toHaveLength(listaEsempio.voci.length)
   })
 
-  it('il reparto segue la tipologia nuova: è un dato del catalogo', () => {
-    const nuovo = categoria('pesce')!.tipi.find(
-      (t) => !listaEsempio.voci.some((v) => v.nome === t.nome),
+  it('il reparto segue la categoria: è un dato del catalogo', () => {
+    const nuovo = categoria('pesce')!.consigli.find(
+      (nome) => !listaEsempio.voci.some((v) => v.nome === nome),
     )!
-    const dopo = sostituisciVoce(listaEsempio, 'pesce-1', nuovo.nome)
-    expect(voce(dopo, 'pesce-1').reparto).toBe(nuovo.reparto)
+    const dopo = sostituisciVoce(listaEsempio, 'pesce-1', nuovo)
+    expect(voce(dopo, 'pesce-1').reparto).toBe(categoria('pesce')!.reparto)
   })
 
   it('il pesce surgelato sta in pescheria: non c è un reparto dei surgelati', () => {
-    expect(categoria('pesce')!.tipi.every((t) => t.reparto === 'pescheria')).toBe(true)
+    expect(categoria('pesce')!.reparto).toBe('pescheria')
   })
 
   it('un nome fuori dalle alternative non cambia niente', () => {
@@ -110,7 +110,7 @@ describe('sostituisciVoce', () => {
   })
 
   it('lascia intatta la lista di partenza', () => {
-    sostituisciVoce(listaEsempio, 'carne_rossa-1', 'spezzatino di manzo')
+    sostituisciVoce(listaEsempio, 'carne_rossa-1', 'maiale')
     expect(voce(listaEsempio, 'carne_rossa-1').nome).toBe('manzo (fettine)')
   })
 

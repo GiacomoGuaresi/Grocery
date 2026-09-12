@@ -16,6 +16,11 @@ La primissima versione utilizzabile deve avere, come minimo:
 - Vista **piano settimanale** con giorno corrente evidenziato (F10).
 - **Archivio** delle liste passate (F11).
 
+## v2 — Lista per categorie (in corso)
+Dopo il primo periodo di prova: lista generica per categoria con moltiplicatore di
+pasti (F15) e popup dei consigli (F14); tolti alternative (F6), rotazioni e archivio
+(F11). Piano in [13](13-piano-v2.md).
+
 ## Futuro (non ora)
 - **Modalità demo** per il portfolio: mostrare l'app a chi la visita senza toccare i
   dati reali (F12).

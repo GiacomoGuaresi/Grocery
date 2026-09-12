@@ -59,7 +59,7 @@ tutte le sezioni e le azioni. **Da desktop** (finestra larga almeno 1024px) il m
 senza X.
 - **Lista**
 - **Piano**
-- **Archivio**
+- ~~**Archivio**~~ (tolto in v2)
 - **Frutta** (di stagione)
 - **Verdura** (di stagione)
 - **Genera lista** (azione, staccata dalle sezioni)
@@ -87,22 +87,29 @@ volta inserita, non viene più richiesta sul dispositivo.
 - Nelle voci manuali sotto **"Altro"** (senza categoria) il tap sul testo rende il
   nome **modificabile nella riga stessa**: Invio o tap fuori salvano, Esc annulla.
   Una **matita** semitrasparente accanto al nome dice che si può correggere.
-- Nelle voci con alternative (frutta, verdura, carne, pesce e ogni altra categoria
-  con più tipologie) il tap sul testo **apre subito la select** delle alternative,
-  senza passare dal popup. Una freccina accanto al nome dice che si può toccare.
+- **Voci generate (v2)**: una per categoria — *Carne rossa, Carne bianca, Pesce,
+  Formaggio, Uova, Affettati, Verdura, Frutta* — ognuna nel suo reparto.
+- **Contatore** al posto della spunta: **`[−] 0/4 [+]`**, con l'unità **"pasti"** in
+  piccolo e leggera. I tasti vanno di uno; toccando il numero lo si scrive. A **4/4**
+  la voce è completa e va tra i "Già presi", dove tiene il contatore: il **−** la
+  riporta nella lista a 3/4. Il totale non si modifica.
+- Il tap sul nome di una voce generata apre il **popup dei consigli** (F14). Una
+  piccola icona accanto al nome dice che si può toccare. Le uova non hanno popup.
+- Il **popup** ha in cima lo **stesso contatore** della riga, perché si tiene aperto
+  nel reparto mentre si prende tutto; sotto, i consigli in sola lettura. Quando la voce
+  arriva al totale il popup **resta aperto**; la voce va tra i "Già presi" alla
+  chiusura.
+- **Verdura** e **Frutta** sono **due voci** nel reparto Ortofrutta; i tipi si vedono
+  **solo nel popup**, in **liste collassabili** con le **chip** *tutto l'anno*,
+  *in uscita*, *in arrivo*: **Di stagione** aperta (chip *tutto l'anno*, *in uscita*)
+  e **Fuori stagione** chiusa (chip *in arrivo*).
 - Sezione ripiegata **"Già presi"** in fondo, per rivedere e **de-spuntare**.
-- Nella riga della voce ci sono la **spunta** e il nome. Le funzioni della voce
-  (alternative, rinomina, elimina) stanno in un **popup**, che si apre col ⋯ a lato
-  e sale dal fondo dello schermo.
-- Ogni voce generata ha una **dropdown** con le tipologie alternative, che si apre
-  dal nome e c'è anche nel popup.
-  Nessuna quantità né grammatura viene mostrata.
+- Nella riga della voce ci sono la **spunta**, il nome e il moltiplicatore. Le
+  funzioni della voce (rinomina, elimina) stanno in un **popup**, che si apre col ⋯
+  a lato e sale dal fondo dello schermo.
 - Ogni voce si può **eliminare**; solo le voci manuali sotto "Altro" si possono
   anche **rinominare**.
-- **Frutta** e **Verdura** sono in **elenco diretto**: ogni tipo scelto (4 di verdura,
-  4 di frutta) è una voce a sé nel reparto Ortofrutta, con la sua checkbox e, nel
-  popup, la sua dropdown di alternative in due sezioni: **Di stagione** e poi
-  **Fuori stagione**. Nessuna voce "Frutta" o "Verdura" che li raggruppa.
+- Via la select delle **alternative** e la freccina ⌄ della v1.
 - **Aggiunta rapida** sempre raggiungibile (serve anche mentre si è al supermercato):
   campo di testo con **autocompletamento case-insensitive**; se il prodotto è nel
   catalogo eredita il reparto, altrimenti finisce sotto **"Altro"**. Sta **sempre in
@@ -110,8 +117,8 @@ volta inserita, non viene più richiesta sul dispositivo.
   angoli arrotondati, ombra) staccata dal bordo, sopra lo sfondo a icone.
 
 ### 3. Genera lista
-Azione per generare il nuovo ciclo di due settimane. Da confermare, perché archivia
-la lista corrente. Sta nel **menu laterale**, che apre direttamente la conferma; nella
+Azione per generare il nuovo ciclo di due settimane. Da confermare, perché
+**cancella** la lista corrente (non c'è più l'archivio). Sta nel **menu laterale**, che apre direttamente la conferma; nella
 lista vuota resta anche come bottone principale.
 
 Se la lista corrente ha voci **non spuntate**, la conferma **chiede se portarle nella
@@ -123,12 +130,11 @@ Non esiste un'azione "rigenera": per rifare la lista se ne genera una nuova.
 La tabella dei pasti con il **giorno corrente evidenziato**. Vista di consultazione.
 
 Mostra solo la **categoria** del giorno ("mercoledì: pesce"), non quale tipologia
-specifica: ci si regola con quello che si ha in casa. L'algoritmo assegna le
-tipologie ai giorni solo per costruire la lista; mangiare l'orata sabato invece che
-mercoledì è irrilevante e l'app non lo traccia.
+specifica: ci si regola con quello che si ha in casa. Resta anche nella v2: serve a
+regolarsi in corsia sul moltiplicatore.
 
-### 5. Archivio
-Elenco delle liste passate, in sola lettura.
+### ~~5. Archivio~~
+Tolto con la v2: pagina, voce del menu e dati.
 
 ### 6. Frutta e verdura di stagione
 Viste di consultazione della tabella di stagionalità: due pagine del menu, una per

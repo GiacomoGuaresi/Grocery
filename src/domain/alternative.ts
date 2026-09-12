@@ -11,14 +11,7 @@
 // Nessuna di queste funzioni tocca le rotazioni: la memoria del ciclo resta
 // quella salvata alla generazione, anche se poi si cambia mezza lista (R7).
 
-import {
-  categoria as trovaCategoria,
-  diStagione,
-  eGruppoFisso,
-  gruppiFissi,
-  stagionalita,
-  type Mese,
-} from './dati'
+import { categoria as trovaCategoria, diStagione, eGruppoFisso, type Mese } from './dati'
 import { meseDi } from './generazione'
 import type { IdReparto, Lista, Voce } from './tipi'
 
@@ -51,14 +44,10 @@ function giaInLista(lista: Lista): Set<string> {
  * frutta e verdura sono tutti i tipi del gruppo, di stagione e no.
  */
 function tipiDi(categoria: NonNullable<Voce['categoria']>): Map<string, IdReparto> {
-  if (eGruppoFisso(categoria)) {
-    const { reparto } = gruppiFissi[categoria]
-    return new Map(Object.keys(stagionalita[categoria]).map((nome) => [nome, reparto]))
-  }
   const catalogo = trovaCategoria(categoria)
-  // Le categorie fisse come le uova hanno una tipologia sola: niente da proporre (R8).
-  if (!catalogo || catalogo.fisso) return new Map()
-  return new Map(catalogo.tipi.map((tipo) => [tipo.nome, tipo.reparto]))
+  if (!catalogo) return new Map()
+  // Le uova non hanno consigli: niente da proporre (R8).
+  return new Map(catalogo.consigli.map((nome) => [nome, catalogo.reparto] as const))
 }
 
 /**

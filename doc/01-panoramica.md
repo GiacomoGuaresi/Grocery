@@ -26,16 +26,17 @@ GitHub e pensato anche come pezzo di **portfolio**, quindi in futuro esisterà u
    igiene, biscotti...) che finiranno nella prossima lista.
 
 ## Obiettivi
-- Generare la lista dei **secondi (cene)** per due settimane, con varietà garantita.
+- Generare la lista dei **secondi (cene)** per due settimane, **per categoria** e con
+  il numero di pasti da coprire; la varietà la suggeriscono i consigli.
 - Essere usabile con una mano, in piedi, in corsia: testo grande, tap semplici.
 - Funzionare **offline**, anche in scrittura, dentro al supermercato.
 - Lista **condivisa e sincronizzata in tempo reale** tra i due telefoni.
 
 ## Non-obiettivi
 - Non è un'app di meal planning completa né un tracker di spesa/budget.
-- **Niente IA**: la generazione è un algoritmo semplice, che pesca a caso dai cataloghi.
+- **Niente IA**: la generazione ricava dalla routine una voce per categoria.
 - Nessuna registrazione pubblica di nuovi utenti.
-- Non gestisce **quantità né grammature**: dice solo *cosa* comprare, le quantità si
-  decidono in corsia. Le grammature indicative sono un possibile sviluppo futuro.
+- Non gestisce **pezzi né grammature**: dice quanti *pasti* coprire, il resto si
+  decide in corsia. Le grammature indicative sono un possibile sviluppo futuro.
 - Non gestisce colazione, spuntini, pranzi e pane (vedi
   [02 — Routine alimentare](02-routine-alimentare.md)).

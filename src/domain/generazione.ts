@@ -9,14 +9,18 @@
 // evitano al giro dopo (R3).
 
 import {
+  categoria,
   categorie,
   diStagione,
+  eGruppoFisso,
   giorniRoutine,
-  gruppiFissi,
   type GruppoFisso,
   type Mese,
 } from './dati'
 import type { IdCategoria, Lista, Rotazione, Voce } from './tipi'
+
+/** Tipi di verdura e di frutta per ciclo: resta finché lo Step V3 non riscrive la generazione. */
+const tipiPerCiclo = 4
 
 /** Le righe di rotazione hanno una chiave per categoria e una per gruppo fisso. */
 export type ChiaveRotazione = IdCategoria | GruppoFisso
@@ -108,17 +112,20 @@ function vociCategoria(
   const catalogo = categorie.find((c) => c.id === id)
   if (!catalogo) return { voci: [], ultimi: [] }
 
-  const scelti = pesca(catalogo.tipi, quante, (tipo) => tipo.nome, daEvitare, caso)
-  const voci = scelti.map((tipo, posizione) => ({
+  // Le uova non hanno consigli: una voce sola col nome della categoria, e
+  // niente da evitare (R8).
+  const fisso = catalogo.consigli.length === 0
+  const candidati = fisso ? [catalogo.etichetta.toLowerCase()] : catalogo.consigli
+  const scelti = pesca(candidati, quante, (nome) => nome, daEvitare, caso)
+  const voci = scelti.map((nome, posizione) => ({
     id: `${id}-${posizione + 1}`,
-    nome: tipo.nome,
-    reparto: tipo.reparto,
+    nome,
+    reparto: catalogo.reparto,
     categoria: id,
     origine: 'generata' as const,
     comprata: false,
   }))
-  // Le categorie fisse hanno una tipologia sola: non c'è niente da evitare (R8).
-  return { voci, ultimi: catalogo.fisso ? [] : scelti.map((tipo) => tipo.nome) }
+  return { voci, ultimi: fisso ? [] : scelti }
 }
 
 /**
@@ -132,7 +139,7 @@ function vociGruppo(
   daEvitare: Set<string>,
   caso: () => number,
 ): { voci: Voce[]; ultimi: string[] } {
-  const { tipiPerCiclo, reparto } = gruppiFissi[gruppo]
+  const reparto = categoria(gruppo)?.reparto ?? 'ortofrutta'
   const scelti = pesca(diStagione(gruppo, mese), tipiPerCiclo, (nome) => nome, daEvitare, caso)
   const voci = scelti.map((nome, posizione) => ({
     id: `${gruppo}-${posizione + 1}`,
@@ -167,6 +174,7 @@ export function generaLista(opzioni: OpzioniGenerazione = {}): Generazione {
 
   const occorrenze = occorrenzePerCiclo()
   for (const catalogo of categorie) {
+    if (eGruppoFisso(catalogo.id)) continue
     const quante = occorrenze.get(catalogo.id) ?? 0
     const scelta = vociCategoria(
       catalogo.id,

@@ -1,11 +1,14 @@
 # 06 — Modello dati
 
+> Aggiornato il 2026-09-12 per la **v2** ([13](13-piano-v2.md)): via le rotazioni,
+> l'archivio e le alternative; entra il moltiplicatore.
+
 Due tipi di dato, con vite diverse:
 
 | Tipo | Dove vive | Chi lo cambia |
 |---|---|---|
-| **Configurazione** (cataloghi, routine, stagionalità) | JSON nel repo — vedi [05](05-dati-statici.md) | Un commit |
-| **Stato** (lista corrente, archivio, rotazioni) | DB condiviso — Supabase, in sviluppo come in produzione | L'app |
+| **Configurazione** (routine, reparti, consigli, stagionalità, prodotti) | JSON nel repo — vedi [05](05-dati-statici.md) | Un commit |
+| **Stato** (la lista corrente) | DB condiviso — Supabase (*Grocery DEV* in sviluppo) | L'app |
 
 Non esiste il concetto di "utente proprietario": **un solo account condiviso**,
 tutti i dati sono comuni.
@@ -15,14 +18,16 @@ tutti i dati sono comuni.
 ## Entità
 
 ### `lista`
-Una lista della spesa per un ciclo di due settimane.
+La lista della spesa del ciclo di due settimane. **Ce n'è una sola**.
 
 | Campo | Tipo | Note |
 |---|---|---|
 | `id` | id | |
 | `creata_il` | timestamp | Inizio del ciclo (momento della generazione) |
-| `stato` | `corrente` \| `archiviata` | Una sola `corrente` alla volta |
 | `voci` | `voce[]` | |
+
+Lo stato `corrente | archiviata` sparisce con l'archivio: alla generazione la lista
+precedente, dopo il riporto delle voci non spuntate, **si cancella**.
 
 ### `voce`
 Un articolo della lista.
@@ -30,39 +35,37 @@ Un articolo della lista.
 | Campo | Tipo | Note |
 |---|---|---|
 | `id` | id | |
-| `nome` | string | Es. "salmone", "detersivo piatti" |
-| `reparto` | string | Riferito a `reparti.json`; `Altro` se prodotto nuovo |
-| `categoria` | string? | Categoria di rotazione (`pesce`, `carne_rossa`, ..., più `verdura` e `frutta`); assente per le voci manuali |
+| `nome` | string | Generata: la categoria ("Pesce"). Manuale: "detersivo piatti" |
+| `reparto` | string | Riferito a `reparti.json`; `altro` se prodotto nuovo |
+| `categoria` | string? | `carne_rossa`, `pesce`, …, `verdura`, `frutta`; assente per le manuali |
 | `origine` | `generata` \| `manuale` | |
-| `comprata` | bool | Spuntata durante la spesa |
-| `alternative` | string[]? | Tipologie sostitutive per la dropdown (F6) |
+| `quantita` | number? | Totale di pasti dalla routine. Solo voci generate |
+| `presi` | number? | Quanti pasti sono già stati presi, da 0 a `quantita`. Solo voci generate |
+| `comprata` | bool | Spuntata durante la spesa; per le generate vale `presi = quantita` |
+| `modificata_il` | timestamp | *Last-write-wins* per voce, come oggi |
 
-Ogni tipo di frutta e verdura è una `voce` a sé, con categoria `verdura` o `frutta`.
-Non esiste più l'entità `elemento` (i tipi dentro una voce raggruppata): i database
-che la contengono vengono migrati all'apertura, una voce per tipo.
+Via `alternative`: i consigli si leggono dal catalogo statico, non si copiano sulla
+voce.
 
-### `rotazione`
-Memoria della rotazione tra un ciclo e l'altro (R3).
-
-| Campo | Tipo | Note |
-|---|---|---|
-| `categoria` | string | `carne_rossa`, `pesce`, `formaggio`, ... (più `verdura` e `frutta`) |
-| `ultimi` | string[] | Le tipologie proposte nell'ultimo ciclo, da evitare in quello nuovo |
+### ~~`rotazione`~~
+Tolta con la v2, tabella e funzioni sul database comprese.
 
 ---
 
 ## Note
-- Le voci manuali aggiunte **tra una spesa e l'altra** entrano nella lista
-  `corrente` già esistente. Alla generazione successiva l'app chiede se portare le
-  voci non spuntate nella nuova lista: è così che arrivano alla spesa successiva,
-  senza bisogno di una lista "prossima spesa" separata.
-- L'archiviazione (F11) consiste nel passare la lista da `corrente` ad `archiviata`
-  al momento della generazione della successiva.
-- Non esiste un'operazione di **rigenerazione** in place: una lista, una volta
-  creata, si sostituisce solo generandone una nuova.
-- Non esiste campo **note** sulle voci, né campo **quantità/grammatura**.
-- Le voci generate non sono rinominabili: il nome viene dal catalogo statico. Solo le
-  voci manuali con reparto `Altro` possono essere rinominate.
-- Le voci sono **denormalizzate** (nome e reparto copiati dal catalogo al momento
-  della generazione): una lista archiviata resta leggibile anche se il catalogo JSON
-  cambia con un commit successivo.
+- Le voci manuali aggiunte **tra una spesa e l'altra** entrano nella lista esistente.
+  Alla generazione successiva l'app chiede se portare le voci non spuntate nella nuova
+  lista.
+- Le voci manuali **non hanno moltiplicatore**.
+- Una voce riportata non si **somma** a quella generata della stessa categoria: restano
+  due voci. Delle generate non se ne riporta nessuna: alla generazione si portano
+  avanti solo le **manuali** non spuntate.
+- `presi` segue il *last-write-wins* per voce come la spunta: se due telefoni
+  premono **+** sulla stessa voce nello stesso istante, un tocco può perdersi. Accettato
+  per ora: si fa la spesa insieme e il numero si vede su entrambi.
+- **Migrazione**: la lista corrente al passaggio alla v2 **resta com'è** (voci con i
+  nomi delle tipologie, senza moltiplicatore); la pulisce l'utente. Le liste archiviate
+  si cancellano insieme alla tabella delle rotazioni.
+- Non esiste campo **note** sulle voci, né grammatura.
+- Le voci generate non sono rinominabili. Solo le voci manuali con reparto `altro`
+  possono essere rinominate.

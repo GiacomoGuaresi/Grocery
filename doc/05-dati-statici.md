@@ -8,14 +8,14 @@ Posizione prevista: `src/data/*.json`.
 
 | File | Contenuto |
 |---|---|
-| `routine.json` | Fonte proteica per giorno della settimana |
-| `catalogo.json` | Tipologie per categoria, con il relativo reparto |
+| `routine.json` | Categoria per giorno della settimana e pasti al giorno di verdura (1) e frutta (2); da qui i moltiplicatori |
+| `catalogo.json` | Per ogni categoria: etichetta, reparto e **consigli brevi** (per verdura e frutta: la stagionalità) |
 | `stagionalita.json` | Verdura e frutta per mese (Nord Italia) |
 | `reparti.json` | Reparti del supermercato e loro ordine in corsia |
 | `prodotti.json` | Catalogo `prodotto → reparto` per l'autocompletamento manuale |
 
-L'**ordine** degli elenchi è indifferente: le tipologie si pescano a caso
-([03](03-algoritmo-generazione.md), R2), non c'è niente da mettere in cima.
+Con la v2 il catalogo **non si pesca più**: sono solo consigli da leggere nel popup
+(F14), quindi brevi e nell'ordine in cui conviene leggerli.
 
 ---
 
@@ -42,7 +42,28 @@ corrispondente. Il pesce si compra sia fresco sia surgelato, e sta sempre in
 
 ---
 
-## Cataloghi di rotazione
+## Consigli (v2)
+
+> Deciso il 2026-09-12: per ora **solo l'animale o il tipo**, senza i tagli. Si
+> personalizzano e si rivedono con l'uso. Unità "pasti" per tutte le categorie.
+
+| Categoria | Reparto | Consigli |
+|---|---|---|
+| Carne rossa | Macelleria | manzo · maiale · vitello · agnello · cavallo |
+| Carne bianca | Macelleria | pollo · tacchino · coniglio · faraona |
+| Pesce | Pescheria | salmone · orata · branzino · merluzzo · pesce spada · alici · sardine · sgombro · baccalà · salmone affumicato · gamberi · calamari · seppie |
+| Formaggio | Latticini, formaggi e uova | mozzarella · burrata · stracchino · ricotta · primo sale · scamorza · pecorino · asiago · emmental · groviera · gorgonzola · taleggio |
+| Affettati | Salumi | prosciutto crudo · prosciutto cotto · bresaola · speck · mortadella · salame · porchetta · pancetta · strolghino |
+| Uova | Latticini, formaggi e uova | — |
+| Verdura | Ortofrutta | dalla tabella di stagionalità |
+| Frutta | Ortofrutta | dalla tabella di stagionalità |
+
+---
+
+## ~~Cataloghi di rotazione~~ (v1)
+
+Gli elenchi completi usati dalla pesca casuale della v1, tolta il 2026-09-12. Restano
+qui come riferimento da cui sono usciti i consigli brevi.
 
 ### Carne rossa — reparto: Macelleria
 Manzo: fettine · macinato · hamburger · tagliata · controfiletto · costata ·
@@ -101,26 +122,22 @@ Voce fissa, nessuna rotazione.
 
 ## Contorni
 
-Solo **verdure**, incluse le **patate** (che entrano nella rotazione come le altre).
+Solo **verdure**, incluse le **patate**.
 **Mai legumi.**
 
-L'algoritmo propone **4 verdure diverse per ciclo di acquisti**, da usare come
-contorno lungo tutti i giorni delle due settimane: non un contorno diverso per ogni
-cena, ma quattro verdure che si ripetono. Sono scelte a caso tra quelle **di
-stagione** nel mese di generazione; le patate sono disponibili tutto l'anno.
+In lista una voce sola, **Verdura ×14**: un contorno ogni sera. Quali verdure lo
+suggerisce il popup, partendo da quelle di stagione; le patate ci sono tutto l'anno.
 
 Si comprano **tutte insieme** in un'unica spesa: nessuna divisione tra prima e
 seconda settimana.
 
 ## Frutta
 
-La frutta **entra nella lista**: si consuma **2 volte al giorno**, ogni giorno.
-Come per le verdure, l'algoritmo propone **4 tipi di frutta per ciclo**, scelti a
-caso tra quelli **di stagione**.
+La frutta **entra nella lista**: si consuma **2 volte al giorno**, ogni giorno. In
+lista una voce sola, **Frutta ×28 pasti**; i tipi li suggerisce il popup, partendo
+da quelli di stagione.
 
-Si compra **in un'unica volta**, senza divisione tra prima e seconda settimana:
-l'app suggerisce solo *quali tipi* comprare, non le quantità né quando. Se serve
-ricomprarne, se ne occupano gli utenti fuori dall'app.
+Si compra **in un'unica volta**, senza divisione tra prima e seconda settimana.
 
 ---
 
@@ -224,8 +241,8 @@ Forma prevista (numeri = mesi):
 
 ## Quantità
 
-L'app **non indica quantità né grammature**: propone solo *cosa* comprare. Le
-quantità si decidono in corsia.
+L'app indica **quanti pasti** coprire (il moltiplicatore), ma **non pezzi né
+grammature**: quelli si decidono in corsia.
 
 Le grammature indicative a persona sono un possibile **sviluppo futuro**, non
 implementate ora.

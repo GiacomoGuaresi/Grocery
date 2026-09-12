@@ -25,35 +25,40 @@ L'app si occupa della **cena** (fonte proteica + contorno) e della **frutta**.
 
 ### Frutta
 Pur non gestendo pranzo e spuntini, la frutta **entra nella lista della spesa**: se ne
-consumano **2 porzioni al giorno**, tutti i giorni. L'algoritmo propone **4 tipi di
-frutta di stagione** per ciclo.
+consumano **2 porzioni al giorno**, tutti i giorni → **Frutta ×28 pasti** per ciclo.
 
 ## Struttura della cena
 Ogni cena è composta da **fonte proteica + contorno + pane**.
 
-- **Fonte proteica** — fissa per giorno della settimana (vedi tabella sotto), la
-  *tipologia* specifica ruota.
+- **Fonte proteica** — fissa per giorno della settimana (vedi tabella sotto). La
+  *tipologia* (taglio, pesce, formaggio) si sceglie in corsia: l'app la suggerisce
+  soltanto, nel popup dei consigli.
 - **Contorno** — sempre **verdura**, al massimo **patate**. **Mai legumi.**
 - **Pane** — comprato a parte e congelato: **NON entra nella lista della spesa**.
 
 ## Frequenze settimanali derivate
 
-| Fonte proteica | Giorno | Volte/settimana | Volte per ciclo (2 sett.) |
-|---|---|---|---|
-| Carne rossa | lunedì | 1 | 2 |
-| Formaggio | martedì | 1 | 2 |
-| Pesce | mercoledì, sabato | 2 | 4 |
-| Uova | giovedì | 1 | 2 |
-| Carne bianca | venerdì | 1 | 2 |
-| Affettati | domenica | 1 | 2 |
+Le volte per ciclo sono i **moltiplicatori** della lista: si ricavano da qui, non si
+scrivono a mano ([03](03-algoritmo-generazione.md), R1).
 
-Totale: **14 cene** per ciclo.
+| Voce in lista | Giorno | Volte/settimana | Moltiplicatore (2 sett.) |
+|---|---|---|---|
+| Carne rossa | lunedì | 1 | ×2 pasti |
+| Formaggio | martedì | 1 | ×2 pasti |
+| Pesce | mercoledì, sabato | 2 | ×4 pasti |
+| Uova | giovedì | 1 | ×2 pasti |
+| Carne bianca | venerdì | 1 | ×2 pasti |
+| Affettati | domenica | 1 | ×2 pasti |
+| Verdura | ogni sera | 7 | ×14 pasti |
+| Frutta | 2 al giorno | 14 | ×28 pasti |
+
+Totale: **14 cene** per ciclo. Il ciclo resta di **2 settimane**.
 
 ## Assunzioni correnti
 - Si cena **sempre a casa**, tutte le sere: nessun pasto viene saltato.
   La gestione dei pasti saltati (cene fuori) è uno **sviluppo futuro**, vedi
   [09 — Roadmap](09-roadmap.md).
-- La routine vale per **entrambi gli utenti**, ma l'app **non gestisce quantità né
-  grammature**: propone solo cosa comprare.
+- La routine vale per **entrambi gli utenti**. L'app conta i **pasti** da coprire, ma
+  **non gestisce pezzi né grammature**: il moltiplicatore è un suggerimento.
 - Interessa l'**ingrediente primario**, non la ricetta: la preparazione la decidono
   gli utenti.

@@ -1,7 +1,7 @@
 # Grocery — Documentazione
 
 > Documento vivo. Aggiornato man mano che le funzionalità vengono definite.
-> Ultimo aggiornamento: 2026-09-09
+> Ultimo aggiornamento: 2026-09-12
 
 | # | Documento | Contenuto |
 |---|---|---|
@@ -17,5 +17,6 @@
 | 10 | [Decisioni](10-decisioni.md) | Registro delle scelte fatte |
 | 11 | [Struttura del progetto](11-struttura-progetto.md) | Cartelle, file di dati, cosa c'è già |
 | 12 | [Piano di sviluppo](12-piano-sviluppo.md) | Gli step, con le checkbox da spuntare |
+| 13 | [Piano v2](13-piano-v2.md) | Lista per categorie, moltiplicatore e popup dei consigli |
 
 Le domande ancora aperte vivono in [../Q&A.md](../Q&A.md).

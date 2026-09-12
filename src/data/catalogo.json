@@ -1,636 +1,81 @@
 {
-  "$commento": "Tipologie per categoria: si pescano a caso, quindi l'ordine e' indifferente. Ogni voce porta il reparto in cui si trova.",
+  "$commento": "Una voce generata per categoria (v2): etichetta, reparto in cui finisce e consigli brevi per il popup, nell'ordine in cui leggerli. Per verdura e frutta i consigli sono la tabella di stagionalita'; le uova non ne hanno.",
   "categorie": {
     "carne_rossa": {
       "etichetta": "Carne rossa",
-      "tipi": [
-        {
-          "nome": "manzo (fettine)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "manzo (macinato)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "hamburger di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "tagliata di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "controfiletto di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "costata di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "spezzatino di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "straccetti di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "bocconcini di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arrosto di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "brasato (cappello del prete)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "filetto di manzo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "roast beef",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "maiale (braciole)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "maiale (lonza)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arista di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "filetto di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "salsiccia",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "spezzatino di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "costine di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "scaloppine di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "stinco di maiale",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "vitello (fettine)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "nodino di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "ossobuco di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arrosto di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "spezzatino di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cotoletta di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "scaloppine di vitello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "costolette di agnello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cosciotto di agnello",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arrosticini",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cavallo (fettine)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "tagliata di cavallo",
-          "reparto": "macelleria"
-        }
-      ]
+      "reparto": "macelleria",
+      "consigli": ["manzo", "maiale", "vitello", "agnello", "cavallo"]
     },
     "carne_bianca": {
       "etichetta": "Carne bianca",
-      "tipi": [
-        {
-          "nome": "petto di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "fettine di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cosce di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "sovracosce di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "alette di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "fusi di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "pollo intero",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "macinato di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "hamburger di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "straccetti di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "spiedini di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cotoletta di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "bocconcini di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arrosto di pollo",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "fesa di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "fettine di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "bocconcini di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "macinato di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "hamburger di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "fusi di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "arrosto di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "spiedini di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "cotoletta di tacchino",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "coniglio (a pezzi)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "coniglio (busto)",
-          "reparto": "macelleria"
-        },
-        {
-          "nome": "faraona",
-          "reparto": "macelleria"
-        }
-      ]
+      "reparto": "macelleria",
+      "consigli": ["pollo", "tacchino", "coniglio", "faraona"]
     },
     "pesce": {
       "etichetta": "Pesce",
-      "tipi": [
-        {
-          "nome": "salmone (filetto)",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "salmone (trancio)",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "orata",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "branzino",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "merluzzo",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "nasello",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "platessa",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "sogliola",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "pesce spada",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "tonno fresco",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "trota",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "trota salmonata",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "sgombro",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "alici",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "sardine",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "rana pescatrice",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "halibut",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "baccala",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "persico",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "cozze",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "vongole",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "polpo",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "seppie",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "calamari",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "filetti di merluzzo surgelati",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "platessa surgelata",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "gamberi",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "gamberoni",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "mazzancolle",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "totani",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "moscardini",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "capesante",
-          "reparto": "pescheria"
-        },
-        {
-          "nome": "salmone affumicato",
-          "reparto": "pescheria"
-        }
+      "reparto": "pescheria",
+      "consigli": [
+        "salmone",
+        "orata",
+        "branzino",
+        "merluzzo",
+        "pesce spada",
+        "alici",
+        "sardine",
+        "sgombro",
+        "baccalà",
+        "salmone affumicato",
+        "gamberi",
+        "calamari",
+        "seppie"
       ]
     },
     "formaggio": {
       "etichetta": "Formaggio",
-      "tipi": [
-        {
-          "nome": "mozzarella",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "mozzarella di bufala",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "burrata",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "stracciatella",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "stracchino",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "crescenza",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "robiola",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "squacquerone",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "ricotta",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "primo sale",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "caprino",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "casatella",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "quartirolo",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "tomino",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "feta",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "formaggio spalmabile",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "scamorza",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "scamorza affumicata",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "provola",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "provolone",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "asiago",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "fontina",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "montasio",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "raschera",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "caciotta",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "pecorino",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "emmental",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "edamer",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "groviera",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "gorgonzola dolce",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "gorgonzola piccante",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "taleggio",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "brie",
-          "reparto": "latticini_uova"
-        },
-        {
-          "nome": "camembert",
-          "reparto": "latticini_uova"
-        }
-      ]
-    },
-    "affettati": {
-      "etichetta": "Affettati",
-      "tipi": [
-        {
-          "nome": "prosciutto crudo",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "prosciutto crudo di Parma",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "prosciutto di San Daniele",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "prosciutto cotto",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "prosciutto cotto alle erbe",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "bresaola",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "speck",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "mortadella",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "salame Milano",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "salame Napoli",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "salame felino",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "spianata",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "coppa",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "capocollo",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "pancetta",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "lonzino",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "culatello",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "strolghino",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "porchetta",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "tacchino arrosto",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "petto di pollo arrosto",
-          "reparto": "salumi"
-        },
-        {
-          "nome": "fesa di tacchino affumicata",
-          "reparto": "salumi"
-        }
+      "reparto": "latticini_uova",
+      "consigli": [
+        "mozzarella",
+        "burrata",
+        "stracchino",
+        "ricotta",
+        "primo sale",
+        "scamorza",
+        "pecorino",
+        "asiago",
+        "emmental",
+        "groviera",
+        "gorgonzola",
+        "taleggio"
       ]
     },
     "uova": {
       "etichetta": "Uova",
-      "fisso": true,
-      "tipi": [
-        {
-          "nome": "uova",
-          "reparto": "latticini_uova"
-        }
+      "reparto": "latticini_uova"
+    },
+    "affettati": {
+      "etichetta": "Affettati",
+      "reparto": "salumi",
+      "consigli": [
+        "prosciutto crudo",
+        "prosciutto cotto",
+        "bresaola",
+        "speck",
+        "mortadella",
+        "salame",
+        "porchetta",
+        "pancetta",
+        "strolghino"
       ]
+    },
+    "verdura": {
+      "etichetta": "Verdura",
+      "reparto": "ortofrutta",
+      "consigli": "stagionalita"
+    },
+    "frutta": {
+      "etichetta": "Frutta",
+      "reparto": "ortofrutta",
+      "consigli": "stagionalita"
     }
   }
 }

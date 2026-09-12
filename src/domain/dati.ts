@@ -14,6 +14,9 @@ export type Mese = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
 export type GruppoFisso = IdGruppo
 
+/** Le categorie del catalogo: le fonti proteiche della routine più verdura e frutta. */
+export type IdVoceCatalogo = IdCategoria | IdGruppo
+
 /** Vero per le categorie di verdura e frutta, che vengono dalla stagionalità. */
 export function eGruppoFisso(categoria: string | undefined): categoria is GruppoFisso {
   return categoria === 'verdura' || categoria === 'frutta'
@@ -24,18 +27,16 @@ export interface Reparto {
   nome: string
 }
 
-/** Una tipologia del catalogo di rotazione, col reparto in cui si compra. */
-export interface Tipo {
-  nome: string
-  reparto: IdReparto
-}
-
 export interface Categoria {
-  id: IdCategoria
+  id: IdVoceCatalogo
   etichetta: string
-  /** Le categorie fisse (uova) hanno un solo tipo e non ruotano. */
-  fisso: boolean
-  tipi: Tipo[]
+  /** Il reparto in cui finisce la voce generata. */
+  reparto: IdReparto
+  /**
+   * I suggerimenti brevi del popup (F14), nell'ordine in cui leggerli. Per
+   * verdura e frutta sono tutti i tipi della stagionalità; vuoto per le uova.
+   */
+  consigli: string[]
 }
 
 export interface GiornoRoutine {
@@ -45,43 +46,47 @@ export interface GiornoRoutine {
   categoria: IdCategoria
 }
 
-export interface ConfigGruppoFisso {
-  tipiPerCiclo: number
-  reparto: IdReparto
-}
-
 export interface Prodotto {
   nome: string
   reparto: IdReparto
 }
 
+/** Come sta una categoria in catalogo.json, prima di risolvere i consigli. */
+interface CategoriaJson {
+  etichetta: string
+  reparto: string
+  consigli?: string[] | 'stagionalita'
+}
+
 /** Gli 8 reparti nell'ordine del percorso in corsia. */
 export const reparti: Reparto[] = repartiJson.reparti as Reparto[]
-
-/** Le categorie di rotazione, nell'ordine in cui compaiono nel catalogo. */
-export const categorie: Categoria[] = Object.entries(catalogoJson.categorie).map(
-  ([id, categoria]) => ({
-    id: id as IdCategoria,
-    etichetta: categoria.etichetta,
-    fisso: 'fisso' in categoria && categoria.fisso === true,
-    tipi: categoria.tipi as Tipo[],
-  }),
-)
-
-/** Fonte proteica per giorno della settimana. */
-export const giorniRoutine: GiornoRoutine[] = routineJson.giorni as GiornoRoutine[]
-
-/** Verdura e frutta: quanti tipi per ciclo e in che reparto finiscono. */
-export const gruppiFissi: Record<GruppoFisso, ConfigGruppoFisso> = {
-  verdura: routineJson.gruppiFissi.verdura as ConfigGruppoFisso,
-  frutta: routineJson.gruppiFissi.frutta as ConfigGruppoFisso,
-}
 
 /** Mesi di disponibilità per ogni verdura e ogni frutto, Nord Italia. */
 export const stagionalita: Record<GruppoFisso, Record<string, Mese[]>> = {
   verdura: stagionalitaJson.verdura as Record<string, Mese[]>,
   frutta: stagionalitaJson.frutta as Record<string, Mese[]>,
 }
+
+/** Le categorie, nell'ordine in cui compaiono nel catalogo. */
+export const categorie: Categoria[] = Object.entries(
+  catalogoJson.categorie as Record<string, CategoriaJson>,
+).map(([id, categoria]) => ({
+  id: id as IdVoceCatalogo,
+  etichetta: categoria.etichetta,
+  reparto: categoria.reparto as IdReparto,
+  consigli:
+    categoria.consigli === 'stagionalita'
+      ? eGruppoFisso(id)
+        ? Object.keys(stagionalita[id])
+        : []
+      : (categoria.consigli ?? []),
+}))
+
+/** Fonte proteica per giorno della settimana. */
+export const giorniRoutine: GiornoRoutine[] = routineJson.giorni as GiornoRoutine[]
+
+/** Verdura e frutta: quanti pasti al giorno ne servono (doc/03, R2). */
+export const pastiPerGiorno: Record<GruppoFisso, number> = routineJson.pastiPerGiorno
 
 /** Mappa prodotto → reparto per l'autocompletamento dell'inserimento manuale. */
 export const prodotti: Prodotto[] = prodottiJson.prodotti as Prodotto[]
@@ -93,7 +98,7 @@ export function reparto(id: IdReparto): Reparto | undefined {
   return repartiPerId.get(id)
 }
 
-export function categoria(id: IdCategoria): Categoria | undefined {
+export function categoria(id: IdVoceCatalogo): Categoria | undefined {
   return categoriePerId.get(id)
 }
 

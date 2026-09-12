@@ -87,3 +87,34 @@
 | 2026-09-11 | Icona dell'app: il **cesto** delle icone, panna su terracotta | deciso |
 | 2026-09-11 | Configurazione di Supabase per la build nelle **variabili** del repository GitHub, non nei segreti: URL, chiave publishable ed email finiscono comunque nel bundle pubblico | deciso |
 | 2026-09-11 | Il sito va online **solo con le registrazioni pubbliche spente** sul progetto Supabase | deciso |
+| 2026-09-12 | **v2 — lista per categorie**: la pesca di tipologie (casuale o in sequenza) non funziona nell'uso vero. Una voce per categoria con moltiplicatore di pasti | deciso |
+| 2026-09-12 | Categorie invariate: carne rossa, carne bianca, pesce, formaggio, uova, affettati, verdura, frutta | deciso |
+| 2026-09-12 | Moltiplicatore **ricavato dalla routine**, ciclo sempre di **2 settimane** | deciso |
+| 2026-09-12 | Il moltiplicatore conta i **pasti**, non pezzi o confezioni; accanto al numero l'unità in piccolo ("cene", "porzioni") | deciso |
+| 2026-09-12 | Moltiplicatore **fisso**, un suggerimento: non si modifica dalla lista, ma si **scala** durante la spesa | deciso |
+| 2026-09-12 | Frutta **×28** (2 porzioni al giorno), verdura **×14** | deciso |
+| 2026-09-12 | Voce riportata della stessa categoria di una generata: **separata**, non sommata | deciso |
+| 2026-09-12 | Nessun moltiplicatore sulle **voci manuali** | deciso |
+| 2026-09-12 | **Rotazioni e pesca casuale tolte del tutto**, tabella e funzioni sul database comprese. Superano le decisioni su scelta casuale e memoria tra i cicli | deciso |
+| 2026-09-12 | **Archivio tolto**: pagina e dati. Alla generazione la lista precedente si cancella | deciso |
+| 2026-09-12 | La lista corrente al passaggio alla v2 **resta com'è**: la pulisce l'utente | deciso |
+| 2026-09-12 | **Dropdown delle alternative tolta**: al suo posto un **popup dei consigli in sola lettura** | deciso |
+| 2026-09-12 | Verdura e frutta: **due voci**, con dentro l'elenco dei tipi di stagione. Superano l'elenco diretto del 2026-09-11 | deciso |
+| 2026-09-12 | Reparti delle voci generiche: carni → macelleria, pesce → pescheria, formaggio e uova → latticini e uova, affettati → salumi, verdura e frutta → ortofrutta | deciso |
+| 2026-09-12 | Pagine *Frutta* e *Verdura* di stagione **restano**; resta anche il **piano settimanale** | deciso |
+| 2026-09-12 | Consigli di carne, pesce, formaggio e affettati: **elenco breve dei tagli/tipi**, con cavallo, agnello, baccalà, alici, sardine, sgombro, salmone affumicato, porchetta, pancetta, strolghino e gli stagionati da tavola | deciso |
+| 2026-09-12 | Popup di verdura e frutta: di stagione + tutto l'anno → in arrivo e in uscita → fuori stagione | deciso |
+| 2026-09-12 | La **generazione non vuole più la rete**: non legge nulla dal database. Supera la decisione del 2026-09-11 | deciso |
+| 2026-09-12 | Nessun mockup: si parte direttamente col codice | deciso |
+| 2026-09-12 | In corsia si contano i presi con un **contatore `[−] presi/totale [+]`**, numero scrivibile; al totale la voce è completa | deciso |
+| 2026-09-12 | Il contatore va di **uno alla volta** anche per verdura ×14 e frutta ×28; da rivedere con l'uso | deciso |
+| 2026-09-12 | Una voce generata **presa a metà non si riporta** nella lista nuova | deciso |
+| 2026-09-12 | Unità **"pasti"** per tutte le voci generate, frutta compresa | deciso |
+| 2026-09-12 | I tipi di verdura e frutta si vedono **solo nel popup**, che ha anche il contatore: si tiene aperto nel reparto mentre si prende tutto | deciso |
+| 2026-09-12 | Popup di verdura e frutta: **liste collassabili** con chip *tutto l'anno*, *in uscita*, *in arrivo*. Supera l'ordine a tre gruppi deciso poco prima | deciso |
+| 2026-09-12 | Consigli di carne, pesce, formaggio e affettati: per ora **solo l'animale o il tipo**, da personalizzare con l'uso | deciso |
+| 2026-09-12 | `presi` in *last-write-wins* per voce: due **+** simultanei da due telefoni possono perdere un tocco. Accettato | deciso |
+| 2026-09-12 | Il contatore **prende il posto della spunta** nelle voci generate; dai "Già presi" il − riporta la voce in lista a totale − 1 | deciso |
+| 2026-09-12 | Alla generazione si riportano solo le **voci manuali** non spuntate; le generate mai, complete o no. Supera "voce riportata separata" | deciso |
+| 2026-09-12 | Popup di verdura e frutta: **Di stagione** aperta (chip *tutto l'anno*, *in uscita*) e **Fuori stagione** chiusa (chip *in arrivo*) | deciso |
+| 2026-09-12 | Al totale il popup **resta aperto**; la voce va tra i "Già presi" alla chiusura | deciso |
