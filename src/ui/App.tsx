@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { vociDaRiportare } from '../domain/ciclo'
+import { vociDaRiportare } from '../domain/generazione'
 import './tema.css'
 import './App.css'
 import { DiStagione } from './DiStagione'

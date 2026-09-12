@@ -9,7 +9,7 @@
 // che torna in primo piano). Ognuna porta l'ora in cui è stata fatta: sulla
 // stessa voce vince la più recente, anche se arriva per ultima quella vecchia.
 
-import { nuovoCiclo } from '../domain/ciclo'
+import { nuovoCiclo } from '../domain/generazione'
 import { differenze, nessunaModifica, unisci, vociInAttesa, type Scrittura } from '../domain/sincronia'
 import type { Lista } from '../domain/tipi'
 import type { MemoriaLocale } from './memoriaLocale'

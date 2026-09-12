@@ -132,14 +132,17 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
 - [x] Test (`consigli.test.ts`): in arrivo / in uscita a cavallo d'anno (dicembre →
       gennaio) (2026-09-12)
 
-### Step V6 — Pulizia
+### Step V6 — Pulizia ✅
 
-- [ ] Codice tolto: `alternative.ts`, `ciclo.ts` e i loro test; `listaEsempio.ts` se
-      non serve più (l'archivio è già andato in V2)
+- [x] Codice tolto: `alternative.ts`, `ciclo.ts` e i loro test. `vociDaRiportare()`
+      e `nuovoCiclo()` servono ancora e sono passati in `generazione.ts`, coi test.
+      `listaEsempio.ts` resta: la usano i test di aggiunta, spunta, modifica e il
+      contratto di Storage (l'archivio è già andato in V2)
 - [x] Menu laterale senza *Archivio* (fatto in V2)
-- [ ] [07](07-architettura-stack.md) (la generazione non vuole più la rete),
+- [x] [07](07-architettura-stack.md) (la generazione non vuole più la rete),
       [11](11-struttura-progetto.md) e il README allineati al codice nuovo
-- [ ] Screenshot del README rifatti, **lista compresa**, senza l'archivio
+- [x] Screenshot del README rifatti con Chrome headless sull'app in sviluppo, larga
+      390px: lista, consigli, accesso, menu, piano, frutta di stagione (2026-09-12)
 
 ### Step V7 — Prova sulla lista vera
 

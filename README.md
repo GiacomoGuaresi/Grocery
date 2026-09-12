@@ -4,20 +4,24 @@ Tool personale per generare la lista della spesa di un ciclo di **due settimane*
 partire dalla routine alimentare seguita, e spuntarla al supermercato dal telefono.
 
 <p>
+  <img src="doc/immagini/lista.png" alt="La lista per categorie, coi contatori dei pasti" width="220">
+  <img src="doc/immagini/consigli.png" alt="Il popup dei consigli della verdura" width="220">
   <img src="doc/immagini/accesso.png" alt="L'accesso con la sola passphrase" width="220">
   <img src="doc/immagini/menu.png" alt="Il menu laterale" width="220">
   <img src="doc/immagini/piano.png" alt="Il piano settimanale delle cene" width="220">
   <img src="doc/immagini/stagione.png" alt="La frutta di stagione" width="220">
 </p>
 
-- **Genera la lista** delle cene di due settimane: proteine pescate a caso dai
-  cataloghi, senza ripetere quelle del ciclo prima, e frutta e verdura di stagione.
-- **Divisa per reparto**, nell'ordine in cui si gira il supermercato; si spunta con
-  un tocco e quello che è nel carrello sparisce.
+- **Genera la lista** delle cene di due settimane: una voce per categoria (carne
+  rossa, pesce, verdura…) col numero di pasti da coprire, contato dalla routine.
+- **Un contatore per voce** `[−] 0/4 [+]` da far salire mentre si riempie il
+  carrello; toccando il nome si aprono i consigli, con frutta e verdura di stagione.
+- **Divisa per reparto**, nell'ordine in cui si gira il supermercato; quello che è
+  nel carrello sparisce. Le aggiunte a mano si spuntano con un tocco.
 - **Condivisa in tempo reale** tra due telefoni, dietro una passphrase.
-- **Funziona senza rete**: è una PWA installabile, e le modifiche fatte offline
-  partono quando la rete torna.
-- Piano settimanale, archivio delle spese passate, frutta e verdura di stagione.
+- **Funziona senza rete**: è una PWA installabile, la lista si genera anche offline
+  e le modifiche partono quando la rete torna.
+- Piano settimanale, frutta e verdura di stagione.
 
 ## Com'è fatta
 
@@ -27,8 +31,8 @@ partire dalla routine alimentare seguita, e spuntarla al supermercato dal telefo
   autenticata). Schema e funzioni in [supabase/migrations](supabase/migrations).
 - Cataloghi, stagionalità e routine in **JSON versionato** ([src/data](src/data)):
   si aggiornano con un commit.
-- Test con **Vitest**, soprattutto sull'algoritmo di generazione e sulla
-  sincronizzazione offline.
+- Test con **Vitest**, soprattutto su generazione, contatore e sincronizzazione
+  offline.
 
 📄 **La documentazione completa sta in [doc/](doc/README.md).**
 

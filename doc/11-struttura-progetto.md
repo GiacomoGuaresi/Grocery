@@ -38,16 +38,18 @@ Grocery/
         ├── App.tsx      layout: header fisso col bottone del menu, contenuto
         ├── MenuLaterale.tsx   menu a scomparsa con sezioni e azioni
         ├── useLista.ts  la lista corrente, letta e salvata sullo storage
-        ├── useArchivio.ts     le liste passate, in sola lettura
         ├── ListaSpesa.tsx     schermata principale: lista attiva + già presi
         ├── GruppoReparto.tsx  un reparto col suo titolo e le sue voci
-        ├── GiaPresi.tsx       sezione ripiegata in fondo, per de-spuntare
+        ├── GiaPresi.tsx       sezione ripiegata in fondo, per riportare in lista
         ├── AggiungiVoce.tsx   aggiunta rapida con autocompletamento
         ├── GeneraLista.tsx    l'azione "Genera lista" e la sua conferma
         ├── PianoSettimanale.tsx  la tabella delle cene, in consultazione
-        ├── Archivio.tsx       le spese passate e una di esse aperta
-        ├── Voce.tsx           una voce: checkbox, nome (rinominabile in "Altro"), ⋯
+        ├── DiStagione.tsx     frutta o verdura di stagione, per mese
+        ├── Voce.tsx           una voce: contatore o checkbox, nome, ⋯
+        ├── Contatore.tsx      `[−] presi/totale [+]` delle voci generate
+        ├── ConsigliVoce.tsx   il popup dei consigli, col contatore in cima
         ├── AzioniVoce.tsx     il popup con le azioni di una voce
+        ├── Installa.tsx       l'invito a installare la PWA
         └── Icona.tsx          le icone SVG dell'app, al posto delle emoji
 ```
 
@@ -56,8 +58,8 @@ Grocery/
 | File | Contenuto | Voci |
 |---|---|---|
 | `reparti.json` | Gli 8 reparti nell'ordine del percorso in corsia | 8 |
-| `routine.json` | Categoria proteica per giorno + gruppi fissi (frutta, verdura) | 7 giorni |
-| `catalogo.json` | Tipologie per categoria, ognuna col proprio reparto | 150 |
+| `routine.json` | Categoria proteica per giorno + pasti al giorno di verdura e frutta | 7 giorni |
+| `catalogo.json` | Per categoria: etichetta, reparto e consigli brevi | 8 categorie |
 | `stagionalita.json` | Verdura e frutta per mese, Nord Italia | 44 + 27 |
 | `prodotti.json` | Mappa `prodotto → reparto` per l'autocompletamento | 83 |
 
@@ -69,13 +71,13 @@ anche aprendolo da solo.
   In `catalogo.json` tutto il **pesce**, fresco o surgelato, è in `pescheria`.
 - In `stagionalita.json` i mesi sono numeri (1 = gennaio) e gli intervalli possono
   attraversare dicembre (es. le arance sono `[12,1,2,3,4]`).
-- Ogni mese ha almeno 8 verdure e 8 frutti disponibili: sempre abbastanza per
-  sceglierne 4 diversi.
+- Ogni mese ha verdura e frutta di stagione, che il popup dei consigli mostra.
 
 ## `src/domain`
-`tipi.ts` contiene il modello dati di [06](06-modello-dati.md): `Lista`, `Voce`,
-`Rotazione`. Ogni tipo di frutta e verdura è una `Voce` con categoria `verdura` o
-`frutta`.
+`tipi.ts` contiene il modello dati di [06](06-modello-dati.md): `Lista` e `Voce`.
+Una voce generata sta per una categoria intera e porta `quantita` (i pasti da
+coprire) e `presi`; le manuali, e le generate rimaste dalla v1, ne sono senza e si
+spuntano.
 
 `dati.ts` è l'unico punto in cui i JSON di `src/data` vengono importati: li tipizza e
 li espone come `reparti`, `categorie`, `giorniRoutine`, `gruppiFissi`,
@@ -92,8 +94,9 @@ stagionalità usa solo mesi da 1 a 12.
 `lista.ts` lavora sulla lista corrente: `raggruppaPerReparto(voci)` divide le voci per
 reparto nell'ordine del percorso in corsia scartando i reparti vuoti, `vociAttive(lista)`
 tiene solo quelle non ancora comprate e `vociComprate(lista)` solo quelle già prese.
-`listaEsempio.ts` è una lista di settembre: da quando l'app genera da sé resta come
-banco di prova dei test.
+`listaEsempio.ts` è una lista di settembre nella forma della v1, con una voce per
+tipologia e senza contatori: resta come banco di prova dei test di aggiunta, spunta,
+modifica e del contratto di Storage, che non guardano i contatori.
 
 `lista.test.ts` verifica l'ordine dei reparti, l'esclusione di quelli vuoti, l'ordine
 delle voci dentro un reparto e la coerenza della lista di esempio (id unici, reparti
@@ -101,8 +104,17 @@ esistenti, 4 tipi di verdura e 4 di frutta di stagione, una voce ciascuno).
 
 `spunta.ts` raccoglie le transizioni di stato della spunta, tutte pure: ogni funzione
 restituisce una lista nuova e lascia intatta quella di partenza. `spuntaVoce()` e
-`despuntaVoce()` spostano una voce tra lista attiva e "Già presi". Ogni tipo di
-frutta e verdura è una voce a sé, quindi si spunta come le altre.
+`despuntaVoce()` spostano una voce tra lista attiva e "Già presi". Valgono per le
+voci manuali e per le generate rimaste dalla v1.
+
+`contatore.ts` fa lo stesso per le voci generate: `aumenta()`, `diminuisci()` e
+`impostaPresi()` tengono `presi` tra 0 e il totale; a totale la voce è comprata e va
+tra i "Già presi", sotto torna in lista.
+
+`consigli.ts` prepara il popup di frutta e verdura: i tipi di stagione nel mese,
+con *tutto l'anno* e *in uscita*, e quelli fuori stagione, con *in arrivo*, anche a
+cavallo d'anno. Per carni, pesce, formaggio e affettati i consigli sono l'elenco
+breve di `catalogo.json`.
 
 `spunta.test.ts` copre le transizioni: la voce che sparisce dalla lista attiva,
 l'immutabilità della lista di partenza, l'idempotenza, il tipo di verdura che si
@@ -115,24 +127,14 @@ i prodotti del catalogo mentre si scrive e `aggiungiVoce()` crea la voce, col re
 del prodotto riconosciuto o in "Altro". `modifica.ts` tiene eliminazione e rinomina:
 solo le voci manuali in "Altro" si rinominano, e il reparto non cambia mai.
 
-`generazione.ts` è l'algoritmo di [03](03-algoritmo-generazione.md): da routine,
-cataloghi e stagionalità escono le voci del ciclo, compresa una voce per ogni tipo di
-verdura e di frutta scelto. Le tipologie si **pescano a caso** (R2) — a scorrere il
-catalogo in ordine usciva sempre lo stesso animale con tagli diversi — evitando
-quelle del ciclo prima, che arrivano dalle `rotazioni` salvate e tornano aggiornate
-da salvare (R3). La sorgente del caso è un parametro (`caso`), così i test la
-sostituiscono con un generatore a seme e restano riproducibili.
-
-`alternative.ts` dà le alternative della dropdown (F6): le altre tipologie della
-categoria o, per un tipo di frutta e verdura, gli altri tipi del gruppo divisi tra di
-stagione nel mese e fuori stagione, senza quello che è già in lista.
-`sostituisciVoce()` mette la scelta al posto della voce.
-
-`archivio.ts` è la parte di dominio delle liste passate: solo formattazione, perché
-una lista archiviata non ha più transizioni di stato. `etichettaData()` scrive la
-data per esteso ("7 settembre 2026"), `riepilogo()` dice com'è andata quella spesa in
-una riga ("12 voci · 10 prese") e `sintesi()` conta le voci di una lista già
-caricata, così l'elenco e la lista aperta dicono le stesse cose.
+`generazione.ts` è l'algoritmo di [03](03-algoritmo-generazione.md), deterministico
+e senza rete: `pastiPerCiclo()` conta dalla routine i pasti di due settimane per
+categoria (pesce 4, verdura 14, frutta 28…) e `generaLista()` fa una voce per
+categoria, nell'ordine del catalogo, con `presi` a zero. Nello stesso file c'è il
+passaggio al ciclo dopo: `vociDaRiportare()` dice quali voci manuali sono rimaste da
+prendere e `nuovoCiclo()` le mette in fondo alla lista nuova, se lo si è chiesto
+(R5). Le generate non si riportano mai. La lista di prima non si archivia: salvando
+la nuova si cancella (R6).
 
 `stagioni.ts` regge le pagine di frutta e verdura di stagione: le quattro `stagioni`
 meteorologiche (tre mesi interi, come la granularità della tabella), `meseDi()` e
@@ -157,16 +159,11 @@ hanno ancora una scrittura in coda, ed è quello che `unisci()` protegge.
 *last-write-wins* per singola voce: spunte su voci diverse che si sommano e, sulla
 stessa voce, l'ultima che vince.
 
-`ciclo.ts` sta intorno all'algoritmo: `vociDaRiportare()` dice cosa è rimasto da
-prendere e `nuovoCiclo()` mette insieme lista nuova, rotazioni da salvare e lista
-precedente da archiviare, portando avanti le voci non spuntate se lo si è chiesto
-(R6). Niente rigenerazione in place: la lista di prima non viene toccata.
-
 ## `src/storage`
 Tutto lo stato passa dall'interfaccia `Storage` di `tipi.ts`:
-`leggiListaCorrente()`, `salvaLista()`, `salvaVoci()`, `leggiArchivio()`,
-`leggiLista(id)`, `leggiRotazioni()`, `salvaRotazioni()` e `quandoCambia()`.
-`salvaLista()` scrive la lista per intero e serve alla generazione; `salvaVoci()`
+`leggiListaCorrente()`, `salvaLista()`, `salvaVoci()` e `quandoCambia()`.
+`salvaLista()` scrive la lista per intero, cancella le altre e serve alla
+generazione; `salvaVoci()`
 scrive solo le voci toccate da una modifica e serve a tutto il resto, così le
 modifiche dei due dispositivi si sommano invece di sovrascriversi; scrive solo sulla
 lista corrente. `quandoCambia(avvisa)` avvisa quando la lista può essere cambiata
@@ -175,17 +172,16 @@ resto dell'app conosce solo questa, e non sa cosa c'è sotto.
 
 `supabase.ts` la implementa su Supabase (Step 13), in sviluppo come in produzione:
 fino al 2026-09-11 in sviluppo c'era SQLite nel browser, poi tolto. Lo schema sta
-in `supabase/migrations`: le tre tabelle di [06](06-modello-dati.md) — `liste`,
-`voci`, `rotazioni` — con date `timestamptz`, `comprata` booleano, `alternative` e
-`ultimi` come `text[]`. Le voci portano una `posizione`, così l'ordine della lista
-è quello con cui è stata salvata. Un indice unico parziale garantisce che la lista
-`corrente` sia una sola, e la vista `archivio` fa i conteggi dell'elenco: per
-l'elenco non serve caricare le voci, mentre `leggiLista(id)` tira su una lista
-qualsiasi per intero, come `leggiListaCorrente()`. Il client
+in `supabase/migrations`: le tabelle di [06](06-modello-dati.md) `liste` e `voci`,
+con date `timestamptz`, `comprata` booleano e, per le voci generate, `quantita` e
+`presi` col vincolo `0 ≤ presi ≤ quantita` (migrazione `20260912000000_v2.sql`, che
+ha tolto `rotazioni`, la vista `archivio`, `alternative` e lo `stato` della lista).
+Le voci portano una `posizione`, così l'ordine della lista è quello con cui è stata
+salvata. Un indice unico garantisce che la lista sia una sola. Il client
 di Supabase non apre transazioni, quindi le scritture composte sono funzioni
-Postgres chiamate via RPC: `salva_lista` aggiorna le voci sul posto e cancella solo
-quelle sparite, `salva_voci` scrive solo le voci toccate (le nuove in fondo, le
-altre al loro posto) e `salva_rotazioni` sostituisce la memoria. Le date tornano da
+Postgres chiamate via RPC: `salva_lista` aggiorna le voci sul posto, cancella solo
+quelle sparite e le altre liste, `salva_voci` scrive solo le voci toccate (le nuove
+in fondo, le altre al loro posto). Le date tornano da
 Postgres come `+00:00` e si rimettono nella forma di `toISOString()`.
 
 Il realtime (Step 15, migrazione `20260911100000_realtime.sql`) ascolta solo la
@@ -197,8 +193,8 @@ niente del contenuto della lista. Il realtime non ripete gli eventi persi, quind
 `quandoCambia` avvisa anche a ogni (ri)connessione del canale e quando l'app torna in
 primo piano: il telefono in tasca chiude il socket senza dirlo. `salva_voci` prende
 il lock sulla riga della lista, e questo mette in fila le scritture concorrenti.
-Non scrive su una lista che non è più la corrente: un dispositivo rimasto indietro
-non tocca l'archivio.
+Non scrive su una lista che non c'è più: la scrittura di un dispositivo rimasto
+indietro non fa niente e non blocca la coda.
 
 Con l'offline (Step 16, migrazione `20260911200000_offline.sql`) `salvaVoci` riceve
 anche `quando`, l'ora della modifica sul dispositivo. `salva_voci` la scrive nella
@@ -220,7 +216,10 @@ primo avviso dello storage. Una scrittura che il database rifiuta per altri moti
 si scarta, per non bloccare le altre. Tutto quello che parla col database passa da
 una sola fila, così le scritture arrivano in ordine e una rilettura parte dopo le
 scritture già avviate. L'istantanea che pubblica dice anche quante modifiche sono in
-coda e se l'ultimo tentativo è fallito per la rete.
+coda e se l'ultimo tentativo è fallito per la rete. Genera lista passa da qui con
+`nuovoCiclo()` e funziona anche offline: la lista nuova va a schermo e un segno in
+memoria locale (`grocery.generata`) la salva per intera al ritorno della rete, prima
+della coda.
 
 `inMemoria.ts` è un database finto con le stesse regole delle funzioni di Supabase,
 e `Collegamento` ci attacca un dispositivo con la sua rete da staccare a comando.
@@ -230,13 +229,13 @@ online con più dispositivi: le modifiche che restano a schermo e sopravvivono a
 chiusura, la coda che parte al ritorno della rete, la spunta vecchia che non vince
 su una più nuova, la voce eliminata che non torna, la lista generata altrove.
 
-Le policy (RLS) aprono le tre tabelle alla sola sessione autenticata, senza
+Le policy (RLS) aprono le tabelle alla sola sessione autenticata, senza
 filtri per utente perché l'account è uno solo; al ruolo `anon` sono tolti anche i
 permessi su tabelle, vista e funzioni. In `supabase/config.toml` la registrazione
 pubblica è spenta.
 
 `index.ts` apre il client una volta sola, con `npm run dev` come nella build: i due
-ambienti usano lo stesso progetto Supabase, quindi gli stessi dati. URL e chiave
+ambienti usano due progetti Supabase con lo stesso schema (vedi 07). URL e chiave
 publishable del progetto arrivano da `VITE_SUPABASE_URL` e
 `VITE_SUPABASE_PUBLISHABLE_KEY` (vedi `.env.example`, da copiare in `.env.local`).
 
@@ -252,15 +251,12 @@ chi è già entrato. `accesso.test.ts` verifica tutto questo su un client finto.
 
 I test dell'interfaccia stanno in `contratto.ts`: la lista riletta identica a quella salvata, l'ordine delle voci
 (anche dopo un riordino), i campi opzionali che restano assenti, il salvataggio
-che aggiorna invece di duplicare, le voci tolte che spariscono, l'unica lista
-corrente, le rotazioni sostituite e non accumulate e lasciate stare quando si salva
-la lista (R7), l'archivio che elenca le liste
-passate ma non quella corrente, nell'ordine giusto e con i conteggi giusti, la
-lista archiviata riletta identica a com'era. Per `salvaVoci`: le voci non toccate
-che restano come sono, le spunte di due dispositivi su voci diverse che si sommano,
-la modifica più recente che vince sulla stessa voce anche quando arriva prima di
-una più vecchia, la voce eliminata che non torna, le nuove in fondo, l'archivio che
-non si tocca.
+che aggiorna invece di duplicare, le voci tolte che spariscono, la lista nuova che
+cancella la vecchia. Per `salvaVoci`: le voci non toccate
+che restano come sono, le spunte e i `presi` di due dispositivi su voci diverse che
+si sommano, la modifica più recente che vince sulla stessa voce anche quando arriva
+prima di una più vecchia, la voce eliminata che non torna, le nuove in fondo, la
+lista sparita che non si tocca.
 
 `realtime.test.ts` prova `quandoCambia` e `salvaVoci` di Supabase su un client
 finto, come `accesso.test.ts`, quindi gira sempre: si ascolta la sola tabella
@@ -304,27 +300,25 @@ arriva come avviso, e rileggere la propria spunta non la fa tremare. Senza rete,
 cima alla lista, una riga discreta lo dice e conta le modifiche che aspettano.
 
 La lista è una sequenza di reparti: titolo del reparto in maiuscoletto e sotto le sue
-voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Frutta e
-verdura sono in elenco diretto: ogni tipo è una riga come le altre, in Ortofrutta.
+voci, righe compatte alte almeno `--riga` e attaccate in un unico blocco. Verdura e
+frutta sono due voci, in Ortofrutta; i tipi stanno solo nel popup dei consigli.
 
-Toccare la checkbox di una voce la segna comprata e la fa sparire dalla lista
-attiva; il tap sul testo non spunta, e nelle voci manuali in "Altro" rende il nome
-modificabile nella riga. In fondo alla lista sta la sezione ripiegata "Già presi",
-col conteggio di quello che è nel carrello: aprendola si rivede tutto e si può
-de-spuntare quello che si è toccato per sbaglio. Non è raggruppata per reparto,
-quel percorso ormai è alle spalle.
+Una voce generata ha di lato al nome il `Contatore` `[−] presi/totale [+]`, col
+numero scrivibile: a totale va tra i "Già presi". Il tap sul nome apre
+`ConsigliVoce`, un popup dal fondo col contatore fisso in cima e sotto i consigli
+(per verdura e frutta *Di stagione* aperta e *Fuori stagione* chiusa); le uova non
+hanno popup. Le voci manuali, e le generate rimaste dalla v1, hanno la checkbox:
+toccarla le segna comprate; il tap sul testo nelle manuali in "Altro" rende il nome
+modificabile. Il ⋯ apre `AzioniVoce` con *Elimina* (e *Rinomina* in "Altro").
+In fondo alla lista sta la sezione ripiegata "Già presi", col conteggio di quello
+che è nel carrello: lì si de-spunta, o col − si riporta in lista una voce col
+contatore. Non è raggruppata per reparto, quel percorso ormai è alle spalle.
 
 Il menu laterale a scomparsa, aperto dal bottone ☰ dell'intestazione, tiene le
-sezioni *Lista*, *Piano*, *Archivio*, *Frutta* e *Verdura* e, sotto, l'azione
+sezioni *Lista*, *Piano*, *Frutta* e *Verdura* e, sotto, l'azione
 *Genera lista*. Per questo
 `useLista` sta in `App.tsx` e non dentro la schermata della lista: la conferma della
 generazione ha bisogno della lista corrente anche quando si è altrove.
-
-`useArchivio.ts` legge le spese passate e ne apre una su richiesta: sono due
-letture separate, perché l'elenco non ha bisogno delle voci. La schermata mostra una
-riga per spesa — data per esteso e riepilogo — e aprendone una rivede le sue voci
-per reparto, barrate quelle che erano finite nel carrello. Non c'è niente da toccare
-oltre alla riga che apre e a quella che riporta indietro: quel ciclo è chiuso (F11).
 
 `DiStagione.tsx` è la pagina della frutta o della verdura di stagione, a seconda
 del `gruppo` che riceve: una barra a segmenti per le quattro stagioni, aperta su

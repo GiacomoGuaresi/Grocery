@@ -82,7 +82,9 @@ successiva.
   sull'orologio dei telefoni, che è sincronizzato dalla rete.
 - **Eliminazioni**: una voce eliminata non torna, nemmeno per una modifica più
   recente rimasta in coda sull'altro dispositivo.
-- **Generazione**: vuole la rete, perché parte dalle rotazioni salvate sul database.
+- **Generazione**: gira anche senza rete (v2). Non legge niente dal database: la
+  lista nuova va subito a schermo e un segno in `localStorage` (`grocery.generata`)
+  la salva per intera al ritorno della rete, prima della coda delle scritture.
 - **Come arriva il realtime**: Supabase avvisa quando la riga della lista corrente
   cambia, e l'app rilegge la lista. Dal canale non passa il contenuto delle voci.
 
@@ -91,7 +93,7 @@ successiva.
 - **Performance**: caricamento pressoché istantaneo, bundle minimo.
 - **Privacy**: pochi dati, non sensibili, visibili solo ai due utenti.
 - **Qualità**: test automatici richiesti, in particolare sull'algoritmo di
-  generazione (pesca casuale, memoria del ciclo prima, varietà nel ciclo, stagionalità).
+  generazione (totali dalla routine, riporto delle voci manuali, generazione offline).
 
 ## Deploy
 Un solo ambiente: **produzione** su GitHub Pages, deploy automatico dal branch
