@@ -155,6 +155,9 @@ export function Voce({ voce, arrivo, onAlterna, onConta, onElimina, onRinomina }
             </span>
           </button>
         )}
+        {contatore && (
+          <Contatore nome={voce.nome} presi={presi} quantita={voce.quantita} onCambia={conta} />
+        )}
         {nomeInCorso !== null ? (
           <input
             className="voce__campo"
@@ -194,9 +197,6 @@ export function Voce({ voce, arrivo, onAlterna, onConta, onElimina, onRinomina }
           </button>
         ) : (
           <span className="voce__nome">{voce.nome}</span>
-        )}
-        {contatore && (
-          <Contatore nome={voce.nome} presi={presi} quantita={voce.quantita} onCambia={conta} />
         )}
         <button
           className="voce__azioni-apri"

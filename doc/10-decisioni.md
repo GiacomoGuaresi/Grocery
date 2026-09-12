@@ -106,10 +106,12 @@
 | 2026-09-12 | Popup di verdura e frutta: di stagione + tutto l'anno → in arrivo e in uscita → fuori stagione | deciso |
 | 2026-09-12 | La **generazione non vuole più la rete**: non legge nulla dal database. Supera la decisione del 2026-09-11 | deciso |
 | 2026-09-12 | Nessun mockup: si parte direttamente col codice | deciso |
-| 2026-09-12 | In corsia si contano i presi con un **contatore `[−] presi/totale [+]`**, numero scrivibile; al totale la voce è completa | deciso |
+| 2026-09-12 | ~~In corsia si contano i presi con un **contatore `[−] presi/totale [+]`**, numero scrivibile; al totale la voce è completa~~ | superata |
+| 2026-09-12 | In corsia si contano i presi con un **contatore `[−] presi/totale [+]`** in testa alla riga, al posto della casella; il numero **non si scrive**, solo i tasti; al totale la voce è completa | deciso |
 | 2026-09-12 | Il contatore va di **uno alla volta** anche per verdura ×14 e frutta ×28; da rivedere con l'uso | deciso |
 | 2026-09-12 | Una voce generata **presa a metà non si riporta** nella lista nuova | deciso |
-| 2026-09-12 | Unità **"pasti"** per tutte le voci generate, frutta compresa | deciso |
+| 2026-09-12 | ~~Unità **"pasti"** per tutte le voci generate, frutta compresa~~ | superata |
+| 2026-09-12 | Il contatore **non mostra l'unità**: "pasti" occupava troppo spazio nella riga | deciso |
 | 2026-09-12 | I tipi di verdura e frutta si vedono **solo nel popup**, che ha anche il contatore: si tiene aperto nel reparto mentre si prende tutto | deciso |
 | 2026-09-12 | Popup di verdura e frutta: **liste collassabili** con chip *tutto l'anno*, *in uscita*, *in arrivo*. Supera l'ordine a tre gruppi deciso poco prima | deciso |
 | 2026-09-12 | Consigli di carne, pesce, formaggio e affettati: per ora **solo l'animale o il tipo**, da personalizzare con l'uso | deciso |
@@ -118,3 +120,5 @@
 | 2026-09-12 | Alla generazione si riportano solo le **voci manuali** non spuntate; le generate mai, complete o no. Supera "voce riportata separata" | deciso |
 | 2026-09-12 | Popup di verdura e frutta: **Di stagione** aperta (chip *tutto l'anno*, *in uscita*) e **Fuori stagione** chiusa (chip *in arrivo*) | deciso |
 | 2026-09-12 | Al totale il popup **resta aperto**; la voce va tra i "Già presi" alla chiusura | deciso |
+| 2026-09-12 | Rivista la UI del popup dei consigli: contatore grande con barra a tacche, **schede** Di stagione / Fuori stagione e **gruppi di pillole** al posto di liste collassabili e chip, bottone fisso in fondo che al totale diventa "Fatto". Supera le due righe sulle liste collassabili | deciso |
+| 2026-09-12 | I tipi del **mese corrente** nel popup sono **in evidenza** (pillole piene); niente date né gruppi in più | deciso |

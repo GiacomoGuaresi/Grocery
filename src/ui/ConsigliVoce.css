@@ -1,26 +1,175 @@
 /* Il popup dei consigli: la sagoma è quella delle azioni (AzioniVoce.css). Qui
-   solo quello che ha in più: il contatore in cima e le liste dei tipi. */
+   è diviso in tre: testa ferma col contatore, tipi che scorrono, piede fermo. */
 .azioni-voce:has(.consigli-voce) {
+  overflow: hidden;
+}
+
+.consigli-voce {
+  display: flex;
+  flex-direction: column;
+  max-height: 85dvh;
+}
+
+.consigli-voce__testa {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--spazio) var(--spazio) 12px;
+}
+
+/* Il contatore in una card: tasti grandi, la barra dei pasti e lo stato. */
+.consigli-voce__conta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 6px 10px 10px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema);
+  transition:
+    border-color var(--durata-voce) ease-out,
+    background var(--durata-voce) ease-out;
+}
+
+.consigli-voce__conta--completa {
+  border-color: var(--terracotta);
+  background: var(--crema-scura);
+}
+
+.consigli-voce__barra {
+  display: flex;
+  gap: 4px;
+}
+
+.consigli-voce__tacca {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bordo);
+  transition: background var(--durata-voce) ease-out;
+}
+
+.consigli-voce__tacca--presa {
+  background: var(--terracotta);
+}
+
+.consigli-voce__stato {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+}
+
+.consigli-voce__conta--completa .consigli-voce__stato {
+  color: var(--terracotta-scura);
+  font-weight: 600;
+}
+
+.consigli-voce__scorre {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 12px var(--spazio) var(--spazio);
+  border-top: 1px solid var(--bordo);
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-/* Titolo e contatore restano in vista mentre si scorrono i tipi. */
-.consigli-voce__testata {
-  position: sticky;
-  top: calc(var(--spazio) * -1);
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: calc(var(--spazio) * -1) calc(var(--spazio) * -1) 0;
-  padding: var(--spazio) var(--spazio) 4px;
-  border-bottom: 1px solid var(--bordo);
-  background: var(--panna);
+/* Le due schede di verdura e frutta, come un interruttore a due posizioni. */
+.consigli-voce__schede {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  padding: 3px;
+  border-radius: var(--raggio);
+  background: var(--crema-scura);
 }
 
-.consigli-voce__elenco {
+.consigli-voce__scheda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: none;
+  border-radius: calc(var(--raggio) - 3px);
+  background: none;
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.consigli-voce__scheda[aria-pressed='true'] {
+  background: var(--panna);
+  color: var(--inchiostro);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgb(59 44 38 / 0.12);
+}
+
+.consigli-voce__scheda:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.consigli-voce__quanti {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--crema);
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  font-weight: 500;
+  text-align: center;
+}
+
+.consigli-voce__gruppi {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consigli-voce__gruppo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Un pallino davanti al titolo dice di che gruppo si tratta, coi colori delle
+   vecchie chip: zucca per quello che finisce, terracotta per quello che arriva. */
+.consigli-voce__etichetta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.consigli-voce__gruppo--in-uscita .consigli-voce__etichetta::before,
+.consigli-voce__gruppo--in-arrivo .consigli-voce__etichetta::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.consigli-voce__gruppo--in-uscita .consigli-voce__etichetta::before {
+  background: var(--zucca);
+}
+
+.consigli-voce__gruppo--in-arrivo .consigli-voce__etichetta::before {
+  border: 2px solid var(--terracotta);
+}
+
+.consigli-voce__gruppo--tutto-l-anno .consigli-voce__etichetta {
+  color: var(--inchiostro-tenue);
+}
+
+.consigli-voce__tipi {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -30,105 +179,40 @@
 }
 
 .consigli-voce__tipo {
-  padding: 4px 10px;
+  padding: 4px 11px;
   border: 1px solid var(--bordo);
   border-radius: 999px;
   background: var(--crema);
 }
 
-.consigli-voce__sezione {
-  display: flex;
-  flex-direction: column;
+.consigli-voce__gruppo--in-uscita .consigli-voce__tipo {
+  border-color: var(--zucca);
 }
 
-.consigli-voce__intestazione {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: var(--tocco);
-  padding: 0;
-  border: none;
-  background: none;
-  color: var(--terracotta-scura);
-  font: inherit;
-  cursor: pointer;
+/* Quelli del mese corrente saltano all'occhio: pillole piene, più grandi e in
+   grassetto. Tutto l'anno e fuori stagione restano chiari. */
+.consigli-voce__gruppo--del-mese .consigli-voce__tipo {
+  padding: 6px 13px;
+  border-color: var(--terracotta);
+  background: var(--terracotta);
+  color: var(--panna);
+  font-weight: 600;
 }
 
-.consigli-voce__quanti {
-  display: inline-block;
-  min-width: 21px;
-  padding: 1px 6px;
-  border-radius: 999px;
-  background: var(--crema-scura);
-  color: var(--inchiostro-tenue);
-  font-size: var(--testo-piccolo);
-  text-align: center;
-}
-
-.consigli-voce__freccia {
-  font-size: 16px;
-  transition: transform var(--durata-voce) ease-out;
-}
-
-.consigli-voce__intestazione[aria-expanded='true'] .consigli-voce__freccia {
-  transform: rotate(90deg);
-}
-
-/* A fisarmonica, come i "Già presi" (GiaPresi.css). */
-.consigli-voce__corpo {
-  display: grid;
-  grid-template-rows: 0fr;
-  visibility: hidden;
-  transition:
-    grid-template-rows var(--durata-voce) ease-out,
-    visibility 0s var(--durata-voce);
-}
-
-.consigli-voce__corpo--aperto {
-  grid-template-rows: 1fr;
-  visibility: visible;
-  transition: grid-template-rows var(--durata-voce) ease-out;
-}
-
-.consigli-voce__righe {
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  list-style: none;
-}
-
-.consigli-voce__riga {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 36px;
-  border-bottom: 1px solid var(--bordo);
-}
-
-.consigli-voce__riga:last-child {
-  border-bottom: none;
-}
-
-.consigli-voce__chip {
-  flex: none;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--crema-scura);
-  color: var(--inchiostro-tenue);
-  font-size: var(--testo-piccolo);
-  white-space: nowrap;
-}
-
-.consigli-voce__chip--in-uscita {
+.consigli-voce__gruppo--del-mese.consigli-voce__gruppo--in-uscita .consigli-voce__tipo {
+  border-color: var(--zucca);
   background: var(--zucca);
   color: var(--inchiostro);
 }
 
-.consigli-voce__chip--in-arrivo {
-  border: 1px solid var(--terracotta);
+.consigli-voce__gruppo--tutto-l-anno .consigli-voce__tipo {
   background: none;
-  color: var(--terracotta-scura);
+  color: var(--inchiostro-tenue);
+}
+
+.consigli-voce__piede {
+  display: flex;
+  flex-direction: column;
+  padding: 10px var(--spazio) calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--bordo);
 }

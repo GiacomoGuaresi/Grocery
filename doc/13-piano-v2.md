@@ -73,7 +73,7 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
       vincolo `0 ≤ presi ≤ quantita`; via `alternative`, `stato`, `rotazioni`,
       `salva_rotazioni`, la vista `archivio` e le liste archiviate; un indice tiene
       una lista sola. Applicata su *Grocery DEV* (2026-09-12); in produzione
-      **dopo conferma** (V7), perché cancella dati
+      dopo conferma, in V7 (2026-09-12), perché cancella dati
 - [x] La lista corrente di produzione **non si tocca**: le sue voci v1 restano con la
       spunta e senza popup
 - [x] Contratto `Storage`, `inMemoria`, `memoriaLocale`, `sincronizzatore`: via
@@ -146,7 +146,8 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
 
 ### Step V7 — Prova sulla lista vera
 
-- [ ] Migrazione applicata in produzione (dopo conferma, V2)
+- [x] Migrazione applicata in produzione con `supabase db push`, dopo conferma, e
+      subito dopo push di main per il deploy della v2 su Pages (2026-09-12)
 - [ ] Una spesa intera fatta con la v2; rivedere il **+** di uno per verdura e frutta
       e i consigli brevi
 - [ ] Nello stesso giro le prove rimaste dalla v1 ([12](12-piano-sviluppo.md), Step 18):

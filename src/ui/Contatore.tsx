@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { movimentoRidotto } from './animazioni'
 import { Icona } from './Icona'
 import './Contatore.css'
@@ -10,20 +10,18 @@ interface Props {
   quantita: number
   /** Il numero nuovo dei presi; i limiti li tiene il dominio (contatore.ts). */
   onCambia: (presi: number) => void
+  /** In grande, largo quanto chi lo contiene: quello del popup dei consigli. */
+  grande?: boolean
 }
 
 /**
  * Il contatore `[−] presi/totale [+]` delle voci generate (F15): prende il
- * posto della spunta. I tasti vanno di uno; toccando il numero lo si scrive,
- * con la tastiera numerica. Invio o tocco fuori salvano, Esc o un campo vuoto
- * lasciano tutto com'era.
+ * posto della spunta. I tasti vanno di uno; il numero si legge soltanto.
  *
  * Quando il numero cambia fa un piccolo scatto, verso l'alto se sale e verso
  * il basso se scende.
  */
-export function Contatore({ nome, presi, quantita, onCambia }: Props) {
-  // Non nullo solo mentre si sta scrivendo il numero.
-  const [scritto, setScritto] = useState<string | null>(null)
+export function Contatore({ nome, presi, quantita, onCambia, grande = false }: Props) {
   const numero = useRef<HTMLSpanElement>(null)
   const prima = useRef(presi)
 
@@ -41,21 +39,8 @@ export function Contatore({ nome, presi, quantita, onCambia }: Props) {
     )
   }, [presi])
 
-  const salva = () => {
-    const valore = Number.parseInt(scritto ?? '', 10)
-    if (!Number.isNaN(valore) && valore !== presi) onCambia(valore)
-    setScritto(null)
-  }
-
-  const totale = (
-    <>
-      <span className="contatore__totale">/{quantita}</span>
-      <span className="contatore__unita">pasti</span>
-    </>
-  )
-
   return (
-    <div className="contatore" role="group" aria-label={`Pasti di ${nome}`}>
+    <div className={grande ? 'contatore contatore--grande' : 'contatore'} role="group" aria-label={`Pasti di ${nome}`}>
       <button
         className="contatore__tasto"
         type="button"
@@ -65,41 +50,12 @@ export function Contatore({ nome, presi, quantita, onCambia }: Props) {
       >
         <Icona nome="meno" />
       </button>
-      {scritto !== null ? (
-        <span className="contatore__valore">
-          <input
-            className="contatore__campo"
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            value={scritto}
-            onChange={(evento) => setScritto(evento.target.value.replace(/\D/g, '').slice(0, 3))}
-            onFocus={(evento) => evento.currentTarget.select()}
-            onBlur={salva}
-            onKeyDown={(evento) => {
-              if (evento.key === 'Enter') evento.currentTarget.blur()
-              if (evento.key === 'Escape') setScritto(null)
-            }}
-            aria-label={`Pasti presi di ${nome}, su ${quantita}`}
-            autoComplete="off"
-            enterKeyHint="done"
-            autoFocus
-          />
-          {totale}
+      <span className="contatore__valore" aria-label={`Presi ${presi} pasti su ${quantita} di ${nome}`}>
+        <span className="contatore__presi" ref={numero}>
+          {presi}
         </span>
-      ) : (
-        <button
-          className="contatore__valore"
-          type="button"
-          aria-label={`Presi ${presi} pasti su ${quantita} di ${nome}: tocca per scrivere il numero`}
-          onClick={() => setScritto(String(presi))}
-        >
-          <span className="contatore__presi" ref={numero}>
-            {presi}
-          </span>
-          {totale}
-        </button>
-      )}
+        <span className="contatore__totale">/{quantita}</span>
+      </span>
       <button
         className="contatore__tasto"
         type="button"

@@ -91,11 +91,12 @@ sola lettura** e, in cima, lo stesso **contatore** della riga (F15). Il popup è
 pensato per restare **aperto nel reparto** mentre si prende tutto: i consigli non si
 selezionano, ma i presi si contano da lì.
 
-- **Verdura** e **Frutta**: i tipi del gruppo in due **liste collassabili**:
-  - **Di stagione** (aperta): i tipi del mese corrente, con la chip *tutto l'anno* o
-    *in uscita* (il mese prossimo non ci sono più);
-  - **Fuori stagione** (chiusa): gli altri, con la chip *in arrivo* se ci sono dal
-    mese prossimo.
+- **Verdura** e **Frutta**: i tipi del gruppo in due **schede** (*Di stagione* /
+  *Fuori stagione*, col numero dei tipi), come pillole divise in gruppi:
+  - **Di stagione** (scheda iniziale): *Ultimi giorni* (il mese prossimo non ci
+    sono più), *Nel pieno*, *Tutto l'anno*. I tipi del **mese corrente** sono **in
+    evidenza**;
+  - **Fuori stagione**: *In arrivo* (ci sono dal mese prossimo), *Più avanti*.
 - Arrivati al totale il popup **resta aperto**, così un tocco di troppo si corregge
   col −; la voce va tra i "Già presi" quando il popup si chiude.
 - **Carne rossa, carne bianca, pesce, formaggio, affettati**: un elenco **breve**, per
@@ -110,8 +111,8 @@ Frutta ×28), ricavato dalla routine. Conta i pasti, **non i pezzi né le confez
 
 - Il **totale è fisso**: un suggerimento, non si modifica.
 - Durante la spesa si contano i presi con un contatore **`[−] 0/4 [+]`**: i tasti
-  vanno di **uno alla volta** (anche per verdura ×14 e frutta ×28, per ora), e il
-  numero si può anche **scrivere** direttamente. Sta nella riga e nel popup (F14).
+  vanno di **uno alla volta** (anche per verdura ×14 e frutta ×28, per ora); il
+  numero **non si scrive**, si legge soltanto. Sta nella riga e nel popup (F14).
 - Il contatore **prende il posto della spunta** nelle voci generate.
 - Arrivati al totale (**4/4**) la voce è **completa** e va tra i "Già presi". Lì
   mostra ancora il contatore: il **−** la riporta nella lista a 3/4.

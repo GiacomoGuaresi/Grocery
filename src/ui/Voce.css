@@ -47,6 +47,12 @@
   cursor: pointer;
 }
 
+/* Nelle voci generate il contatore prende il posto della casella: dal nome lo
+   separa lo stesso spazio della casella (i 6px del suo padding più il gap). */
+.voce__testata > .contatore {
+  margin-right: 6px;
+}
+
 .voce__nome {
   flex: 1;
   min-width: 0;
