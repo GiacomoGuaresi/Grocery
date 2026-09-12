@@ -1,28 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { haVociDaRiportare, nuovoCiclo, vociDaRiportare } from './ciclo'
+import { generaLista } from './generazione'
 import type { Lista, Voce } from './tipi'
 
 const ilQuindiciDiGiugno = new Date(2026, 5, 15)
-
-/**
- * La generazione pesca a caso (doc/03, R2): con un seme fisso due chiamate
- * danno la stessa lista, ed è quello che serve per confrontarle qui.
- */
-function caso(seme: number): () => number {
-  let stato = seme >>> 0
-  return () => {
-    stato = (stato + 0x6d2b79f5) >>> 0
-    let t = stato
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-/** Le opzioni di un ciclo generato sempre uguale, per poterlo confrontare. */
-function stessaGenerazione() {
-  return { data: ilQuindiciDiGiugno, caso: caso(42) }
-}
 
 function lista(voci: Voce[]): Lista {
   return { id: 'precedente', creataIl: '2026-06-01T08:00:00.000Z', voci }
@@ -44,24 +25,45 @@ const detersivo: Voce = {
   comprata: true,
 }
 
-function verdura(id: string, nome: string, comprata = false): Voce {
-  return { id, nome, reparto: 'ortofrutta', categoria: 'verdura', origine: 'generata', comprata }
+function generata(categoria: 'pesce' | 'verdura', presi: number, quantita: number): Voce {
+  return {
+    id: categoria,
+    nome: categoria,
+    reparto: categoria === 'pesce' ? 'pescheria' : 'ortofrutta',
+    categoria,
+    origine: 'generata',
+    comprata: presi === quantita,
+    quantita,
+    presi,
+  }
 }
 
-function nomi(l: Lista): string[] {
-  return l.voci.map((voce) => voce.nome)
+/** Una generata rimasta dalla v1: niente contatore, solo la spunta. */
+const orataV1: Voce = {
+  id: 'pesce-1',
+  nome: 'orata',
+  reparto: 'pescheria',
+  categoria: 'pesce',
+  origine: 'generata',
+  comprata: false,
 }
+
+const precedente = lista([
+  caffe,
+  detersivo,
+  generata('pesce', 2, 4),
+  generata('verdura', 0, 14),
+  generata('verdura', 14, 14),
+  orataV1,
+])
 
 describe('vociDaRiportare', () => {
-  it('sono le voci non spuntate', () => {
-    expect(vociDaRiportare(lista([caffe, detersivo]))).toEqual([caffe])
+  it('sono le sole voci manuali non spuntate', () => {
+    expect(vociDaRiportare(precedente)).toEqual([caffe])
   })
 
-  it('della verdura restano i soli tipi non presi', () => {
-    const rimaste = vociDaRiportare(
-      lista([verdura('verdura-1', 'zucchine', true), verdura('verdura-2', 'spinaci')]),
-    )
-    expect(rimaste.map((voce) => voce.nome)).toEqual(['spinaci'])
+  it('le generate non si riportano, prese a metà, mai toccate, complete o dalla v1', () => {
+    expect(haVociDaRiportare(lista([generata('pesce', 2, 4), generata('verdura', 0, 14), orataV1]))).toBe(false)
   })
 
   it('senza lista precedente non c’è niente da riportare', () => {
@@ -73,97 +75,47 @@ describe('vociDaRiportare', () => {
 })
 
 describe('nuovoCiclo', () => {
-  it('la prima generazione dà una lista piena', () => {
-    expect(nuovoCiclo({ data: ilQuindiciDiGiugno }).voci.length).toBeGreaterThan(0)
+  const generataSola = generaLista({ data: ilQuindiciDiGiugno })
+
+  it('la prima generazione è la lista generata', () => {
+    expect(nuovoCiclo({ data: ilQuindiciDiGiugno })).toEqual(generataSola)
   })
 
   it('la lista nuova ha un altro id e non tocca la precedente', () => {
-    const precedente = lista([caffe, detersivo])
-    const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente })
-
-    expect(nuova.id).not.toBe(precedente.id)
-    expect(precedente.voci).toEqual([caffe, detersivo])
-  })
-
-  it('senza conferma le voci rimaste non passano nella lista nuova', () => {
-    const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente: lista([caffe]) })
-    expect(nomi(nuova)).not.toContain('caffè')
-  })
-
-  it('con la conferma porta avanti le voci non spuntate, non quelle prese', () => {
-    const nuova = nuovoCiclo({
-      data: ilQuindiciDiGiugno,
-      precedente: lista([caffe, detersivo]),
-      portaAvanti: true,
-    })
-
-    expect(nomi(nuova)).toContain('caffè')
-    expect(nomi(nuova)).not.toContain('detersivo piatti')
-  })
-
-  it('non raddoppia quello che il nuovo ciclo propone già', () => {
-    const senzaRiporto = nuovoCiclo(stessaGenerazione())
-    const primaVoce = senzaRiporto.voci[0]
-    const doppione: Voce = { ...primaVoce, id: 'doppione', nome: primaVoce.nome.toUpperCase() }
-
-    const nuova = nuovoCiclo({
-      ...stessaGenerazione(),
-      precedente: lista([doppione]),
-      portaAvanti: true,
-    })
-
-    expect(nuova.voci).toHaveLength(senzaRiporto.voci.length)
-  })
-
-  it('un tipo di verdura rimasto torna come voce a sé, se il ciclo nuovo non lo propone già', () => {
-    const senzaRiporto = nuovoCiclo(stessaGenerazione())
-    const giaProposta = senzaRiporto.voci.find((voce) => voce.categoria === 'verdura')!
-
-    const nuova = nuovoCiclo({
-      ...stessaGenerazione(),
-      precedente: lista([verdura('verdura-1', 'cavolo nero'), verdura('verdura-2', giaProposta.nome)]),
-      portaAvanti: true,
-    })
-
-    // Il tipo rimasto si aggiunge, quello già proposto dal ciclo nuovo no.
-    expect(nuova.voci).toHaveLength(senzaRiporto.voci.length + 1)
-    expect(nomi(nuova).filter((nome) => nome === 'cavolo nero')).toHaveLength(1)
-    expect(nomi(nuova).filter((nome) => nome === giaProposta.nome)).toHaveLength(1)
-    const ids = nuova.voci.map((voce) => voce.id)
-    expect(new Set(ids).size).toBe(ids.length)
-  })
-
-  it('quello che si porta avanti arriva da prendere, non spuntato', () => {
-    const rimasta: Voce = { ...caffe, comprata: false }
-    const nuova = nuovoCiclo({
-      data: ilQuindiciDiGiugno,
-      precedente: lista([rimasta]),
-      portaAvanti: true,
-    })
-    expect(nuova.voci.find((voce) => voce.nome === 'caffè')?.comprata).toBe(false)
-  })
-
-  it('una voce riportata non ruba l\'id a una voce del ciclo nuovo', () => {
-    const senzaRiporto = nuovoCiclo(stessaGenerazione())
-    const occupato = senzaRiporto.voci[0].id
-    const vecchia: Voce = { ...caffe, id: occupato }
-
-    const nuova = nuovoCiclo({
-      ...stessaGenerazione(),
-      precedente: lista([vecchia]),
-      portaAvanti: true,
-    })
-
-    const ids = nuova.voci.map((voce) => voce.id)
-    expect(new Set(ids).size).toBe(ids.length)
-    expect(nuova.voci.find((voce) => voce.nome === 'caffè')?.id).toBe(`riportata-${occupato}`)
-  })
-
-  it('la generazione non è in place: la lista nuova è un oggetto a parte', () => {
-    const precedente = lista([caffe])
+    const copia = structuredClone(precedente)
     const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente, portaAvanti: true })
 
-    expect(nuova).not.toBe(precedente)
-    expect(precedente.voci).toEqual([caffe])
+    expect(nuova.id).not.toBe(precedente.id)
+    expect(precedente).toEqual(copia)
+  })
+
+  it('senza conferma non passa niente della precedente', () => {
+    expect(nuovoCiclo({ data: ilQuindiciDiGiugno, precedente })).toEqual(generataSola)
+  })
+
+  it('con la conferma porta avanti le manuali non spuntate, in fondo e tali e quali', () => {
+    const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente, portaAvanti: true })
+    expect(nuova.voci).toEqual([...generataSola.voci, caffe])
+  })
+
+  it('nessuna generata riportata: pesce e verdura ripartono da zero, una voce sola', () => {
+    const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente, portaAvanti: true })
+    const pesce = nuova.voci.filter((voce) => voce.categoria === 'pesce')
+    const verdura = nuova.voci.filter((voce) => voce.categoria === 'verdura')
+
+    expect(pesce).toHaveLength(1)
+    expect(pesce[0]).toMatchObject({ quantita: 4, presi: 0 })
+    expect(verdura).toHaveLength(1)
+    expect(verdura[0]).toMatchObject({ quantita: 14, presi: 0 })
+    expect(nuova.voci.map((voce) => voce.nome)).not.toContain('orata')
+  })
+
+  it('una manuale riportata non ruba l’id a una voce del ciclo nuovo', () => {
+    const vecchia: Voce = { ...caffe, id: 'pesce' }
+    const nuova = nuovoCiclo({ data: ilQuindiciDiGiugno, precedente: lista([vecchia]), portaAvanti: true })
+
+    const ids = nuova.voci.map((voce) => voce.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    expect(nuova.voci.find((voce) => voce.nome === 'caffè')?.id).toBe('riportata-pesce')
   })
 })

@@ -12,7 +12,7 @@
 // quella salvata alla generazione, anche se poi si cambia mezza lista (R7).
 
 import { categoria as trovaCategoria, diStagione, eGruppoFisso, type Mese } from './dati'
-import { meseDi } from './generazione'
+import { meseDi } from './stagioni'
 import type { IdReparto, Lista, Voce } from './tipi'
 
 /**

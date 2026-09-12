@@ -87,14 +87,19 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
       Generazione e ciclo v1 senza rotazioni né archiviazione (pesca casuale senza
       memoria) finché V3 non li riscrive
 
-### Step V3 — Generazione nuova
+### Step V3 — Generazione nuova ✅
 
-- [ ] `generazione.ts` riscritto: una voce per categoria, totale dalla routine
-- [ ] `nuovoCiclo()`: niente rotazioni né archiviazione; la lista vecchia si cancella
-- [ ] Riporto: solo le voci manuali non spuntate; le generate mai, complete o no
-- [ ] Genera lista funziona **anche offline**
-- [ ] Test: totali giusti dalla routine (pesce 4, verdura 14, frutta 28); cambiando
-      la routine cambiano i numeri; nessuna generata riportata, le manuali sì
+- [x] `generazione.ts` riscritto: una voce per categoria (id = categoria, nome =
+      etichetta, `presi` 0), totale dalla routine; una categoria senza sere non entra
+- [x] `nuovoCiclo()`: niente rotazioni né archiviazione; la lista vecchia si cancella
+- [x] Riporto: solo le voci manuali non spuntate; le generate mai, complete o no
+      (nemmeno quelle rimaste dalla v1)
+- [x] Genera lista funziona **anche offline**: la lista va subito a schermo, un
+      segno in memoria locale (`grocery.generata`) la salva per intera al ritorno
+      della rete, prima della coda; conta come una modifica in attesa
+- [x] Test: totali giusti dalla routine (pesce 4, verdura 14, frutta 28); cambiando
+      la routine cambiano i numeri; nessuna generata riportata, le manuali sì;
+      generazione senza rete che sopravvive alla chiusura (2026-09-12)
 
 ### Step V4 — Contatore in lista
 

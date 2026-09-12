@@ -1,66 +1,49 @@
-// Passaggio da un ciclo di due settimane al successivo (Step 9 di
-// doc/12-piano-sviluppo.md). L'algoritmo (Step 8) sa solo produrre le voci del
-// nuovo ciclo; qui intorno c'è quello che riguarda la lista di prima: portare
-// avanti, se lo si chiede, quello che non è stato preso (R6, F1).
+// Passaggio da un ciclo di due settimane al successivo (v2, Step V3 di
+// doc/13-piano-v2.md). La generazione sa solo produrre le voci del nuovo ciclo;
+// qui intorno c'è quello che riguarda la lista di prima: portare avanti, se lo
+// si chiede, le voci manuali non spuntate (R5, F1).
 //
-// Dalla v2 la lista di prima non si archivia: salvando la nuova si cancella
-// (doc/13). Il riporto si riscrive nello Step V3.
+// La lista di prima non si archivia: salvando la nuova si cancella (R6).
 
-import { normalizza } from './aggiunta'
 import { generaLista, type OpzioniGenerazione } from './generazione'
 import type { Lista, Voce } from './tipi'
 
 export interface OpzioniCiclo extends OpzioniGenerazione {
   /** La lista di adesso, che verrà sostituita. Assente alla prima generazione. */
   precedente?: Lista | null
-  /** Se portare nella nuova lista le voci non spuntate della precedente (R6). */
+  /** Se portare nella nuova lista le voci manuali non spuntate (R5). */
   portaAvanti?: boolean
 }
 
 /**
- * Quello che resta da prendere nella lista: le voci ancora non spuntate. È la
- * domanda da fare prima di generare: se non torna niente, non c'è niente da
- * chiedere.
+ * Quello che si può portare nella lista nuova: le voci manuali non spuntate.
+ * Le generate mai, complete o no, e nemmeno quelle rimaste dalla v1: la lista
+ * nuova ha già le sue. Se non torna niente, non c'è niente da chiedere.
  */
 export function vociDaRiportare(lista: Lista | null | undefined): Voce[] {
   if (!lista) return []
-  return lista.voci.filter((voce) => !voce.comprata)
+  return lista.voci.filter((voce) => voce.origine === 'manuale' && !voce.comprata)
 }
 
-/** Vero se la lista ha ancora qualcosa da prendere: allora si chiede (R6). */
+/** Vero se la lista ha voci manuali ancora da prendere: allora si chiede (R5). */
 export function haVociDaRiportare(lista: Lista | null | undefined): boolean {
   return vociDaRiportare(lista).length > 0
 }
 
-/**
- * Aggiunge alla lista nuova quello che era rimasto da prendere. Non raddoppia
- * niente: quello che il nuovo ciclo propone già — per nome, senza badare a
- * maiuscole e accenti — non viene riportato. Vale anche per i tipi di frutta
- * e verdura, che sono voci come le altre.
- */
+/** Aggiunge in fondo alla lista nuova le voci manuali rimaste, tali e quali. */
 function riporta(nuova: Lista, precedente: Lista): Lista {
-  const voci = nuova.voci.map((voce) => ({ ...voce }))
-  const perId = new Map(voci.map((voce) => [voce.id, voce]))
-  const giaPresenti = new Set(voci.map((voce) => normalizza(voce.nome)))
-
-  for (const rimasta of vociDaRiportare(precedente)) {
-    if (giaPresenti.has(normalizza(rimasta.nome))) continue
-    giaPresenti.add(normalizza(rimasta.nome))
-    // L'id di una voce generata si ripete tra un ciclo e l'altro
-    // (`pesce-1`, …): quando è già occupato, la voce riportata ne prende uno
-    // suo, così le due restano distinte.
-    const id = perId.has(rimasta.id) ? `riportata-${rimasta.id}` : rimasta.id
-    const voce: Voce = { ...rimasta, id, comprata: false }
-    voci.push(voce)
-    perId.set(id, voce)
-  }
-
-  return { ...nuova, voci }
+  const occupati = new Set(nuova.voci.map((voce) => voce.id))
+  const riportate = vociDaRiportare(precedente).map((voce) =>
+    // Gli id delle manuali non collidono con quelli delle generate; se
+    // capitasse lo stesso, la riportata ne prende uno suo.
+    occupati.has(voce.id) ? { ...voce, id: `riportata-${voce.id}` } : voce,
+  )
+  return { ...nuova, voci: [...nuova.voci, ...riportate] }
 }
 
 /**
- * La lista del nuovo ciclo: quella generata più, se richiesto, quello che era
- * rimasto da prendere. Funzione pura: chi chiama la salva, e salvandola
+ * La lista del nuovo ciclo: quella generata più, se richiesto, le voci manuali
+ * rimaste. Funzione pura e senza rete: chi chiama la salva, e salvandola
  * cancella la precedente.
  */
 export function nuovoCiclo(opzioni: OpzioniCiclo = {}): Lista {

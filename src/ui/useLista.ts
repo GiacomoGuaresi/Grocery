@@ -14,8 +14,8 @@ export interface ListaPersistita extends Istantanea {
   /** Applica una trasformazione pura alla lista e salva le voci che ha toccato. */
   modifica(trasforma: (lista: Lista) => Lista): void
   /**
-   * Genera il ciclo nuovo: archivia la lista corrente e la sostituisce, con o
-   * senza le voci rimaste da prendere (Step 9).
+   * Genera il ciclo nuovo: sostituisce la lista corrente, che si cancella, con
+   * o senza le voci manuali rimaste. Funziona anche senza rete (Step V3).
    */
   genera(portaAvanti: boolean): void
 }

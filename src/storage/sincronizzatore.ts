@@ -50,6 +50,8 @@ export class Sincronizzatore {
   private fallita = false
   private senzaRete = false
   private coda: Scrittura[]
+  /** L'id della lista generata qui e non ancora arrivata al database. */
+  private generata: string | null
   private istantanea: Istantanea
   // Tutto quello che parla col database passa di qui, uno alla volta: le
   // scritture arrivano nell'ordine in cui sono state fatte, e una rilettura
@@ -62,6 +64,7 @@ export class Sincronizzatore {
 
   constructor(private readonly opzioni: Opzioni) {
     this.coda = opzioni.memoria.leggiCoda()
+    this.generata = opzioni.memoria.leggiGenerata()
     this.istantanea = this.fotografa()
   }
 
@@ -110,6 +113,10 @@ export class Sincronizzatore {
       const letta = await storage.leggiListaCorrente()
       if (letta) {
         const locale = this.lista
+        // Generata qui mentre questa rilettura era già partita: vale la nuova,
+        // che parte per il database subito dopo.
+        if (this.generata && locale?.id === this.generata) return
+
         this.tieni(locale ? unisci(letta, locale, vociInAttesa(this.coda, locale.id)) : letta)
         return
       }
@@ -137,18 +144,18 @@ export class Sincronizzatore {
   }
 
   /**
-   * Genera il ciclo nuovo: la lista nuova, con o senza le voci rimaste da
-   * prendere (Step 9), prende il posto di quella di adesso, che si cancella.
-   * Per ora passa ancora dal database e senza rete non parte: lo Step V3 la
-   * fa girare anche offline.
+   * Genera il ciclo nuovo: la lista nuova, con o senza le voci manuali rimaste
+   * (R5), prende il posto di quella di adesso, che si cancella. Gira anche
+   * senza rete (Step V3): la lista va subito a schermo e nella memoria, e parte
+   * per il database appena si può, prima delle modifiche fatte dopo.
    */
   genera(portaAvanti: boolean): void {
-    void this.inFila('Generazione fallita', async (storage) => {
-      await this.svuotaCoda(storage)
-      const lista = nuovoCiclo({ precedente: this.lista, portaAvanti })
-      await storage.salvaLista(lista)
-      this.tieni(lista)
-    })
+    const lista = nuovoCiclo({ precedente: this.lista, portaAvanti, data: this.adesso() })
+    // Come per le modifiche: prima il segno che manca il salvataggio, poi la lista.
+    this.generata = lista.id
+    this.opzioni.memoria.salvaGenerata(lista.id)
+    this.tieni(lista)
+    void this.inFila('Generazione fallita', (storage) => this.svuotaCoda(storage))
   }
 
   /** Quando tutto quello che è partito finora ha finito, riuscito o no. */
@@ -171,6 +178,16 @@ export class Sincronizzatore {
    * altre dietro di lei.
    */
   private async svuotaCoda(storage: Storage): Promise<void> {
+    // Una lista generata qui senza rete va salvata per intero, con le
+    // modifiche fatte nel frattempo; le scritture in coda per lei poi
+    // riscrivono voci già giuste, quelle per la lista di prima non toccano niente.
+    if (this.generata) {
+      if (this.lista?.id === this.generata) await storage.salvaLista(this.lista)
+      if (this.chiuso) return
+      this.generata = null
+      this.opzioni.memoria.salvaGenerata(null)
+      this.pubblica()
+    }
     while (this.coda.length > 0 && !this.chiuso) {
       const { listaId, modifiche, quando } = this.coda[0]
       try {
@@ -218,7 +235,8 @@ export class Sincronizzatore {
     const stato: StatoLista = this.lista
       ? { fase: 'pronta', lista: this.lista }
       : { fase: this.fallita ? 'errore' : 'caricamento' }
-    return { stato, inAttesa: this.coda.length, senzaRete: this.senzaRete }
+    const inAttesa = this.coda.length + (this.generata ? 1 : 0)
+    return { stato, inAttesa, senzaRete: this.senzaRete }
   }
 
   private pubblica(): void {

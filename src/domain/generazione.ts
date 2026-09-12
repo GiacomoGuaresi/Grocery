@@ -1,125 +1,75 @@
-// Algoritmo di generazione della lista (Step 8 di doc/12-piano-sviluppo.md).
-// Solo logica, nessuna UI: dalla routine, dai cataloghi e dalla stagionalità
-// escono le voci di un ciclo di due settimane (doc/03-algoritmo-generazione.md).
+// Algoritmo di generazione della lista (v2, Step V3 di doc/13-piano-v2.md).
+// Solo logica, nessuna UI: dalla routine escono le voci di un ciclo di due
+// settimane (doc/03-algoritmo-generazione.md).
 //
-// La scelta è **casuale**, non a giro fisso sul catalogo: scorrendo il catalogo
-// in ordine capitavano cicli interi sullo stesso animale, cambiando solo il
-// taglio (R2). Dalla v2 non c'è più memoria tra un ciclo e l'altro: le
-// rotazioni sono tolte, e lo Step V3 riscrive la generazione per categorie.
+// Deterministico e senza stato: una voce per categoria, col totale dei pasti
+// da coprire. Non sceglie tipologie (i tipi sono solo consigli del popup), non
+// guarda la stagionalità e non legge niente dal database, quindi gira anche
+// senza rete.
 
-import {
-  categoria,
-  categorie,
-  diStagione,
-  eGruppoFisso,
-  giorniRoutine,
-  type GruppoFisso,
-  type Mese,
-} from './dati'
+import { categorie, giorniRoutine, pastiPerGiorno, type GiornoRoutine, type GruppoFisso } from './dati'
 import type { IdCategoria, Lista, Voce } from './tipi'
 
-/** Tipi di verdura e di frutta per ciclo: resta finché lo Step V3 non riscrive la generazione. */
-const tipiPerCiclo = 4
+/** Il ciclo dura due settimane. */
+const settimanePerCiclo = 2
+
+/** La routine da cui nascono i numeri: di norma `routine.json`, sostituibile nei test. */
+export interface Routine {
+  giorni: Pick<GiornoRoutine, 'categoria'>[]
+  pastiPerGiorno: Record<GruppoFisso, number>
+}
 
 export interface OpzioniGenerazione {
-  /** Determina il mese, e quindi la stagionalità. Default: adesso. */
+  /** Dà l'id e la data della lista. Default: adesso. */
   data?: Date
   /** Id della lista prodotta. Default: derivato dalla data. */
   id?: string
-  /** La sorgente del caso, sostituibile nei test. Default: `Math.random`. */
-  caso?: () => number
+  /** Default: quella di `routine.json`. */
+  routine?: Routine
 }
 
-/** 1 = gennaio ... 12 = dicembre, dal fuso locale come il resto dell'app. */
-export function meseDi(data: Date): Mese {
-  return (data.getMonth() + 1) as Mese
-}
+const routineDelleDati: Routine = { giorni: giorniRoutine, pastiPerGiorno }
 
 /**
- * Quante voci servono per categoria in un ciclo di due settimane: le occorrenze
- * nella routine settimanale, moltiplicate per due (R1). Non è una tabella a
- * mano: cambiare `routine.json` cambia la copertura.
+ * Quanti pasti coprire per categoria in un ciclo. Le fonti proteiche: le sere
+ * della settimana che la routine assegna × 2 (R1). Verdura e frutta: i pasti
+ * al giorno × 7 × 2 (R2). Non è una tabella a mano: cambiare la routine cambia
+ * i numeri.
  */
-export function occorrenzePerCiclo(): Map<IdCategoria, number> {
-  const occorrenze = new Map<IdCategoria, number>()
-  for (const giorno of giorniRoutine) {
-    occorrenze.set(giorno.categoria, (occorrenze.get(giorno.categoria) ?? 0) + 2)
+export function pastiPerCiclo(routine: Routine = routineDelleDati): Map<IdCategoria | GruppoFisso, number> {
+  const pasti = new Map<IdCategoria | GruppoFisso, number>()
+  for (const { categoria } of routine.giorni) {
+    pasti.set(categoria, (pasti.get(categoria) ?? 0) + settimanePerCiclo)
   }
-  return occorrenze
-}
-
-/** Mescola una copia dell'elenco (Fisher-Yates), lasciando intatto l'originale. */
-function mescola<T>(elenco: T[], caso: () => number): T[] {
-  const mescolato = [...elenco]
-  for (let i = mescolato.length - 1; i > 0; i--) {
-    const j = Math.floor(caso() * (i + 1))
-    ;[mescolato[i], mescolato[j]] = [mescolato[j], mescolato[i]]
+  for (const [gruppo, alGiorno] of Object.entries(routine.pastiPerGiorno) as [GruppoFisso, number][]) {
+    pasti.set(gruppo, alGiorno * 7 * settimanePerCiclo)
   }
-  return mescolato
+  return pasti
 }
 
 /**
- * Pesca a caso fino a `quanti` elementi dai candidati, mai due volte lo stesso
- * (R4). Se i candidati sono meno delle voci da riempire — le uova, che hanno
- * una sola tipologia — escono tutti una volta sola: nella lista una voce non si
- * ripete mai (R8).
- */
-function pesca<T>(candidati: T[], quanti: number, caso: () => number): T[] {
-  return mescola(candidati, caso).slice(0, quanti)
-}
-
-/** Le voci di una categoria per il ciclo. */
-function vociCategoria(id: IdCategoria, quante: number, caso: () => number): Voce[] {
-  const catalogo = categorie.find((c) => c.id === id)
-  if (!catalogo) return []
-
-  // Le uova non hanno consigli: una voce sola col nome della categoria (R8).
-  const candidati = catalogo.consigli.length === 0 ? [catalogo.etichetta.toLowerCase()] : catalogo.consigli
-  return pesca(candidati, quante, caso).map((nome, posizione) => ({
-    id: `${id}-${posizione + 1}`,
-    nome,
-    reparto: catalogo.reparto,
-    categoria: id,
-    origine: 'generata' as const,
-    comprata: false,
-  }))
-}
-
-/**
- * Le voci di verdura o frutta: `tipiPerCiclo` tipi di stagione, diversi tra
- * loro, pescati a caso tra quelli del mese (R5, R5b). Ogni tipo è una voce a
- * sé, che si spunta come le altre (R5d).
- */
-function vociGruppo(gruppo: GruppoFisso, mese: Mese, caso: () => number): Voce[] {
-  const reparto = categoria(gruppo)?.reparto ?? 'ortofrutta'
-  return pesca(diStagione(gruppo, mese), tipiPerCiclo, caso).map((nome, posizione) => ({
-    id: `${gruppo}-${posizione + 1}`,
-    nome,
-    reparto,
-    categoria: gruppo,
-    origine: 'generata' as const,
-    comprata: false,
-  }))
-}
-
-/**
- * La lista di un ciclo di due settimane. Non tocca la lista precedente:
- * riportare le voci non spuntate è compito di chi chiama (R6, Step 9).
+ * La lista di un ciclo di due settimane: una voce per categoria, nell'ordine
+ * del catalogo, con `presi` a zero. Una categoria che la routine non usa non
+ * entra. Non tocca la lista precedente: il riporto è in `ciclo.ts`.
  */
 export function generaLista(opzioni: OpzioniGenerazione = {}): Lista {
   const data = opzioni.data ?? new Date()
-  const caso = opzioni.caso ?? Math.random
-  const mese = meseDi(data)
+  const pasti = pastiPerCiclo(opzioni.routine)
 
   const voci: Voce[] = []
-  for (const gruppo of ['verdura', 'frutta'] as GruppoFisso[]) {
-    voci.push(...vociGruppo(gruppo, mese, caso))
-  }
-
-  const occorrenze = occorrenzePerCiclo()
   for (const catalogo of categorie) {
-    if (eGruppoFisso(catalogo.id)) continue
-    voci.push(...vociCategoria(catalogo.id, occorrenze.get(catalogo.id) ?? 0, caso))
+    const quantita = pasti.get(catalogo.id) ?? 0
+    if (quantita <= 0) continue
+    voci.push({
+      id: catalogo.id,
+      nome: catalogo.etichetta,
+      reparto: catalogo.reparto,
+      categoria: catalogo.id,
+      origine: 'generata',
+      comprata: false,
+      quantita,
+      presi: 0,
+    })
   }
 
   return {

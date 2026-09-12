@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { eliminaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
 import type { Lista } from '../domain/tipi'
-import { alle, lista } from './contratto'
+import { alle, conPresi, lista } from './contratto'
 import { Collegamento, StorageInMemoria } from './inMemoria'
 import { MemoriaLocale, type Scaffale } from './memoriaLocale'
 import { Sincronizzatore } from './sincronizzatore'
@@ -91,6 +91,39 @@ describe('senza rete', () => {
     const sulDatabase = await db.leggiListaCorrente()
     expect(ids(sulDatabase)).toEqual(['pesce-1', 'manuale-1'])
     expect(comprata(sulDatabase, 'pesce-1')).toBe(true)
+    expect(dopo.lista()).toEqual(sulDatabase)
+  })
+
+  it('la lista si genera anche senza rete, sopravvive alla chiusura e parte al ritorno', async () => {
+    const db = await conLista()
+    const memoria = scaffale()
+    const prima = dispositivo(db, memoria)
+    await prima.sincronizzatore.apri()
+
+    prima.rete.stacca()
+    prima.sincronizzatore.genera(false)
+    const generata = prima.lista()
+    expect(generata.id).not.toBe(lista.id)
+    expect(generata.voci.find((voce) => voce.id === 'pesce')).toMatchObject({ quantita: 4, presi: 0 })
+    prima.sincronizzatore.modifica((l) => conPresi(l, 'pesce', 1))
+    await prima.sincronizzatore.finito()
+    expect(prima.sincronizzatore.leggi()).toMatchObject({ inAttesa: 2, senzaRete: true })
+    expect(await db.leggiListaCorrente()).toEqual(lista)
+    prima.sincronizzatore.chiudi()
+
+    const dopo = dispositivo(db, memoria)
+    dopo.rete.stacca()
+    await dopo.sincronizzatore.apri()
+    expect(dopo.lista().id).toBe(generata.id)
+
+    dopo.rete.riattacca()
+    await vi.waitFor(() =>
+      expect(dopo.sincronizzatore.leggi()).toMatchObject({ inAttesa: 0, senzaRete: false }),
+    )
+    await dopo.sincronizzatore.finito()
+    const sulDatabase = await db.leggiListaCorrente()
+    expect(sulDatabase?.id).toBe(generata.id)
+    expect(sulDatabase?.voci.find((voce) => voce.id === 'pesce')?.presi).toBe(1)
     expect(dopo.lista()).toEqual(sulDatabase)
   })
 
@@ -188,8 +221,8 @@ describe('last-write-wins con la coda', () => {
     await qui.sincronizzatore.finito()
     expect(qui.lista().id).toBe(la.lista().id)
     expect(qui.lista().id).not.toBe(lista.id)
-    // La lista nuova ha anche lei un `pesce-1`: la spunta vecchia non ci arriva.
-    expect(comprata(await db.leggiListaCorrente(), 'pesce-1')).toBe(false)
+    // La spunta vecchia non fa rinascere `pesce-1` nella lista nuova.
+    expect(ids(await db.leggiListaCorrente())).not.toContain('pesce-1')
     expect(await db.leggiListaCorrente()).toEqual(la.lista())
   })
 })

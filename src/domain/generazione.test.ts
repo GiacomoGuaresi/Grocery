@@ -1,180 +1,82 @@
 import { describe, expect, it } from 'vitest'
-import { normalizza } from './aggiunta'
-import { categorie, stagionalita } from './dati'
-import { generaLista, meseDi, occorrenzePerCiclo } from './generazione'
-import type { IdCategoria, Lista, Voce } from './tipi'
+import { categorie } from './dati'
+import { generaLista, pastiPerCiclo, type Routine } from './generazione'
+import type { Lista, Voce } from './tipi'
 
-/**
- * Una sorgente del caso riproducibile (mulberry32): stesso seme, stessa
- * sequenza. Serve a testare un algoritmo che per scelta non è deterministico
- * (doc/03, R2) senza che i test diventino ballerini.
- */
-function caso(seme: number): () => number {
-  let stato = seme >>> 0
-  return () => {
-    stato = (stato + 0x6d2b79f5) >>> 0
-    let t = stato
-    t = Math.imul(t ^ (t >>> 15), t | 1)
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
+function voce(lista: Lista, categoria: NonNullable<Voce['categoria']>): Voce | undefined {
+  return lista.voci.find((v) => v.categoria === categoria)
 }
 
-/** Il 15 del mese: una data qualsiasi dentro il mese, senza sorprese di fuso. */
-function ilQuindici(mese: number): Date {
-  return new Date(2026, mese - 1, 15)
-}
-
-function vociDi(lista: Lista, categoria: NonNullable<Voce['categoria']>): Voce[] {
-  return lista.voci.filter((voce) => voce.categoria === categoria)
-}
-
-function nomi(voci: Voce[]): string[] {
-  return voci.map((voce) => voce.nome)
-}
-
-/** I tipi di verdura o di frutta del ciclo: una voce ciascuno. */
-function tipi(lista: Lista, gruppo: 'verdura' | 'frutta'): string[] {
-  return nomi(vociDi(lista, gruppo))
-}
-
-describe('meseDi', () => {
-  it('gennaio è 1 e dicembre è 12', () => {
-    expect(meseDi(ilQuindici(1))).toBe(1)
-    expect(meseDi(ilQuindici(12))).toBe(12)
-  })
-})
-
-describe('occorrenzePerCiclo', () => {
+describe('pastiPerCiclo', () => {
   it('copre il ciclo come la routine di doc/02', () => {
-    expect(Object.fromEntries(occorrenzePerCiclo())).toEqual({
+    expect(Object.fromEntries(pastiPerCiclo())).toEqual({
       carne_rossa: 2,
       formaggio: 2,
       pesce: 4,
       uova: 2,
       carne_bianca: 2,
       affettati: 2,
+      verdura: 14,
+      frutta: 28,
     })
   })
-
-  it('sono 14 cene in tutto', () => {
-    const totale = [...occorrenzePerCiclo().values()].reduce((a, b) => a + b, 0)
-    expect(totale).toBe(14)
-  })
 })
 
-describe('generaLista — copertura', () => {
-  const lista = generaLista({ data: ilQuindici(6) })
+describe('generaLista', () => {
+  const lista = generaLista({ data: new Date(2026, 5, 15) })
 
-  it('genera tante voci quante le occorrenze di ogni categoria, le uova una sola', () => {
-    for (const [categoria, quante] of occorrenzePerCiclo()) {
-      expect(vociDi(lista, categoria)).toHaveLength(categoria === 'uova' ? 1 : quante)
-    }
+  it('una voce per categoria, nell’ordine del catalogo', () => {
+    expect(lista.voci.map((v) => v.categoria)).toEqual(categorie.map((c) => c.id))
   })
 
-  it('più una voce per ogni tipo di verdura e di frutta, in ortofrutta', () => {
-    // 14 cene, ma le due di uova sono una voce sola.
-    expect(lista.voci).toHaveLength(13 + 4 + 4)
-    for (const gruppo of ['verdura', 'frutta'] as const) {
-      const voci = vociDi(lista, gruppo)
-      expect(voci).toHaveLength(4)
-      expect(voci.every((voce) => voce.reparto === 'ortofrutta')).toBe(true)
-    }
+  it('totali dalla routine: pesce 4, verdura 14, frutta 28', () => {
+    expect(voce(lista, 'pesce')?.quantita).toBe(4)
+    expect(voce(lista, 'verdura')?.quantita).toBe(14)
+    expect(voce(lista, 'frutta')?.quantita).toBe(28)
+    expect(voce(lista, 'uova')?.quantita).toBe(2)
   })
 
-  it('ogni voce ha il suo id', () => {
-    const ids = lista.voci.map((voce) => voce.id)
-    expect(new Set(ids).size).toBe(ids.length)
-  })
-
-  it('sono tutte voci generate e non spuntate', () => {
-    expect(lista.voci.every((voce) => voce.origine === 'generata')).toBe(true)
-    expect(lista.voci.every((voce) => !voce.comprata)).toBe(true)
-  })
-
-  it('ogni voce porta il reparto della sua categoria', () => {
+  it('ogni voce ha nome dalla categoria, reparto, niente presi e niente spunta', () => {
     for (const catalogo of categorie) {
-      for (const voce of vociDi(lista, catalogo.id)) {
-        expect(voce.reparto).toBe(catalogo.reparto)
-      }
-    }
-  })
-})
-
-describe('generaLista — varietà dentro il ciclo', () => {
-  const lista = generaLista({ data: ilQuindici(6) })
-
-  it('le tipologie della stessa categoria sono diverse tra loro', () => {
-    for (const categoria of ['carne_rossa', 'carne_bianca', 'pesce', 'formaggio', 'affettati'] as IdCategoria[]) {
-      const scelte = nomi(vociDi(lista, categoria))
-      expect(new Set(scelte).size).toBe(scelte.length)
+      expect(voce(lista, catalogo.id)).toEqual({
+        id: catalogo.id,
+        nome: catalogo.etichetta,
+        reparto: catalogo.reparto,
+        categoria: catalogo.id,
+        origine: 'generata',
+        comprata: false,
+        quantita: pastiPerCiclo().get(catalogo.id),
+        presi: 0,
+      })
     }
   })
 
-  it('le uova tornano due volte nella routine ma sono una voce sola', () => {
-    expect(nomi(vociDi(lista, 'uova'))).toEqual(['uova'])
+  it('è deterministica: stessa data, stessa lista', () => {
+    const data = new Date(2026, 0, 15)
+    expect(generaLista({ data })).toEqual(generaLista({ data }))
   })
 
-  it('nessuna voce si ripete, in nessun mese e con nessun seme', () => {
-    for (let mese = 1; mese <= 12; mese++) {
-      for (let seme = 1; seme <= 5; seme++) {
-        const lista = generaLista({ data: ilQuindici(mese), caso: caso(mese * 10 + seme) })
-        const tutti = lista.voci.map((voce) => normalizza(voce.nome))
-        expect(new Set(tutti).size).toBe(tutti.length)
-      }
+  it('cambiando la routine cambiano i numeri', () => {
+    const routine: Routine = {
+      giorni: [
+        { categoria: 'pesce' },
+        { categoria: 'pesce' },
+        { categoria: 'pesce' },
+        { categoria: 'uova' },
+        { categoria: 'carne_bianca' },
+        { categoria: 'carne_bianca' },
+        { categoria: 'formaggio' },
+      ],
+      pastiPerGiorno: { verdura: 2, frutta: 3 },
     }
-  })
+    const diversa = generaLista({ routine })
 
-  it('i 4 tipi di verdura e i 4 di frutta sono diversi tra loro', () => {
-    expect(new Set(tipi(lista, 'verdura')).size).toBe(4)
-    expect(new Set(tipi(lista, 'frutta')).size).toBe(4)
-  })
-})
-
-describe('generaLista — scelta casuale', () => {
-  it('a parità di seme esce sempre la stessa lista', () => {
-    const prima = generaLista({ data: ilQuindici(3), id: 'x', caso: caso(7) })
-    const seconda = generaLista({ data: ilQuindici(3), id: 'x', caso: caso(7) })
-    expect(seconda).toEqual(prima)
-  })
-
-  it('non segue l’ordine del catalogo: semi diversi, liste diverse', () => {
-    const carne = categorie.find((c) => c.id === 'carne_rossa')!
-    const primi = carne.consigli.slice(0, 2)
-    const uscite = [1, 2, 3, 4, 5].map((seme) =>
-      nomi(vociDi(generaLista({ data: ilQuindici(3), caso: caso(seme) }), 'carne_rossa')),
-    )
-
-    expect(new Set(uscite.map((u) => u.join('|'))).size).toBeGreaterThan(1)
-    expect(uscite.every((u) => u.join('|') === primi.join('|'))).toBe(false)
-  })
-
-  it('gira su tutto il catalogo, non su un angolo solo', () => {
-    // Il motivo del cambio (doc/10): a giro fisso capitavano cicli interi
-    // sullo stesso animale, cambiando solo il taglio.
-    const scelte = new Set<string>()
-    for (let seme = 1; seme <= 20; seme++) {
-      const lista = generaLista({ data: ilQuindici(6), caso: caso(seme) })
-      for (const nome of nomi(vociDi(lista, 'carne_rossa'))) scelte.add(nome)
-    }
-    expect(scelte.size).toBe(categorie.find((c) => c.id === 'carne_rossa')!.consigli.length)
-  })
-})
-
-describe('generaLista — stagionalità', () => {
-  it('a gennaio non escono pomodori', () => {
-    const lista = generaLista({ data: ilQuindici(1) })
-    expect(tipi(lista, 'verdura')).not.toContain('pomodori')
-  })
-
-  it('sceglie solo verdura e frutta del mese, in ogni mese', () => {
-    for (let mese = 1; mese <= 12; mese++) {
-      const lista = generaLista({ data: ilQuindici(mese) })
-      for (const gruppo of ['verdura', 'frutta'] as const) {
-        for (const nome of tipi(lista, gruppo)) {
-          expect(stagionalita[gruppo][nome]).toContain(mese)
-        }
-      }
-    }
+    expect(voce(diversa, 'pesce')?.quantita).toBe(6)
+    expect(voce(diversa, 'carne_bianca')?.quantita).toBe(4)
+    expect(voce(diversa, 'verdura')?.quantita).toBe(28)
+    expect(voce(diversa, 'frutta')?.quantita).toBe(42)
+    // Senza sere in routine, la categoria non entra in lista.
+    expect(voce(diversa, 'carne_rossa')).toBeUndefined()
+    expect(voce(diversa, 'affettati')).toBeUndefined()
   })
 })

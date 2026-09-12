@@ -17,6 +17,7 @@ export interface Scaffale {
 
 const CHIAVE_LISTA = 'grocery.lista'
 const CHIAVE_CODA = 'grocery.coda'
+const CHIAVE_GENERATA = 'grocery.generata'
 
 export class MemoriaLocale {
   constructor(private readonly scaffale: Scaffale | null) {}
@@ -49,6 +50,19 @@ export class MemoriaLocale {
 
   salvaCoda(coda: Scrittura[]): void {
     this.scrivi(CHIAVE_CODA, coda)
+  }
+
+  /**
+   * L'id di una lista generata qui e non ancora salvata sul database (Step V3):
+   * finché c'è, al ritorno della rete la lista va salvata per intero.
+   */
+  leggiGenerata(): string | null {
+    const id = this.leggi<unknown>(CHIAVE_GENERATA, null)
+    return typeof id === 'string' ? id : null
+  }
+
+  salvaGenerata(id: string | null): void {
+    this.scrivi(CHIAVE_GENERATA, id)
   }
 
   /** Un valore illeggibile vale quanto uno assente: si riparte dal database. */
