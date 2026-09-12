@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { tutteLeAlternative, type Alternative } from '../domain/alternative'
+import { contaVoce, haContatore } from '../domain/contatore'
 import { rinominabile } from '../domain/modifica'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { movimentoRidotto, useUscita } from './animazioni'
 import { AzioniVoce, SceltaAlternativa } from './AzioniVoce'
+import { Contatore } from './Contatore'
 import { Icona } from './Icona'
 import './Voce.css'
 
 /**
  * La voce appena arrivata in un punto della lista, da far entrare con
- * un'animazione: aggiunta a mano, oppure spostata da una spunta o una
- * de-spunta. `comprata` dice dove arriva, così la riga che sta uscendo
- * dall'altra parte non la prende per sé.
+ * un'animazione: aggiunta a mano, oppure spostata da una spunta, una
+ * de-spunta o dal contatore. `comprata` dice dove arriva, così la riga che sta
+ * uscendo dall'altra parte non la prende per sé.
  */
 export interface Arrivo {
   id: string
@@ -27,6 +29,8 @@ interface Props {
   arrivo: Arrivo | null
   /** Tocco sulla casella: la spunta, o la de-spunta se è tra i già presi. */
   onAlterna: (id: string) => void
+  /** Il contatore delle voci generate: il numero nuovo dei presi. */
+  onConta: (id: string, presi: number) => void
   /** Toglie la voce dalla lista. */
   onElimina: (id: string) => void
   /** Corregge il nome: solo per le voci manuali sotto "Altro". */
@@ -36,24 +40,27 @@ interface Props {
 }
 
 /**
- * Una voce della lista. Toccare la sua casella la segna comprata e la fa
- * sparire dalla lista attiva (doc/08-ui-ux.md). Ogni tipo di frutta e verdura
- * è una voce a sé, come tutte le altre.
+ * Una voce della lista. Le voci manuali, e le generate rimaste dalla v1, si
+ * spuntano dalla casella: segnate comprate spariscono dalla lista attiva
+ * (doc/08-ui-ux.md). Le generate v2 al posto della casella hanno il contatore
+ * dei pasti (F15): arrivate al totale sono complete e vanno tra i "Già presi",
+ * dove il − le riporta indietro.
  *
- * Si spunta solo dalla casella: il nome non spunta. Nelle voci manuali sotto
- * "Altro" toccare il nome lo rende modificabile lì dove sta; nelle voci che
- * hanno alternative (frutta, verdura, carne, pesce…) apre subito la dropdown
- * per sostituirle. Tutto il resto — rinomina, elimina, e di nuovo le
+ * Il nome non spunta. Nelle voci manuali sotto "Altro" toccarlo lo rende
+ * modificabile lì dove sta; nelle voci che hanno alternative apre subito la
+ * dropdown per sostituirle. Tutto il resto — rinomina, elimina, e di nuovo le
  * alternative — sta nel popup che si apre col ⋯ (AzioniVoce).
  *
- * Spunta ed eliminazione sono animate: la riga si chiude, e solo dopo la
- * modifica arriva alla lista. Una voce appena arrivata invece si apre.
+ * Spunta, contatore completato ed eliminazione sono animati: la riga si
+ * chiude, e solo dopo la modifica arriva alla lista. Una voce appena arrivata
+ * invece si apre. Il contatore che non sposta la voce cambia subito.
  */
 export function Voce({
   voce,
   alternative,
   arrivo,
   onAlterna,
+  onConta,
   onElimina,
   onRinomina,
   onSostituisci,
@@ -61,13 +68,17 @@ export function Voce({
   const [azioniAperte, setAzioniAperte] = useState(false)
   // Non nullo solo mentre si sta scrivendo il nome nuovo direttamente nella riga.
   const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
+  // Il numero che porta la voce dall'altra parte, mostrato mentre la riga esce.
+  const [presiInUscita, setPresiInUscita] = useState<number | null>(null)
   const riga = useRef<HTMLLIElement>(null)
 
-  const { uscita, esci, fine } = useUscita<'spunta' | 'elimina'>((motivo) =>
-    motivo === 'elimina' ? onElimina(voce.id) : onAlterna(voce.id),
-  )
-  // Mentre la riga esce per la spunta, la casella mostra già lo stato nuovo.
-  const spuntata = uscita === 'spunta' ? !voce.comprata : voce.comprata
+  const { uscita, esci, fine } = useUscita<'spunta' | 'conta' | 'elimina'>((motivo) => {
+    if (motivo === 'elimina') onElimina(voce.id)
+    else if (motivo === 'conta') onConta(voce.id, presiInUscita ?? voce.presi ?? 0)
+    else onAlterna(voce.id)
+  })
+  // Mentre la riga esce per la spunta o il contatore, si mostra già lo stato nuovo.
+  const spuntata = uscita === 'spunta' || uscita === 'conta' ? !voce.comprata : voce.comprata
 
   const arriva =
     arrivo && arrivo.id === voce.id && arrivo.comprata === voce.comprata ? arrivo.tipo : null
@@ -82,10 +93,23 @@ export function Voce({
     })
   }, [arriva])
 
+  const contatore = haContatore(voce)
+
   const classi = ['voce']
+  if (contatore && spuntata) classi.push('voce--completa')
   if (arriva && !arrivata) classi.push('voce--arriva', `voce--arriva-${arriva}`)
   if (uscita) classi.push('voce--esce')
-  if (uscita === 'spunta' && spuntata) classi.push('voce--si-spunta')
+  if ((uscita === 'spunta' || uscita === 'conta') && spuntata) classi.push('voce--si-spunta')
+
+  // Se il numero nuovo sposta la voce tra lista e "Già presi" la riga esce
+  // prima; altrimenti cambia subito.
+  const conta = (numero: number) => {
+    const nuova = contaVoce(voce, numero)
+    if (nuova === voce) return
+    if (nuova.comprata === voce.comprata) return onConta(voce.id, nuova.presi ?? 0)
+    setPresiInUscita(nuova.presi ?? 0)
+    esci('conta')
+  }
 
   // Invio o tocco fuori salvano; un nome vuoto o uguale lascia tutto com'era.
   const salvaNome = () => {
@@ -108,17 +132,19 @@ export function Voce({
       }}
     >
       <div className="voce__testata">
-        <button
-          className="voce__spunta"
-          type="button"
-          aria-pressed={spuntata}
-          aria-label={`Spunta ${voce.nome}`}
-          onClick={() => esci('spunta')}
-        >
-          <span className="voce__segno" aria-hidden="true">
-            <Icona nome="spunta" className="voce__segno-spunta" />
-          </span>
-        </button>
+        {!contatore && (
+          <button
+            className="voce__spunta"
+            type="button"
+            aria-pressed={spuntata}
+            aria-label={`Spunta ${voce.nome}`}
+            onClick={() => esci('spunta')}
+          >
+            <span className="voce__segno" aria-hidden="true">
+              <Icona nome="spunta" className="voce__segno-spunta" />
+            </span>
+          </button>
+        )}
         {nomeInCorso !== null ? (
           <input
             className="voce__campo"
@@ -161,6 +187,14 @@ export function Voce({
           </span>
         ) : (
           <span className="voce__nome">{voce.nome}</span>
+        )}
+        {contatore && (
+          <Contatore
+            nome={voce.nome}
+            presi={presiInUscita ?? voce.presi}
+            quantita={voce.quantita}
+            onCambia={conta}
+          />
         )}
         <button
           className="voce__azioni-apri"

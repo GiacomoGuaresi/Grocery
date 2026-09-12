@@ -68,6 +68,8 @@ const disegni = {
     </>
   ),
   spunta: <path d="M20 6 9 17l-5-5" />,
+  meno: <path d="M5 12h14" />,
+  piu: <path d="M5 12h14M12 5v14" />,
   scarica: <path d="M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5" />,
 } satisfies Record<string, ReactNode>
 

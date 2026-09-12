@@ -161,6 +161,12 @@
   text-decoration: line-through;
 }
 
+/* Le voci col contatore, complete: come quelle spuntate nei già presi. */
+.voce--completa .voce__nome {
+  color: var(--inchiostro-tenue);
+  text-decoration: line-through;
+}
+
 .voce__spunta:active .voce__segno {
   background: var(--crema-scura);
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
 import { alternativeVoce, sostituisciVoce } from '../domain/alternative'
+import { contaVoce, haContatore, impostaPresi } from '../domain/contatore'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
@@ -65,6 +66,16 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
     })
   }
 
+  // Il contatore: se il numero porta la voce tra i già presi, o la riporta
+  // indietro, la voce arriva dall'altra parte come per la spunta.
+  const conta = (id: string, presi: number) => {
+    const voce = lista.voci.find((v) => v.id === id)
+    const nuova = voce && contaVoce(voce, presi)
+    if (voce && nuova && nuova.comprata !== voce.comprata)
+      setArrivo({ id, tipo: 'spostata', comprata: nuova.comprata })
+    modifica((corrente) => impostaPresi(corrente, id, presi))
+  }
+
   const elimina = (id: string) => modifica((corrente) => eliminaVoce(corrente, id))
 
   const rinomina = (id: string, nome: string) =>
@@ -76,7 +87,10 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   const sostituisci = (id: string, nome: string) =>
     modifica((corrente) => sostituisciVoce(corrente, id, nome))
 
-  const alternative = (voce: VoceLista) => alternativeVoce(lista, voce)
+  // Le voci col contatore sono categorie intere: non si sostituiscono (i
+  // consigli arriveranno nel popup, Step V5).
+  const alternative = (voce: VoceLista) =>
+    haContatore(voce) ? { consigliate: [], fuoriStagione: [] } : alternativeVoce(lista, voce)
 
   return (
     <div className="lista">
@@ -88,6 +102,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
             gruppo={gruppo}
             arrivo={arrivo}
             onAlterna={alterna}
+            onConta={conta}
             onElimina={elimina}
             onRinomina={rinomina}
             onSostituisci={sostituisci}
@@ -101,6 +116,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
         voci={comprate}
         arrivo={arrivo}
         onAlterna={alterna}
+        onConta={conta}
         onElimina={elimina}
         onRinomina={rinomina}
         onSostituisci={sostituisci}

@@ -11,6 +11,7 @@ interface Props {
   /** L'ultima voce arrivata nella lista, da far entrare con un'animazione. */
   arrivo: Arrivo | null
   onAlterna: (id: string) => void
+  onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
   onSostituisci: (id: string, nome: string) => void
@@ -30,6 +31,7 @@ export function GiaPresi({
   voci,
   arrivo,
   onAlterna,
+  onConta,
   onElimina,
   onRinomina,
   onSostituisci,
@@ -78,6 +80,7 @@ export function GiaPresi({
               alternative={alternative(voce)}
               arrivo={arrivo}
               onAlterna={onAlterna}
+              onConta={onConta}
               onElimina={onElimina}
               onRinomina={onRinomina}
               onSostituisci={onSostituisci}

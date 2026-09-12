@@ -101,18 +101,20 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
       la routine cambiano i numeri; nessuna generata riportata, le manuali sì;
       generazione senza rete che sopravvive alla chiusura (2026-09-12)
 
-### Step V4 — Contatore in lista
+### Step V4 — Contatore in lista ✅
 
-- [ ] Dominio: `aumenta`, `diminuisci`, `impostaPresi` con limiti 0 e totale; a
-      totale la voce è comprata, sotto no. Test sulle transizioni
-- [ ] Componente contatore `[−] presi/totale [+]` con unità "pasti" in piccolo;
+- [x] Dominio (`contatore.ts`): `aumenta`, `diminuisci`, `impostaPresi` con limiti 0
+      e totale; a totale la voce è comprata, sotto no. Test sulle transizioni
+- [x] Componente `Contatore` `[−] presi/totale [+]` con unità "pasti" in piccolo;
       numero scrivibile (tastiera numerica, 16px per iOS)
-- [ ] Nella riga delle voci generate al posto della spunta; le manuali tengono la
-      spunta
-- [ ] Voce completa → "Già presi" con la stessa animazione della spunta; lì tiene il
+- [x] Nella riga delle voci generate al posto della spunta, di lato al nome; le
+      manuali e le generate rimaste dalla v1 tengono la spunta
+- [x] Voce completa → "Già presi" con la stessa animazione della spunta; lì tiene il
       contatore e il − la riporta in lista a totale − 1
-- [ ] Animazione breve sul cambio di numero
-- [ ] Le scritture del contatore passano dalla coda offline come le spunte
+- [x] Animazione breve sul cambio di numero (in su se sale, in giù se scende)
+- [x] Le scritture del contatore passano dalla coda offline come le spunte (test nel
+      sincronizzatore). Le voci col contatore non hanno più la dropdown delle
+      alternative (2026-09-12)
 
 ### Step V5 — Popup dei consigli
 

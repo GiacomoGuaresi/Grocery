@@ -1,0 +1,90 @@
+/* Il contatore delle voci generate: sta nella riga, di lato al nome, alto
+   quanto la riga così i tasti si prendono col pollice. */
+.contatore {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+.contatore__tasto {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  min-height: var(--riga);
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: var(--terracotta);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.contatore__tasto:active:not(:disabled) {
+  background: var(--crema-scura);
+  color: var(--terracotta-scura);
+}
+
+.contatore__tasto:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Il numero: si tocca per scriverlo. Le cifre hanno tutte la stessa larghezza,
+   così contando la riga non balla. */
+.contatore__valore {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  min-width: 64px;
+  min-height: var(--riga);
+  padding: 0 2px;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  line-height: var(--riga);
+  cursor: text;
+}
+
+.contatore__presi {
+  display: inline-block;
+  font-weight: 600;
+}
+
+.contatore__totale {
+  color: var(--inchiostro-tenue);
+}
+
+/* L'unità in piccolo e leggera: il numero è quello che conta. */
+.contatore__unita {
+  margin-left: 3px;
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  font-weight: 400;
+}
+
+/* Il numero mentre lo si scrive: a 16px, altrimenti iOS zooma al tocco. */
+.contatore__campo {
+  align-self: center;
+  width: 3.2ch;
+  min-height: 28px;
+  padding: 0 2px;
+  border: 1px solid var(--terracotta);
+  border-radius: 6px;
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  font-size: var(--testo-campo);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  box-sizing: content-box;
+}
+
+.contatore__campo:focus {
+  outline: 2px solid var(--terracotta);
+  outline-offset: -1px;
+}

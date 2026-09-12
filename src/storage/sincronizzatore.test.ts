@@ -3,6 +3,7 @@
 // database in memoria.
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { aumenta, impostaPresi } from '../domain/contatore'
 import { eliminaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
 import type { Lista } from '../domain/tipi'
@@ -125,6 +126,25 @@ describe('senza rete', () => {
     expect(sulDatabase?.id).toBe(generata.id)
     expect(sulDatabase?.voci.find((voce) => voce.id === 'pesce')?.presi).toBe(1)
     expect(dopo.lista()).toEqual(sulDatabase)
+  })
+
+  it('il contatore passa dalla coda come le spunte: completa senza rete, arriva al ritorno', async () => {
+    const db = await conLista()
+    const qui = dispositivo(db)
+    await qui.sincronizzatore.apri()
+
+    qui.rete.stacca()
+    qui.sincronizzatore.modifica((l) => impostaPresi(l, 'verdura-1', 13))
+    qui.sincronizzatore.modifica((l) => aumenta(l, 'verdura-1'))
+    await qui.sincronizzatore.finito()
+    expect(qui.lista().voci[0]).toMatchObject({ presi: 14, comprata: true })
+    expect(qui.sincronizzatore.leggi()).toMatchObject({ inAttesa: 2, senzaRete: true })
+    expect(await db.leggiListaCorrente()).toEqual(lista)
+
+    qui.rete.riattacca()
+    await vi.waitFor(() => expect(qui.sincronizzatore.leggi().inAttesa).toBe(0))
+    await qui.sincronizzatore.finito()
+    expect((await db.leggiListaCorrente())?.voci[0]).toMatchObject({ presi: 14, comprata: true })
   })
 
   it('la prima apertura senza rete non ha niente da mostrare, finché la rete non torna', async () => {
