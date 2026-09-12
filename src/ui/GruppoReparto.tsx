@@ -1,6 +1,4 @@
-import type { Alternative } from '../domain/alternative'
 import type { GruppoReparto as Gruppo } from '../domain/lista'
-import type { Voce as VoceLista } from '../domain/tipi'
 import { Voce, type Arrivo } from './Voce'
 import './GruppoReparto.css'
 
@@ -12,22 +10,10 @@ interface Props {
   onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
-  onSostituisci: (id: string, nome: string) => void
-  /** Le alternative per la voce (F6). */
-  alternative: (voce: VoceLista) => Alternative
 }
 
 /** Un reparto della lista, col suo titolo e le sue voci. */
-export function GruppoReparto({
-  gruppo,
-  arrivo,
-  onAlterna,
-  onConta,
-  onElimina,
-  onRinomina,
-  onSostituisci,
-  alternative,
-}: Props) {
+export function GruppoReparto({ gruppo, arrivo, onAlterna, onConta, onElimina, onRinomina }: Props) {
   return (
     <section className="reparto" aria-labelledby={`reparto-${gruppo.id}`}>
       <h2 className="reparto__titolo" id={`reparto-${gruppo.id}`}>
@@ -38,13 +24,11 @@ export function GruppoReparto({
           <Voce
             key={voce.id}
             voce={voce}
-            alternative={alternative(voce)}
             arrivo={arrivo}
             onAlterna={onAlterna}
             onConta={onConta}
             onElimina={onElimina}
             onRinomina={onRinomina}
-            onSostituisci={onSostituisci}
           />
         ))}
       </ul>

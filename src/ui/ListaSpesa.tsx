@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
-import { alternativeVoce, sostituisciVoce } from '../domain/alternative'
-import { contaVoce, haContatore, impostaPresi } from '../domain/contatore'
+import { contaVoce, impostaPresi } from '../domain/contatore'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
 import { eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
-import type { Voce as VoceLista } from '../domain/tipi'
 import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
@@ -81,17 +79,6 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   const rinomina = (id: string, nome: string) =>
     modifica((corrente) => rinominaVoce(corrente, id, nome))
 
-  // Le alternative si calcolano sulla lista di adesso: quello che è già dentro
-  // non viene riproposto, e per frutta e verdura il mese corrente decide cosa
-  // è di stagione e va in cima alla dropdown (F6).
-  const sostituisci = (id: string, nome: string) =>
-    modifica((corrente) => sostituisciVoce(corrente, id, nome))
-
-  // Le voci col contatore sono categorie intere: non si sostituiscono (i
-  // consigli arriveranno nel popup, Step V5).
-  const alternative = (voce: VoceLista) =>
-    haContatore(voce) ? { consigliate: [], fuoriStagione: [] } : alternativeVoce(lista, voce)
-
   return (
     <div className="lista">
       {rete}
@@ -105,8 +92,6 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
             onConta={conta}
             onElimina={elimina}
             onRinomina={rinomina}
-            onSostituisci={sostituisci}
-            alternative={alternative}
           />
         ))
       ) : (
@@ -119,8 +104,6 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
         onConta={conta}
         onElimina={elimina}
         onRinomina={rinomina}
-        onSostituisci={sostituisci}
-        alternative={alternative}
       />
       <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
     </div>

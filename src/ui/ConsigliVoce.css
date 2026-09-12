@@ -1,0 +1,134 @@
+/* Il popup dei consigli: la sagoma è quella delle azioni (AzioniVoce.css). Qui
+   solo quello che ha in più: il contatore in cima e le liste dei tipi. */
+.azioni-voce:has(.consigli-voce) {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Titolo e contatore restano in vista mentre si scorrono i tipi. */
+.consigli-voce__testata {
+  position: sticky;
+  top: calc(var(--spazio) * -1);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: calc(var(--spazio) * -1) calc(var(--spazio) * -1) 0;
+  padding: var(--spazio) var(--spazio) 4px;
+  border-bottom: 1px solid var(--bordo);
+  background: var(--panna);
+}
+
+.consigli-voce__elenco {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.consigli-voce__tipo {
+  padding: 4px 10px;
+  border: 1px solid var(--bordo);
+  border-radius: 999px;
+  background: var(--crema);
+}
+
+.consigli-voce__sezione {
+  display: flex;
+  flex-direction: column;
+}
+
+.consigli-voce__intestazione {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--terracotta-scura);
+  font: inherit;
+  cursor: pointer;
+}
+
+.consigli-voce__quanti {
+  display: inline-block;
+  min-width: 21px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--crema-scura);
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  text-align: center;
+}
+
+.consigli-voce__freccia {
+  font-size: 16px;
+  transition: transform var(--durata-voce) ease-out;
+}
+
+.consigli-voce__intestazione[aria-expanded='true'] .consigli-voce__freccia {
+  transform: rotate(90deg);
+}
+
+/* A fisarmonica, come i "Già presi" (GiaPresi.css). */
+.consigli-voce__corpo {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--durata-voce) ease-out,
+    visibility 0s var(--durata-voce);
+}
+
+.consigli-voce__corpo--aperto {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition: grid-template-rows var(--durata-voce) ease-out;
+}
+
+.consigli-voce__righe {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+}
+
+.consigli-voce__riga {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  border-bottom: 1px solid var(--bordo);
+}
+
+.consigli-voce__riga:last-child {
+  border-bottom: none;
+}
+
+.consigli-voce__chip {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--crema-scura);
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  white-space: nowrap;
+}
+
+.consigli-voce__chip--in-uscita {
+  background: var(--zucca);
+  color: var(--inchiostro);
+}
+
+.consigli-voce__chip--in-arrivo {
+  border: 1px solid var(--terracotta);
+  background: none;
+  color: var(--terracotta-scura);
+}

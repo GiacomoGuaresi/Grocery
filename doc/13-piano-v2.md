@@ -116,18 +116,21 @@ Stessa regola della v1: step piccoli, ognuno lascia l'app funzionante.
       sincronizzatore). Le voci col contatore non hanno più la dropdown delle
       alternative (2026-09-12)
 
-### Step V5 — Popup dei consigli
+### Step V5 — Popup dei consigli ✅
 
-- [ ] Tap sul nome di una voce generata → popup dal fondo, stesso stile di
-      `AzioniVoce`, con il **contatore in cima**
-- [ ] Il popup resta aperto anche al totale; la voce va tra i "Già presi" alla
-      chiusura
-- [ ] **Carni, pesce, formaggio, affettati**: elenco breve dei tipi
-- [ ] **Verdura / Frutta**: *Di stagione* aperta (chip *tutto l'anno*, *in uscita*)
-      e *Fuori stagione* chiusa (chip *in arrivo*)
-- [ ] **Uova**: niente popup e niente icona accanto al nome
-- [ ] Nel ⋯ resta solo *Elimina* (e *Rinomina* per le voci in "Altro")
-- [ ] Test: in arrivo / in uscita a cavallo d'anno (dicembre → gennaio)
+- [x] Tap sul nome di una voce generata → popup dal fondo (`ConsigliVoce`), stesso
+      stile di `AzioniVoce`, con il **contatore in cima** (fisso mentre si scorre)
+- [x] Il popup resta aperto anche al totale; la voce va tra i "Già presi" alla
+      chiusura (il numero che la sposterebbe resta in sospeso fino ad allora)
+- [x] **Carni, pesce, formaggio, affettati**: elenco breve dei tipi
+- [x] **Verdura / Frutta**: *Di stagione* aperta (chip *tutto l'anno*, *in uscita*)
+      e *Fuori stagione* chiusa (chip *in arrivo*), dal dominio `consigli.ts`
+- [x] **Uova**: niente popup e niente icona accanto al nome
+- [x] Nel ⋯ resta solo *Elimina* (e *Rinomina* per le voci in "Altro"). Tolta
+      anche la dropdown delle alternative dal nome delle voci v1: il file
+      `alternative.ts` resta fino a V6, non più usato dalla UI
+- [x] Test (`consigli.test.ts`): in arrivo / in uscita a cavallo d'anno (dicembre →
+      gennaio) (2026-09-12)
 
 ### Step V6 — Pulizia
 

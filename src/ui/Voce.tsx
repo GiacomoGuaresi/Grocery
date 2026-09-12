@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { tutteLeAlternative, type Alternative } from '../domain/alternative'
+import { consigliVoce } from '../domain/consigli'
 import { contaVoce, haContatore } from '../domain/contatore'
 import { rinominabile } from '../domain/modifica'
+import { meseDi } from '../domain/stagioni'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { movimentoRidotto, useUscita } from './animazioni'
-import { AzioniVoce, SceltaAlternativa } from './AzioniVoce'
+import { AzioniVoce } from './AzioniVoce'
+import { ConsigliVoce } from './ConsigliVoce'
 import { Contatore } from './Contatore'
 import { Icona } from './Icona'
 import './Voce.css'
@@ -23,8 +25,6 @@ export interface Arrivo {
 
 interface Props {
   voce: VoceLista
-  /** Le tipologie con cui si può sostituire la voce (F6); per frutta e verdura, prima quelle di stagione. */
-  alternative: Alternative
   /** L'ultima voce arrivata nella lista, se c'è. */
   arrivo: Arrivo | null
   /** Tocco sulla casella: la spunta, o la de-spunta se è tra i già presi. */
@@ -35,8 +35,6 @@ interface Props {
   onElimina: (id: string) => void
   /** Corregge il nome: solo per le voci manuali sotto "Altro". */
   onRinomina: (id: string, nome: string) => void
-  /** Mette al posto della voce un'altra tipologia della sua categoria. */
-  onSostituisci: (id: string, nome: string) => void
 }
 
 /**
@@ -47,29 +45,23 @@ interface Props {
  * dove il − le riporta indietro.
  *
  * Il nome non spunta. Nelle voci manuali sotto "Altro" toccarlo lo rende
- * modificabile lì dove sta; nelle voci che hanno alternative apre subito la
- * dropdown per sostituirle. Tutto il resto — rinomina, elimina, e di nuovo le
- * alternative — sta nel popup che si apre col ⋯ (AzioniVoce).
+ * modificabile lì dove sta; nelle generate con consigli apre il popup dei
+ * consigli (F14), col contatore in cima. Rinomina ed elimina stanno nel popup
+ * che si apre col ⋯ (AzioniVoce).
  *
  * Spunta, contatore completato ed eliminazione sono animati: la riga si
  * chiude, e solo dopo la modifica arriva alla lista. Una voce appena arrivata
  * invece si apre. Il contatore che non sposta la voce cambia subito.
  */
-export function Voce({
-  voce,
-  alternative,
-  arrivo,
-  onAlterna,
-  onConta,
-  onElimina,
-  onRinomina,
-  onSostituisci,
-}: Props) {
+export function Voce({ voce, arrivo, onAlterna, onConta, onElimina, onRinomina }: Props) {
   const [azioniAperte, setAzioniAperte] = useState(false)
+  const [consigliAperti, setConsigliAperti] = useState(false)
   // Non nullo solo mentre si sta scrivendo il nome nuovo direttamente nella riga.
   const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
   // Il numero che porta la voce dall'altra parte, mostrato mentre la riga esce.
   const [presiInUscita, setPresiInUscita] = useState<number | null>(null)
+  // Dal popup dei consigli: il numero che sposterebbe la voce, tenuto fino alla chiusura.
+  const [presiInSospeso, setPresiInSospeso] = useState<number | null>(null)
   const riga = useRef<HTMLLIElement>(null)
 
   const { uscita, esci, fine } = useUscita<'spunta' | 'conta' | 'elimina'>((motivo) => {
@@ -94,6 +86,8 @@ export function Voce({
   }, [arriva])
 
   const contatore = haContatore(voce)
+  const consigli = consigliVoce(voce, meseDi())
+  const presi = presiInUscita ?? presiInSospeso ?? voce.presi ?? 0
 
   const classi = ['voce']
   if (contatore && spuntata) classi.push('voce--completa')
@@ -109,6 +103,22 @@ export function Voce({
     if (nuova.comprata === voce.comprata) return onConta(voce.id, nuova.presi ?? 0)
     setPresiInUscita(nuova.presi ?? 0)
     esci('conta')
+  }
+
+  // Dal popup: il numero che non sposta la voce va subito alla lista; quello
+  // che la sposterebbe aspetta la chiusura, così il popup resta aperto.
+  const contaNelPopup = (numero: number) => {
+    const nuova = contaVoce(voce, numero)
+    if (nuova.comprata !== voce.comprata) return setPresiInSospeso(nuova.presi ?? 0)
+    setPresiInSospeso(null)
+    if (nuova !== voce) onConta(voce.id, nuova.presi ?? 0)
+  }
+
+  const chiudiConsigli = () => {
+    setConsigliAperti(false)
+    if (presiInSospeso === null) return
+    setPresiInSospeso(null)
+    conta(presiInSospeso)
   }
 
   // Invio o tocco fuori salvano; un nome vuoto o uguale lascia tutto com'era.
@@ -163,7 +173,7 @@ export function Voce({
           />
         ) : rinominabile(voce) ? (
           <button
-            className="voce__nome voce__nome--rinomina"
+            className="voce__nome voce__nome--tocco voce__nome--rinomina"
             type="button"
             aria-label={`Rinomina ${voce.nome}`}
             onClick={() => setNomeInCorso(voce.nome)}
@@ -171,30 +181,22 @@ export function Voce({
             {voce.nome}
             <Icona nome="matita" className="voce__nome-icona" />
           </button>
-        ) : tutteLeAlternative(alternative).length > 0 ? (
-          // La select è trasparente e copre il nome: il tocco sul testo apre la
-          // ruota nativa. Il nome resta uno span, così la barra dei già presi c'è.
-          <span className="voce__nome voce__nome--sostituisci">
+        ) : consigli ? (
+          <button
+            className="voce__nome voce__nome--tocco voce__nome--consigli"
+            type="button"
+            aria-haspopup="dialog"
+            aria-label={`Consigli per ${voce.nome}`}
+            onClick={() => setConsigliAperti(true)}
+          >
             {voce.nome}
-            <Icona nome="giu" className="voce__nome-icona" />
-            <SceltaAlternativa
-              className="voce__scelta"
-              etichetta={`Sostituisci ${voce.nome}`}
-              testo={voce.nome}
-              alternative={alternative}
-              onScegli={(nome) => onSostituisci(voce.id, nome)}
-            />
-          </span>
+            <Icona nome="avanti" className="voce__nome-icona" />
+          </button>
         ) : (
           <span className="voce__nome">{voce.nome}</span>
         )}
         {contatore && (
-          <Contatore
-            nome={voce.nome}
-            presi={presiInUscita ?? voce.presi}
-            quantita={voce.quantita}
-            onCambia={conta}
-          />
+          <Contatore nome={voce.nome} presi={presi} quantita={voce.quantita} onCambia={conta} />
         )}
         <button
           className="voce__azioni-apri"
@@ -210,11 +212,19 @@ export function Voce({
       {azioniAperte && (
         <AzioniVoce
           voce={voce}
-          alternative={alternative}
           onElimina={() => esci('elimina')}
           onRinomina={(nome) => onRinomina(voce.id, nome)}
-          onSostituisci={(nome) => onSostituisci(voce.id, nome)}
           onChiudi={() => setAzioniAperte(false)}
+        />
+      )}
+
+      {consigliAperti && contatore && consigli && (
+        <ConsigliVoce
+          voce={voce}
+          presi={presi}
+          consigli={consigli}
+          onConta={contaNelPopup}
+          onChiudi={chiudiConsigli}
         />
       )}
     </li>

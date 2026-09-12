@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Alternative } from '../domain/alternative'
 import type { Voce as VoceLista } from '../domain/tipi'
 import { movimentoRidotto } from './animazioni'
 import { Icona } from './Icona'
@@ -14,9 +13,6 @@ interface Props {
   onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
-  onSostituisci: (id: string, nome: string) => void
-  /** Le alternative per la voce (F6). */
-  alternative: (voce: VoceLista) => Alternative
 }
 
 /**
@@ -34,8 +30,6 @@ export function GiaPresi({
   onConta,
   onElimina,
   onRinomina,
-  onSostituisci,
-  alternative,
 }: Props) {
   const [aperta, setAperta] = useState(false)
   const contatore = useRef<HTMLSpanElement>(null)
@@ -77,13 +71,11 @@ export function GiaPresi({
             <Voce
               key={voce.id}
               voce={voce}
-              alternative={alternative(voce)}
               arrivo={arrivo}
               onAlterna={onAlterna}
               onConta={onConta}
               onElimina={onElimina}
               onRinomina={onRinomina}
-              onSostituisci={onSostituisci}
             />
           ))}
         </ul>
