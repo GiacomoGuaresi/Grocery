@@ -245,7 +245,8 @@ da `AccessoSupabase`, che fa della passphrase la password
 dell'unico account, la cui email arriva da `VITE_SUPABASE_EMAIL`: chi entra scrive
 solo la passphrase. Storage e accesso condividono un solo client, creato con
 `createBrowserClient` di `@supabase/ssr`, che tiene la sessione nei **cookie**
-(400 giorni, limitati al percorso dell'app). Se il rinnovo del token fallisce per
+(400 giorni, con percorso `/`, condivisi con Projects; i vecchi cookie sul percorso
+`/Grocery/` si cancellano all'avvio). Se il rinnovo del token fallisce per
 mancanza di rete la sessione resta valida: in corsia non si chiede la passphrase a
 chi è già entrato. `accesso.test.ts` verifica tutto questo su un client finto.
 

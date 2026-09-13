@@ -57,6 +57,10 @@ password.
 La sessione viene **conservata nei cookie**, così la passphrase non viene richiesta a
 ogni apertura — requisito importante, visto che l'app si usa al volo in corsia.
 
+I cookie hanno percorso `/`, non `/Grocery/`: **Projects** (`giacomoguaresi.github.io/Projects/`)
+usa lo stesso progetto Supabase e lo stesso account, e così le due app **condividono la
+sessione**. Entri in una, sei dentro anche nell'altra.
+
 Le policy del DB consentono lettura e scrittura **solo alla sessione autenticata**:
 nessuna registrazione pubblica è abilitata.
 

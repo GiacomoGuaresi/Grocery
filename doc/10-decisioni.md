@@ -56,6 +56,7 @@
 | 2026-09-12 | Solo Supabase, ma lo sviluppo su un **progetto separato** (*Grocery DEV*) con lo stesso schema e lo stesso account: lo sviluppo non sporca la produzione | deciso |
 | 2026-09-09 | Sessione conservata nei **cookie**: passphrase non richiesta ogni volta | deciso |
 | 2026-09-11 | Sessione **solo nei cookie** (400 giorni, rinnovati a ogni uso), nessuna copia in `localStorage`: nessuno usa Safari su iPhone, dove i cookie scritti da JavaScript durano al massimo 7 giorni. Da rivedere se entra un iPhone | deciso |
+| 2026-09-13 | Cookie della sessione con percorso **`/`** invece di `/Grocery/`: sessione **condivisa con Projects** (stessa origine, stesso progetto Supabase, stesso account). I vecchi cookie su `/Grocery/` si cancellano all'avvio; si rientra con la passphrase una volta sola | deciso |
 | 2026-09-09 | Nome del repository: **`Grocery`** (mantenuto per ora) | deciso |
 | 2026-09-09 | Frutta e verdura comprate **tutte insieme**, nessuna divisione prima/seconda settimana | deciso |
 | 2026-09-09 | ~~Frutta e verdura come **una voce raggruppata ciascuna**, con dropdown sui singoli tipi~~ | superata |

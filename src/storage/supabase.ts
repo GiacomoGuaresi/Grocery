@@ -12,13 +12,31 @@ import { ErroreRete, type Storage } from './tipi'
 /**
  * Storage e accesso sullo stesso client, così le letture viaggiano con la
  * sessione aperta dalla passphrase. `createBrowserClient` tiene la sessione nei
- * cookie (400 giorni, rinnovati a ogni uso), limitati al percorso dell'app.
+ * cookie (400 giorni, rinnovati a ogni uso) con percorso `/`: Projects sta sulla
+ * stessa origine e sullo stesso progetto Supabase, così le due app condividono
+ * la sessione (entri in una, sei dentro anche nell'altra).
  */
 export function connettiSupabase(url: string, chiave: string, email: string) {
+  dimenticaSessioneDelPercorsoApp()
   const client = createBrowserClient(url, chiave, {
-    cookieOptions: { path: import.meta.env.BASE_URL },
+    cookieOptions: { path: '/' },
   })
   return { storage: new StorageSupabase(client), accesso: new AccessoSupabase(client, email) }
+}
+
+/**
+ * Fino al 2026-09-13 i cookie della sessione stavano sul percorso dell'app
+ * (`/Grocery/`). Se restassero, il browser avrebbe due sessioni con lo stesso
+ * nome e il client potrebbe leggere quella vecchia, coi token ormai scaduti.
+ * Si cancellano: al primo avvio si rientra con la passphrase, una volta sola.
+ */
+function dimenticaSessioneDelPercorsoApp() {
+  const percorso = import.meta.env.BASE_URL
+  if (typeof document === 'undefined' || percorso === '/') return
+  for (const coppia of document.cookie.split('; ')) {
+    const nome = coppia.split('=')[0]
+    if (nome.startsWith('sb-')) document.cookie = `${nome}=; path=${percorso}; max-age=0`
+  }
 }
 
 interface RigaVoce {
