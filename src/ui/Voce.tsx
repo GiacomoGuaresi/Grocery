@@ -3,7 +3,7 @@ import { consigliVoce } from '../domain/consigli'
 import { contaVoce, haContatore } from '../domain/contatore'
 import { rinominabile } from '../domain/modifica'
 import { meseDi } from '../domain/stagioni'
-import type { Voce as VoceLista } from '../domain/tipi'
+import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
 import { movimentoRidotto, useUscita } from './animazioni'
 import { AzioniVoce } from './AzioniVoce'
 import { ConsigliVoce } from './ConsigliVoce'
@@ -35,6 +35,8 @@ interface Props {
   onElimina: (id: string) => void
   /** Corregge il nome: solo per le voci manuali sotto "Altro". */
   onRinomina: (id: string, nome: string) => void
+  /** Sceglie il reparto: solo per le voci manuali sotto "Altro". */
+  onCambiaReparto: (id: string, reparto: IdReparto) => void
 }
 
 /**
@@ -46,14 +48,23 @@ interface Props {
  *
  * Il nome non spunta. Nelle voci manuali sotto "Altro" toccarlo lo rende
  * modificabile lì dove sta; nelle generate con consigli apre il popup dei
- * consigli (F14), col contatore in cima. Rinomina ed elimina stanno nel popup
+ * consigli (F14), col contatore in cima. Rinomina, scelta del reparto ed
+ * elimina stanno nel popup
  * che si apre col ⋯ (AzioniVoce).
  *
  * Spunta, contatore completato ed eliminazione sono animati: la riga si
  * chiude, e solo dopo la modifica arriva alla lista. Una voce appena arrivata
  * invece si apre. Il contatore che non sposta la voce cambia subito.
  */
-export function Voce({ voce, arrivo, onAlterna, onConta, onElimina, onRinomina }: Props) {
+export function Voce({
+  voce,
+  arrivo,
+  onAlterna,
+  onConta,
+  onElimina,
+  onRinomina,
+  onCambiaReparto,
+}: Props) {
   const [azioniAperte, setAzioniAperte] = useState(false)
   const [consigliAperti, setConsigliAperti] = useState(false)
   // Non nullo solo mentre si sta scrivendo il nome nuovo direttamente nella riga.
@@ -214,6 +225,7 @@ export function Voce({ voce, arrivo, onAlterna, onConta, onElimina, onRinomina }
           voce={voce}
           onElimina={() => esci('elimina')}
           onRinomina={(nome) => onRinomina(voce.id, nome)}
+          onCambiaReparto={(reparto) => onCambiaReparto(voce.id, reparto)}
           onChiudi={() => setAzioniAperte(false)}
         />
       )}

@@ -124,11 +124,14 @@ Frutta ×28), ricavato dalla routine. Conta i pasti, **non i pezzi né le confez
 |---|---|---|---|
 | Generata (una categoria) | ❌ | ❌ | ✅ |
 | Manuale riconosciuta dal catalogo | ❌ | ❌ | ✅ |
-| Manuale nuova (reparto "Altro") | ✅ | ❌ | ✅ |
+| Manuale nuova (reparto "Altro") | ✅ | ✅ una volta, tra i reparti esistenti | ✅ |
 
 Gli alimenti del catalogo sono **dati statici**: non si rinominano né cambiano
 reparto. Solo le voci manuali finite in "Altro", che non hanno un reparto, possono
-essere rinominate.
+essere rinominate, e dal popup ⋯ si può **sceglierne il reparto** tra quelli di
+`reparti.json` (tutti tranne "Altro"). Da lì la voce sta nel suo reparto come una
+riconosciuta dal catalogo: non si rinomina né si sposta più. La scelta vale solo
+per quella voce: il catalogo non la impara.
 
 ## F7 — Condivisione
 Unica lista condivisa, **aggiornamento in tempo reale** tra i due dispositivi. Non

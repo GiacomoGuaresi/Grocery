@@ -3,11 +3,13 @@
 //
 // Gli alimenti del catalogo sono dati statici: una voce generata si sostituisce
 // con la dropdown (F6), non si rinomina. Solo le voci manuali finite in "Altro"
-// hanno un nome scritto a mano, e solo quello si corregge. Il reparto non si
-// cambia mai, in nessun caso (doc/04-funzionalita.md, F6b).
+// hanno un nome scritto a mano, e solo quello si corregge. Sono anche le sole
+// senza reparto: lo si sceglie tra quelli esistenti, e da lì non si sposta più
+// (doc/04-funzionalita.md, F6b).
 
 import { normalizza } from './aggiunta'
-import type { Lista, Voce } from './tipi'
+import { reparti } from './dati'
+import type { IdReparto, Lista, Voce } from './tipi'
 
 /** Vero se il nome di questa voce si può correggere: manuale e in "Altro". */
 export function rinominabile(voce: Voce): boolean {
@@ -31,6 +33,23 @@ export function rinominaVoce(lista: Lista, id: string, nome: string): Lista {
     ...lista,
     voci: lista.voci.map((voce) =>
       voce.id === id && rinominabile(voce) ? { ...voce, nome: pulito } : voce,
+    ),
+  }
+}
+
+/** I reparti in cui si può mettere una voce senza reparto: tutti tranne "Altro". */
+export const repartiSceglibili = reparti.filter((reparto) => reparto.id !== 'altro')
+
+/**
+ * Mette una voce manuale di "Altro" nel reparto scelto. Le altre voci restano
+ * dove sono, e così la voce se il reparto è "Altro" o non esiste.
+ */
+export function cambiaReparto(lista: Lista, id: string, reparto: IdReparto): Lista {
+  if (!repartiSceglibili.some((r) => r.id === reparto)) return lista
+  return {
+    ...lista,
+    voci: lista.voci.map((voce) =>
+      voce.id === id && rinominabile(voce) ? { ...voce, reparto } : voce,
     ),
   }
 }

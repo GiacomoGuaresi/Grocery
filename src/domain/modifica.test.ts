@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { aggiungiVoce } from './aggiunta'
 import { listaEsempio } from './listaEsempio'
-import { eliminaVoce, rinominabile, rinominaVoce } from './modifica'
+import { cambiaReparto, eliminaVoce, rinominabile, rinominaVoce } from './modifica'
 import type { Lista } from './tipi'
 
 /** Una lista con una voce manuale nuova ("Altro") e una manuale riconosciuta. */
@@ -95,5 +95,41 @@ describe('rinominaVoce', () => {
     const prima = conVociManuali()
     const presa = { ...prima, voci: prima.voci.map((v) => ({ ...v, comprata: true })) }
     expect(voce(rinominaVoce(presa, 'manuale-nuova', 'segale'), 'manuale-nuova')?.comprata).toBe(true)
+  })
+})
+
+describe('cambiaReparto', () => {
+  it('mette una voce manuale di Altro nel reparto scelto', () => {
+    const dopo = cambiaReparto(conVociManuali(), 'manuale-nuova', 'dispensa')
+    expect(voce(dopo, 'manuale-nuova')?.reparto).toBe('dispensa')
+  })
+
+  it('una volta nel reparto non si rinomina né si sposta più', () => {
+    const dopo = cambiaReparto(conVociManuali(), 'manuale-nuova', 'dispensa')
+    expect(rinominabile(voce(dopo, 'manuale-nuova')!)).toBe(false)
+    const ancora = cambiaReparto(dopo, 'manuale-nuova', 'casa_igiene')
+    expect(voce(ancora, 'manuale-nuova')?.reparto).toBe('dispensa')
+  })
+
+  it('non sposta una voce manuale riconosciuta dal catalogo', () => {
+    const dopo = cambiaReparto(conVociManuali(), 'manuale-nota', 'dispensa')
+    expect(voce(dopo, 'manuale-nota')?.reparto).toBe('casa_igiene')
+  })
+
+  it('non sposta una voce generata', () => {
+    const dopo = cambiaReparto(listaEsempio, 'carne_rossa-1', 'dispensa')
+    expect(voce(dopo, 'carne_rossa-1')?.reparto).toBe('macelleria')
+  })
+
+  it("rifiuta Altro come scelta, lasciando la lista com'è", () => {
+    const prima = conVociManuali()
+    expect(cambiaReparto(prima, 'manuale-nuova', 'altro')).toBe(prima)
+  })
+
+  it('lascia intatti nome e spunta', () => {
+    const prima = conVociManuali()
+    const presa = { ...prima, voci: prima.voci.map((v) => ({ ...v, comprata: true })) }
+    const dopo = voce(cambiaReparto(presa, 'manuale-nuova', 'dispensa'), 'manuale-nuova')
+    expect(dopo).toMatchObject({ nome: 'lievito madre', comprata: true })
   })
 })

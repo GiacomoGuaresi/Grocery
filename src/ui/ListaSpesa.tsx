@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
 import { contaVoce, impostaPresi } from '../domain/contatore'
 import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
-import { eliminaVoce, rinominaVoce } from '../domain/modifica'
+import { cambiaReparto, eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
+import type { IdReparto } from '../domain/tipi'
 import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
@@ -79,6 +80,9 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   const rinomina = (id: string, nome: string) =>
     modifica((corrente) => rinominaVoce(corrente, id, nome))
 
+  const spostaInReparto = (id: string, reparto: IdReparto) =>
+    modifica((corrente) => cambiaReparto(corrente, id, reparto))
+
   return (
     <div className="lista">
       {rete}
@@ -92,6 +96,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
             onConta={conta}
             onElimina={elimina}
             onRinomina={rinomina}
+            onCambiaReparto={spostaInReparto}
           />
         ))
       ) : (
@@ -104,6 +109,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
         onConta={conta}
         onElimina={elimina}
         onRinomina={rinomina}
+        onCambiaReparto={spostaInReparto}
       />
       <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
     </div>

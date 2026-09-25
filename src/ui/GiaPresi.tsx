@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { Voce as VoceLista } from '../domain/tipi'
+import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
 import { movimentoRidotto } from './animazioni'
 import { Icona } from './Icona'
 import { Voce, type Arrivo } from './Voce'
@@ -13,6 +13,7 @@ interface Props {
   onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
   onRinomina: (id: string, nome: string) => void
+  onCambiaReparto: (id: string, reparto: IdReparto) => void
 }
 
 /**
@@ -30,6 +31,7 @@ export function GiaPresi({
   onConta,
   onElimina,
   onRinomina,
+  onCambiaReparto,
 }: Props) {
   const [aperta, setAperta] = useState(false)
   const contatore = useRef<HTMLSpanElement>(null)
@@ -76,6 +78,7 @@ export function GiaPresi({
               onConta={onConta}
               onElimina={onElimina}
               onRinomina={onRinomina}
+              onCambiaReparto={onCambiaReparto}
             />
           ))}
         </ul>

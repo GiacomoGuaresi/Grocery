@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { rinominabile } from '../domain/modifica'
-import type { Voce as VoceLista } from '../domain/tipi'
+import { rinominabile, repartiSceglibili } from '../domain/modifica'
+import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
 import { useUscita } from './animazioni'
 import './AzioniVoce.css'
 
@@ -8,13 +8,15 @@ interface Props {
   voce: VoceLista
   onElimina: () => void
   onRinomina: (nome: string) => void
+  /** Mette nel reparto scelto una voce senza reparto. */
+  onCambiaReparto: (reparto: IdReparto) => void
   /** Il popup si è chiuso, in qualunque modo. */
   onChiudi: () => void
 }
 
 /**
- * Il popup con le azioni di una voce: rinominarla (solo le voci manuali sotto
- * "Altro", F6b) ed eliminarla. Nella riga della lista restano la spunta o il
+ * Il popup con le azioni di una voce: rinominarla e sceglierle il reparto
+ * (solo le voci manuali sotto "Altro", F6b) ed eliminarla. Nella riga della lista restano la spunta o il
  * contatore e il nome, così le righe sono basse e in corsia non si cancella
  * niente per sbaglio. I consigli delle voci generate hanno un popup loro
  * (ConsigliVoce), che si apre dal nome.
@@ -25,10 +27,12 @@ interface Props {
  * Prima di chiudersi ridiscende verso il fondo. L'eliminazione aspetta che sia
  * sceso, così dopo si vede la riga che se ne va.
  */
-export function AzioniVoce({ voce, onElimina, onRinomina, onChiudi }: Props) {
+export function AzioniVoce({ voce, onElimina, onRinomina, onCambiaReparto, onChiudi }: Props) {
   const finestra = useRef<HTMLDialogElement>(null)
   // Non nullo solo mentre si sta scrivendo il nome nuovo.
   const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
+  // Vero mentre si sceglie il reparto tra quelli esistenti.
+  const [sceltaReparto, setSceltaReparto] = useState(false)
 
   useEffect(() => {
     const dialogo = finestra.current
@@ -64,16 +68,53 @@ export function AzioniVoce({ voce, onElimina, onRinomina, onChiudi }: Props) {
           {voce.nome}
         </h2>
 
-        {nomeInCorso === null ? (
+        {sceltaReparto ? (
+          <div className="azioni-voce__campo">
+            <span className="azioni-voce__etichetta" id={`reparti-${voce.id}`}>
+              Reparto
+            </span>
+            <div className="azioni-voce__reparti" role="group" aria-labelledby={`reparti-${voce.id}`}>
+              {repartiSceglibili.map((reparto) => (
+                <button
+                  key={reparto.id}
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => {
+                    onCambiaReparto(reparto.id)
+                    chiudi()
+                  }}
+                >
+                  {reparto.nome}
+                </button>
+              ))}
+            </div>
+            <button
+              className="azioni-voce__bottone"
+              type="button"
+              onClick={() => setSceltaReparto(false)}
+            >
+              Indietro
+            </button>
+          </div>
+        ) : nomeInCorso === null ? (
           <>
             {rinominabile(voce) && (
-              <button
-                className="azioni-voce__bottone"
-                type="button"
-                onClick={() => setNomeInCorso(voce.nome)}
-              >
-                Rinomina
-              </button>
+              <>
+                <button
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => setNomeInCorso(voce.nome)}
+                >
+                  Rinomina
+                </button>
+                <button
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => setSceltaReparto(true)}
+                >
+                  Scegli reparto
+                </button>
+              </>
             )}
             <button
               className="azioni-voce__bottone azioni-voce__bottone--elimina"

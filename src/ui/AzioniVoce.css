@@ -145,6 +145,19 @@ body:has(.azioni-voce[open]) {
   font-weight: 600;
 }
 
+.azioni-voce__reparti {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+/* Nomi lunghi come "Latticini, formaggi e uova" vanno a capo dentro il bottone. */
+.azioni-voce__reparti .azioni-voce__bottone {
+  padding: 6px 12px;
+  line-height: 1.2;
+}
+
 .azioni-voce__coppia {
   display: grid;
   grid-template-columns: 1fr 1fr;
