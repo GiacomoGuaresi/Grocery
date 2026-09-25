@@ -174,6 +174,42 @@
       "reparto": "latticini_uova"
     },
     {
+      "nome": "prezzemolo",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "limone",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "timo",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "pomodori",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "patate",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "cipolle",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "scalogno",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "aglio",
+      "reparto": "ortofrutta"
+    },
+    {
+      "nome": "soffritto",
+      "reparto": "ortofrutta"
+    },
+    {
       "nome": "verdure surgelate",
       "reparto": "ortofrutta"
     },
@@ -183,6 +219,34 @@
     },
     {
       "nome": "pizza surgelata",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "olive",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "bibite",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "cedrata",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "sughi pronti",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "piselli",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "fagioli",
+      "reparto": "dispensa"
+    },
+    {
+      "nome": "lenticchie",
       "reparto": "dispensa"
     },
     {
@@ -335,6 +399,10 @@
     },
     {
       "nome": "cotton fioc",
+      "reparto": "casa_igiene"
+    },
+    {
+      "nome": "detersivo pavimenti parquet",
       "reparto": "casa_igiene"
     }
   ]
