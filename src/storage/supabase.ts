@@ -7,6 +7,7 @@ import type { PostgrestError, SupabaseClient } from '@supabase/supabase-js'
 import type { Modifiche } from '../domain/sincronia'
 import type { IdReparto, Lista, Voce } from '../domain/tipi'
 import { AccessoSupabase } from './accesso'
+import { fetchPaziente } from './orologio'
 import { ErroreRete, type Storage } from './tipi'
 
 /**
@@ -20,6 +21,7 @@ export function connettiSupabase(url: string, chiave: string, email: string) {
   dimenticaSessioneDelPercorsoApp()
   const client = createBrowserClient(url, chiave, {
     cookieOptions: { path: '/' },
+    global: { fetch: fetchPaziente() },
   })
   return { storage: new StorageSupabase(client), accesso: new AccessoSupabase(client, email) }
 }
