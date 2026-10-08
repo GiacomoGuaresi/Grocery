@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { movimentoRidotto } from './animazioni'
 import { Icona } from './Icona'
+import { usePressioneLunga } from './pressioneLunga'
 import './Contatore.css'
 
 interface Props {
@@ -16,7 +17,8 @@ interface Props {
 
 /**
  * Il contatore `[−] presi/totale [+]` delle voci generate (F15): prende il
- * posto della spunta. I tasti vanno di uno; il numero si legge soltanto.
+ * posto della spunta. I tasti vanno di uno; tenuti premuti, il − azzera e il +
+ * completa. Il numero si legge soltanto.
  *
  * Quando il numero cambia fa un piccolo scatto, verso l'alto se sale e verso
  * il basso se scende.
@@ -24,6 +26,8 @@ interface Props {
 export function Contatore({ nome, presi, quantita, onCambia, grande = false }: Props) {
   const numero = useRef<HTMLSpanElement>(null)
   const prima = useRef(presi)
+  const azzera = usePressioneLunga(() => onCambia(0))
+  const completa = usePressioneLunga(() => onCambia(quantita))
 
   useEffect(() => {
     if (prima.current === presi) return
@@ -47,6 +51,7 @@ export function Contatore({ nome, presi, quantita, onCambia, grande = false }: P
         aria-label={`Un pasto in meno di ${nome}`}
         disabled={presi <= 0}
         onClick={() => onCambia(presi - 1)}
+        {...azzera}
       >
         <Icona nome="meno" />
       </button>
@@ -62,6 +67,7 @@ export function Contatore({ nome, presi, quantita, onCambia, grande = false }: P
         aria-label={`Un pasto in più di ${nome}`}
         disabled={presi >= quantita}
         onClick={() => onCambia(presi + 1)}
+        {...completa}
       >
         <Icona nome="piu" />
       </button>

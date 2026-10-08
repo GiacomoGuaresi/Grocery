@@ -9,6 +9,7 @@ import { AzioniVoce } from './AzioniVoce'
 import { ConsigliVoce } from './ConsigliVoce'
 import { Contatore } from './Contatore'
 import { Icona } from './Icona'
+import { usePressioneLunga } from './pressioneLunga'
 import './Voce.css'
 
 /**
@@ -50,7 +51,7 @@ interface Props {
  * modificabile lì dove sta; nelle generate con consigli apre il popup dei
  * consigli (F14), col contatore in cima. Rinomina, scelta del reparto ed
  * elimina stanno nel popup
- * che si apre col ⋯ (AzioniVoce).
+ * che si apre col ⋯ (AzioniVoce), o tenendo premuto il nome.
  *
  * Spunta, contatore completato ed eliminazione sono animati: la riga si
  * chiude, e solo dopo la modifica arriva alla lista. Una voce appena arrivata
@@ -74,6 +75,9 @@ export function Voce({
   // Dal popup dei consigli: il numero che sposterebbe la voce, tenuto fino alla chiusura.
   const [presiInSospeso, setPresiInSospeso] = useState<number | null>(null)
   const riga = useRef<HTMLLIElement>(null)
+  const pressioneLunga = usePressioneLunga(() => {
+    if (nomeInCorso === null) setAzioniAperte(true)
+  })
 
   const { uscita, esci, fine } = useUscita<'spunta' | 'conta' | 'elimina'>((motivo) => {
     if (motivo === 'elimina') onElimina(voce.id)
@@ -191,6 +195,7 @@ export function Voce({
             type="button"
             aria-label={`Rinomina ${voce.nome}`}
             onClick={() => setNomeInCorso(voce.nome)}
+            {...pressioneLunga}
           >
             {voce.nome}
             <Icona nome="matita" className="voce__nome-icona" />
@@ -202,12 +207,15 @@ export function Voce({
             aria-haspopup="dialog"
             aria-label={`Consigli per ${voce.nome}`}
             onClick={() => setConsigliAperti(true)}
+            {...pressioneLunga}
           >
             {voce.nome}
             <Icona nome="avanti" className="voce__nome-icona" />
           </button>
         ) : (
-          <span className="voce__nome">{voce.nome}</span>
+          <span className="voce__nome voce__nome--premi" {...pressioneLunga}>
+            {voce.nome}
+          </span>
         )}
         <button
           className="voce__azioni-apri"

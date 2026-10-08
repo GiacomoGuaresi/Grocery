@@ -21,6 +21,10 @@
   color: var(--terracotta);
   font-size: 12px;
   cursor: pointer;
+  /* Tenuti premuti azzerano o completano: niente menu di sistema di iOS. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .contatore__tasto::before {

@@ -59,6 +59,15 @@
   font-weight: 500;
 }
 
+/* Tenuto premuto, il nome apre le azioni: niente selezione del testo né menu
+   di sistema di iOS al posto del popup. */
+.voce__nome--tocco,
+.voce__nome--premi {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 /* Il nome che si tocca: tutta l'altezza della riga. Nelle voci manuali sotto
    "Altro" lo si corregge, nelle generate apre il popup dei consigli. */
 .voce__nome--tocco {
