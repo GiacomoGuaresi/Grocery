@@ -71,6 +71,10 @@ Nell'intestazione, a destra, solo nella schermata della lista: **annulla** e
 30, solo per la sessione, niente sul server). Generare una lista nuova la svuota.
 Le righe che spariscono o cambiano posto prima escono; poi le voci toccate
 lampeggiano color zucca dove sono tornate, e la lista ci scorre se serve.
+I tocchi veloci vanno in coda e si fanno uno alla volta; aspettano anche le righe
+che stanno uscendo per uno swipe, così annullano proprio quello. Una voce eliminata
+che torna ha un id nuovo e finisce in fondo al suo reparto: il database non
+riprende mai un id eliminato (`voci_eliminate`).
 
 ## Navigazione
 Un **menu laterale a scomparsa**, aperto dal bottone ☰ nell'intestazione, contiene

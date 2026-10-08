@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { consigliVoce } from '../domain/consigli'
 import { contaVoce, haContatore } from '../domain/contatore'
 import { rinominabile } from '../domain/modifica'
@@ -11,6 +11,7 @@ import { Contatore } from './Contatore'
 import { Icona } from './Icona'
 import { usePressioneLunga } from './pressioneLunga'
 import { useScorrimento } from './scorrimento'
+import { RegistroUscite } from './useSalti'
 import './Voce.css'
 
 /**
@@ -88,11 +89,27 @@ export function Voce({
     if (nomeInCorso === null) setAzioniAperte(true)
   })
 
-  const { uscita, esci, fine } = useUscita<'spunta' | 'conta' | 'elimina'>((motivo) => {
+  // Mentre la riga esce, annulla e ripristina aspettano la sua modifica (useSalti).
+  const registro = useContext(RegistroUscite)
+  const finisciUscita = useRef<(() => void) | null>(null)
+  useEffect(() => () => finisciUscita.current?.(), [])
+
+  const { uscita, esci: esciSubito, fine } = useUscita<'spunta' | 'conta' | 'elimina'>((motivo) => {
     if (motivo === 'elimina') onElimina(voce.id)
     else if (motivo === 'conta') onConta(voce.id, presiInUscita ?? voce.presi ?? 0)
     else onAlterna(voce.id)
+    finisciUscita.current?.()
+    finisciUscita.current = null
   })
+  const esci = (motivo: 'spunta' | 'conta' | 'elimina') => {
+    if (uscita || finisciUscita.current) return
+    finisciUscita.current = registro.inizia()
+    esciSubito(motivo)
+  }
+  // Riaperta senza che la voce si sia spostata: il numero torna quello vero.
+  useEffect(() => {
+    if (uscita === null) setPresiInUscita(null)
+  }, [uscita])
   // Mentre la riga esce per la spunta o il contatore, si mostra già lo stato nuovo.
   const spuntata = uscita === 'spunta' || uscita === 'conta' ? !voce.comprata : voce.comprata
 

@@ -49,6 +49,8 @@ export function useTrascinaGiu(finestra: RefObject<HTMLElement | null>, onChiudi
       if (!corrente || evento.pointerId !== corrente.id) return
       gesto.current = null
       if (!trascinato.current) return
+      // Il click che segue il rilascio arriva prima di questo timer, e viene scartato.
+      window.setTimeout(() => (trascinato.current = false), 0)
       const velocita = corrente.dy / Math.max(evento.timeStamp - corrente.tempo, 1)
       if (corrente.dy > SOGLIA || velocita > VELOCITA) onChiudi()
       else sposta(0, true)

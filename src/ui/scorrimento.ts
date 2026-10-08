@@ -67,6 +67,8 @@ export function useScorrimento({ attivo, onDestra, onSinistra }: Opzioni) {
       if (!corrente || evento.pointerId !== corrente.id) return
       gesto.current = null
       if (!corrente.laterale) return
+      // Il click che segue il rilascio arriva prima di questo timer, e viene scartato.
+      window.setTimeout(() => (trascinato.current = false), 0)
       if (!oltre) return torna()
       // La riga resta spostata mentre se ne va; se invece resta, torna al suo posto.
       if (spostamento > 0) onDestra()

@@ -12,6 +12,10 @@ export function movimentoRidotto(): boolean {
  * finisce mai (browser vecchio, scheda in secondo piano) `concludi` parte lo
  * stesso dopo `riserva` ms: la modifica alla lista non resta appesa a
  * un'animazione. Mentre si esce, altri `esci` vengono ignorati.
+ *
+ * Di solito chi esce sparisce con la modifica. Se invece resta (la modifica
+ * non ha cambiato niente: l'aveva già fatta l'altro dispositivo, o un annulla
+ * arrivato in mezzo), dopo `riserva` ms torna com'era e si può riusare.
  */
 export function useUscita<T extends string>(concludi: (motivo: T) => void, riserva = 1000) {
   const [uscita, setUscita] = useState<T | null>(null)
@@ -32,7 +36,16 @@ export function useUscita<T extends string>(concludi: (motivo: T) => void, riser
   useEffect(() => {
     if (uscita === null) return
     const timer = window.setTimeout(fine, riserva)
-    return () => window.clearTimeout(timer)
+    // Ancora qui ben dopo la fine: si riapre.
+    const riapri = window.setTimeout(() => {
+      motivo.current = null
+      concluso.current = false
+      setUscita(null)
+    }, riserva * 2)
+    return () => {
+      window.clearTimeout(timer)
+      window.clearTimeout(riapri)
+    }
   }, [uscita, fine, riserva])
 
   const esci = useCallback((nuovo: T) => {

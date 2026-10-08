@@ -47,7 +47,8 @@ export function usePressioneLunga(onPressioneLunga: () => void) {
       if (!inizio.current) return
       const dx = evento.clientX - inizio.current.x
       const dy = evento.clientY - inizio.current.y
-      if (Math.hypot(dx, dy) > TOLLERANZA) annulla()
+      // Allo stesso punto in cui parte lo scorrimento della riga (scorrimento.ts).
+      if (Math.hypot(dx, dy) >= TOLLERANZA) annulla()
     },
     onPointerUp: annulla,
     onPointerCancel: annulla,

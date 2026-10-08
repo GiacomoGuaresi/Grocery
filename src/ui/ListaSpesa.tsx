@@ -11,7 +11,7 @@ import { GruppoReparto } from './GruppoReparto'
 import { GruppoRicetta } from './GruppoRicetta'
 import { Icona } from './Icona'
 import type { ListaPersistita } from './useLista'
-import type { Salti } from './useSalti'
+import { RegistroUscite, type Salti } from './useSalti'
 import './ListaSpesa.css'
 
 /**
@@ -93,53 +93,55 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApr
     modifica((corrente) => cambiaReparto(corrente, id, reparto))
 
   return (
-    <div className="lista">
-      {rete}
-      {attive.length > 0 || ricette.length > 0 ? (
-        <>
-          {attive.map((gruppo) => (
-            <GruppoReparto
-              key={gruppo.id}
-              gruppo={gruppo}
-              arrivi={arrivi}
-              escono={escono}
-              onAlterna={alterna}
-              onConta={conta}
-              onElimina={elimina}
-              onRinomina={rinomina}
-              onCambiaReparto={spostaInReparto}
-            />
-          ))}
-          {ricette.map((gruppo) => (
-            <GruppoRicetta
-              key={gruppo.ricetta.id}
-              gruppo={gruppo}
-              arrivi={arrivi}
-              escono={escono}
-              onApriRicetta={onApriRicetta}
-              onAlterna={alterna}
-              onConta={conta}
-              onElimina={elimina}
-              onRinomina={rinomina}
-              onCambiaReparto={spostaInReparto}
-            />
-          ))}
-        </>
-      ) : (
-        <TuttoPreso />
-      )}
-      <GiaPresi
-        voci={comprate}
-        arrivi={arrivi}
-        escono={escono}
-        onAlterna={alterna}
-        onConta={conta}
-        onElimina={elimina}
-        onRinomina={rinomina}
-        onCambiaReparto={spostaInReparto}
-      />
-      <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
-    </div>
+    <RegistroUscite.Provider value={salti.registro}>
+      <div className="lista">
+        {rete}
+        {attive.length > 0 || ricette.length > 0 ? (
+          <>
+            {attive.map((gruppo) => (
+              <GruppoReparto
+                key={gruppo.id}
+                gruppo={gruppo}
+                arrivi={arrivi}
+                escono={escono}
+                onAlterna={alterna}
+                onConta={conta}
+                onElimina={elimina}
+                onRinomina={rinomina}
+                onCambiaReparto={spostaInReparto}
+              />
+            ))}
+            {ricette.map((gruppo) => (
+              <GruppoRicetta
+                key={gruppo.ricetta.id}
+                gruppo={gruppo}
+                arrivi={arrivi}
+                escono={escono}
+                onApriRicetta={onApriRicetta}
+                onAlterna={alterna}
+                onConta={conta}
+                onElimina={elimina}
+                onRinomina={rinomina}
+                onCambiaReparto={spostaInReparto}
+              />
+            ))}
+          </>
+        ) : (
+          <TuttoPreso />
+        )}
+        <GiaPresi
+          voci={comprate}
+          arrivi={arrivi}
+          escono={escono}
+          onAlterna={alterna}
+          onConta={conta}
+          onElimina={elimina}
+          onRinomina={rinomina}
+          onCambiaReparto={spostaInReparto}
+        />
+        <AggiungiVoce onAggiungi={aggiungi} giaPresente={giaPresente} />
+      </div>
+    </RegistroUscite.Provider>
   )
 }
 
