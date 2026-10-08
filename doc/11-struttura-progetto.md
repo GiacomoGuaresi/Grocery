@@ -10,6 +10,7 @@ Grocery/
 ├── .env.example         variabili d'ambiente: URL, chiave ed email di Supabase
 ├── supabase/            progetto Supabase (CLI)
 │   ├── config.toml      config del Supabase locale: registrazione pubblica spenta
+│   ├── functions/       Edge Function importa-ricetta e il parser condiviso (doc/14)
 │   └── migrations/      schema, funzioni e policy del database
 ├── index.html           entry point di Vite
 ├── public/              icona.svg e le icone PWA generate da lì (npm run icone)

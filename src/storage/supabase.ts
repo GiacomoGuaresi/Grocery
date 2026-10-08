@@ -8,6 +8,7 @@ import type { Modifiche } from '../domain/sincronia'
 import type { IdReparto, Lista, Voce } from '../domain/tipi'
 import { AccessoSupabase } from './accesso'
 import { fetchPaziente } from './orologio'
+import { RicettarioSupabase } from './ricettario'
 import { ErroreRete, type Storage } from './tipi'
 
 /**
@@ -23,7 +24,11 @@ export function connettiSupabase(url: string, chiave: string, email: string) {
     cookieOptions: { path: '/' },
     global: { fetch: fetchPaziente() },
   })
-  return { storage: new StorageSupabase(client), accesso: new AccessoSupabase(client, email) }
+  return {
+    storage: new StorageSupabase(client),
+    accesso: new AccessoSupabase(client, email),
+    ricettario: new RicettarioSupabase(client),
+  }
 }
 
 /**
@@ -50,6 +55,8 @@ interface RigaVoce {
   comprata: boolean
   quantita: number | null
   presi: number | null
+  ricetta_id: string | null
+  ricetta_nome: string | null
 }
 
 interface RigaLista {
@@ -59,7 +66,7 @@ interface RigaLista {
 }
 
 const COLONNE_LISTA =
-  'id, creata_il, voci(id, nome, reparto, categoria, origine, comprata, quantita, presi)'
+  'id, creata_il, voci(id, nome, reparto, categoria, origine, comprata, quantita, presi, ricetta_id, ricetta_nome)'
 
 export class StorageSupabase implements Storage {
   constructor(private readonly client: SupabaseClient) {}
@@ -179,6 +186,8 @@ function daRigaVoce(riga: RigaVoce): Voce {
   if (riga.categoria !== null) voce.categoria = riga.categoria as Voce['categoria']
   if (riga.quantita !== null) voce.quantita = riga.quantita
   if (riga.presi !== null) voce.presi = riga.presi
+  if (riga.ricetta_id !== null && riga.ricetta_nome !== null)
+    voce.ricetta = { id: riga.ricetta_id, nome: riga.ricetta_nome }
   return voce
 }
 

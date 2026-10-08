@@ -19,6 +19,7 @@
 | F11b | Vista della frutta e della verdura di stagione, per stagione o per mese | ✅ |
 | F14 | **Popup dei consigli** su ogni voce generata | v2 |
 | F15 | **Moltiplicatore** di pasti sulle voci generate, scalabile in corsia | v2 |
+| F16 | **Ricette**: import da un link condiviso, ingredienti scelti nella lista | in corso |
 | F12 | Modalità demo per il portfolio | ❌ futuro |
 | F13 | Gestione dei pasti saltati (cene fuori) | ❌ futuro |
 
@@ -158,3 +159,27 @@ cancellano anche loro.
 Due pagine del menu laterale, **Frutta** e **Verdura**, che mostrano cosa è di
 stagione, dalla tabella di stagionalità. Parte dalla **stagione corrente** e permette di cambiare **stagione**
 o di restringere a un **mese**. In sola consultazione.
+
+## F16 — Ricette
+Piano in [14](14-piano-ricette.md).
+- Si **condivide il link** di una ricetta verso Grocery (PWA installata su Android:
+  da Chrome, da Google, dall'app di GialloZafferano), oppure lo si **incolla**
+  nella sezione Ricette.
+- Grocery scarica la pagina e legge la ricetta descritta per Google (JSON-LD
+  schema.org `Recipe`): funziona con GialloZafferano, Fatto in casa da Benedetta e
+  gli altri siti che la descrivono. Se la pagina non ne ha una lo dice.
+- Salva **nome, link, foto** (solo il link: l'immagine resta sul sito),
+  **categorie del sito** e **ingredienti** col testo originale. Niente procedimento:
+  si apre sul sito. Lo stesso link importato due volte aggiorna la ricetta, non la
+  duplica.
+- Poi chiede se **aggiungere gli ingredienti alla lista** e **quali**: tutti
+  spuntati tranne i *q.b.*; quelli già da prendere hanno l'etichetta "già in lista",
+  ma si possono aggiungere lo stesso.
+- In lista gli ingredienti stanno **dopo i reparti**, in un gruppo col **nome della
+  ricetta** (troncato coi "…"); il titolo apre la scheda. Si spuntano, rinominano ed
+  eliminano come le manuali, ma **non cambiano reparto**.
+- Al ciclo nuovo si comportano come le **voci manuali**: rientrano nella domanda
+  "porto avanti le voci rimaste?", col loro gruppo.
+- Sezione **Ricette**: ricerca per nome, filtro per categoria, scheda, ri-aggiungi
+  gli ingredienti, elimina (gli ingredienti già in lista restano).
+

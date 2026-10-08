@@ -46,9 +46,17 @@ credenziali di entrambi stanno in `supabase/credenziali.local`.
 Dal 2026-09-11 al 2026-09-12 sviluppo e produzione hanno condiviso lo stesso
 progetto; prima ancora in sviluppo c'era SQLite nel browser (`sql.js`, su IndexedDB).
 
-Nessun backend proprio. Nessuna funzione serverless: non servendo l'IA, non c'è
-alcuna API key da nascondere. La chiave `anon` di Supabase è pubblica per
-progettazione e viene protetta lato DB.
+Nessun backend proprio. Una sola funzione serverless, dal 2026-10-08: la **Edge
+Function `importa-ricetta`** delle Ricette ([14](14-piano-ricette.md)), perché il
+browser non può scaricare le pagine di altri siti (niente CORS). Scarica la pagina,
+legge lo JSON-LD `Recipe` e restituisce i dati. La usa solo la sessione
+autenticata: lo controlla chiedendo a Supabase Auth, con `verify_jwt` spento in
+`config.toml` (così vale anche con le chiavi di firma nuove). Va solo verso siti
+pubblici in http(s), con tempo e peso limitati. Nessuna API key da nascondere. La
+chiave `anon` di Supabase è pubblica per progettazione e viene protetta lato DB.
+
+La funzione non parte col deploy su Pages: si pubblica a mano su **tutti e due** i
+progetti, come le migrazioni, con `supabase functions deploy importa-ricetta`.
 
 ## Accesso
 Passphrase condivisa, uguale per entrambi: un solo account, la passphrase fa da
@@ -76,6 +84,8 @@ successiva.
 - **Scritture offline** (spunte, aggiunte, eliminazioni) applicate subito in locale e
   messe in coda, anche lei in `localStorage`; al ritorno della rete vengono inviate a
   Supabase, nell'ordine in cui sono state fatte (Step 16).
+- **Ricette**: l'elenco visto l'ultima volta resta in `localStorage`
+  (`grocery.ricette`) e si sfoglia offline; importare ed eliminare vogliono la rete.
 - **Realtime** quando c'è rete: le modifiche di un dispositivo compaiono sull'altro.
 - **Conflitti**: lo scenario reale è due persone nello stesso supermercato che
   spuntano cose diverse. Si applica *last-write-wins* per singola voce, che è

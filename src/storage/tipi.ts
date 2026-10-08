@@ -3,7 +3,7 @@
 // Supabase (Step 13), in sviluppo come in produzione.
 
 import type { Modifiche } from '../domain/sincronia'
-import type { Lista } from '../domain/tipi'
+import type { Lista, Ricetta, RicettaImportata } from '../domain/tipi'
 
 export interface Storage {
   /** La lista, oppure `null` se non ne esiste ancora una. */
@@ -31,6 +31,37 @@ export interface Storage {
    * Restituisce come smettere.
    */
   quandoCambia(avvisa: () => void): () => void
+}
+
+/**
+ * Le ricette salvate (doc/14-piano-ricette.md). A differenza della lista
+ * vogliono la rete: senza, ogni metodo lancia `ErroreRete`. L'elenco visto
+ * l'ultima volta lo tiene l'interfaccia, per mostrarlo anche offline.
+ */
+export interface Ricettario {
+  /** Tutte le ricette, dalla più recente. */
+  leggiRicette(): Promise<Ricetta[]>
+  /**
+   * Salva la ricetta importata. Se ce n'è già una con lo stesso link la
+   * aggiorna, tenendo il suo id (che le voci in lista ricordano), e la restituisce.
+   */
+  salvaRicetta(ricetta: RicettaImportata): Promise<Ricetta>
+  eliminaRicetta(id: string): Promise<void>
+  /** Scarica la ricetta dal link dentro il testo condiviso (Edge Function `importa-ricetta`). */
+  importa(testo: string): Promise<RicettaImportata>
+}
+
+/** Perché una ricetta non si è potuta importare, oltre alla rete che manca. */
+export type MotivoImport = 'nessun-link' | 'non-ricetta' | 'sito-irraggiungibile' | 'non-autenticato' | 'sconosciuto'
+
+export class ErroreImport extends Error {
+  constructor(
+    readonly motivo: MotivoImport,
+    causa?: unknown,
+  ) {
+    super(`Ricetta non importata: ${motivo}`, { cause: causa })
+    this.name = 'ErroreImport'
+  }
 }
 
 /**

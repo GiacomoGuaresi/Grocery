@@ -7,7 +7,7 @@
 // averla a schermo prima ancora di sentire il database.
 
 import type { Scrittura } from '../domain/sincronia'
-import type { Lista, Voce } from '../domain/tipi'
+import type { Lista, Ricetta, Voce } from '../domain/tipi'
 
 /** Il pezzo di `localStorage` che serve qui: nei test lo fa una Map. */
 export interface Scaffale {
@@ -18,6 +18,7 @@ export interface Scaffale {
 const CHIAVE_LISTA = 'grocery.lista'
 const CHIAVE_CODA = 'grocery.coda'
 const CHIAVE_GENERATA = 'grocery.generata'
+const CHIAVE_RICETTE = 'grocery.ricette'
 
 export class MemoriaLocale {
   constructor(private readonly scaffale: Scaffale | null) {}
@@ -65,6 +66,19 @@ export class MemoriaLocale {
     this.scrivi(CHIAVE_GENERATA, id)
   }
 
+  /**
+   * Le ricette viste l'ultima volta (doc/14): per sfogliarle anche senza rete.
+   * Si cambiano solo con la rete, quindi qui non c'è coda.
+   */
+  leggiRicette(): Ricetta[] {
+    const ricette = this.leggi<unknown>(CHIAVE_RICETTE, [])
+    return Array.isArray(ricette) ? ricette.filter(eRicetta) : []
+  }
+
+  salvaRicette(ricette: Ricetta[]): void {
+    this.scrivi(CHIAVE_RICETTE, ricette)
+  }
+
   /** Un valore illeggibile vale quanto uno assente: si riparte dal database. */
   private leggi<T>(chiave: string, altrimenti: T): T {
     try {
@@ -89,6 +103,17 @@ export class MemoriaLocale {
 function eLista(valore: unknown): valore is Lista {
   const lista = valore as Lista | null
   return typeof lista?.id === 'string' && typeof lista.creataIl === 'string' && Array.isArray(lista.voci)
+}
+
+function eRicetta(valore: unknown): valore is Ricetta {
+  const ricetta = valore as Ricetta | null
+  return (
+    typeof ricetta?.id === 'string' &&
+    typeof ricetta.nome === 'string' &&
+    typeof ricetta.url === 'string' &&
+    Array.isArray(ricetta.categorie) &&
+    Array.isArray(ricetta.ingredienti)
+  )
 }
 
 function eScrittura(valore: unknown): valore is Scrittura {

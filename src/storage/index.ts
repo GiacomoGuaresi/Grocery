@@ -3,16 +3,22 @@
 
 import type { Accesso } from './accesso'
 import { connettiSupabase } from './supabase'
-import type { Storage } from './tipi'
+import type { Ricettario, Storage } from './tipi'
 
 export type { Accesso, EsitoAccesso } from './accesso'
-export type { Storage } from './tipi'
+export type { Ricettario, Storage } from './tipi'
+export { ErroreImport, ErroreRete, type MotivoImport } from './tipi'
 
 let supabase: ReturnType<typeof connettiSupabase> | null = null
 
 /** Lo storage dell'app, aperto una volta sola e condiviso da chi lo chiede. */
 export async function storage(): Promise<Storage> {
   return connessione().storage
+}
+
+/** Le ricette salvate (doc/14), sulla stessa sessione della lista. */
+export function ricettario(): Ricettario {
+  return connessione().ricettario
 }
 
 /** Chi può entrare: serve la sessione aperta dalla passphrase. */

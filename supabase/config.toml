@@ -414,3 +414,8 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+# Ricette (doc/14-piano-ricette.md): la funzione controlla da sé la sessione,
+# chiedendo a Supabase Auth; così funziona anche con le chiavi di firma nuove.
+[functions.importa-ricetta]
+verify_jwt = false

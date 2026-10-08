@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
 import { contaVoce, impostaPresi } from '../domain/contatore'
-import { raggruppaPerReparto, vociAttive, vociComprate } from '../domain/lista'
+import { raggruppaPerReparto, raggruppaPerRicetta, vociAttive, vociComprate } from '../domain/lista'
 import { cambiaReparto, eliminaVoce, rinominaVoce } from '../domain/modifica'
 import { despuntaVoce, spuntaVoce } from '../domain/spunta'
 import type { IdReparto } from '../domain/tipi'
@@ -9,14 +9,15 @@ import { AggiungiVoce } from './AggiungiVoce'
 import { GeneraLista } from './GeneraLista'
 import { GiaPresi } from './GiaPresi'
 import { GruppoReparto } from './GruppoReparto'
+import { GruppoRicetta } from './GruppoRicetta'
 import { Icona } from './Icona'
 import type { ListaPersistita } from './useLista'
 import type { Arrivo } from './Voce'
 import './ListaSpesa.css'
 
 /**
- * Schermata principale: la lista della spesa, raggruppata per reparto, con la
- * spunta e la sezione "Già presi" in fondo. In fondo, sempre raggiungibile,
+ * Schermata principale: la lista della spesa, raggruppata per reparto e poi
+ * per ricetta (doc/14), con la spunta e la sezione "Già presi" in fondo. In fondo, sempre raggiungibile,
  * il campo di aggiunta rapida; il ciclo nuovo si apre dal menu laterale. La
  * lista la tiene App (useLista), perché serve anche a "Genera lista": arriva
  * dallo storage e ogni modifica ci torna, così resta anche dopo un refresh.
@@ -24,7 +25,12 @@ import './ListaSpesa.css'
  * Tiene a mente l'ultima voce arrivata (aggiunta, spuntata o de-spuntata),
  * che entra nel suo posto nuovo con un'animazione.
  */
-export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: ListaPersistita) {
+interface Props extends ListaPersistita {
+  /** Il tocco sul titolo di un gruppo-ricetta: la sua scheda (doc/14). */
+  onApriRicetta: (id: string) => void
+}
+
+export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApriRicetta }: Props) {
   const [arrivo, setArrivo] = useState<Arrivo | null>(null)
 
   if (stato.fase === 'caricamento') return <Caricamento />
@@ -54,6 +60,7 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   }
 
   const attive = raggruppaPerReparto(vociAttive(lista))
+  const ricette = raggruppaPerRicetta(vociAttive(lista))
   const comprate = vociComprate(lista)
 
   const alterna = (id: string) => {
@@ -86,19 +93,34 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete }: Lis
   return (
     <div className="lista">
       {rete}
-      {attive.length > 0 ? (
-        attive.map((gruppo) => (
-          <GruppoReparto
-            key={gruppo.id}
-            gruppo={gruppo}
-            arrivo={arrivo}
-            onAlterna={alterna}
-            onConta={conta}
-            onElimina={elimina}
-            onRinomina={rinomina}
-            onCambiaReparto={spostaInReparto}
-          />
-        ))
+      {attive.length > 0 || ricette.length > 0 ? (
+        <>
+          {attive.map((gruppo) => (
+            <GruppoReparto
+              key={gruppo.id}
+              gruppo={gruppo}
+              arrivo={arrivo}
+              onAlterna={alterna}
+              onConta={conta}
+              onElimina={elimina}
+              onRinomina={rinomina}
+              onCambiaReparto={spostaInReparto}
+            />
+          ))}
+          {ricette.map((gruppo) => (
+            <GruppoRicetta
+              key={gruppo.ricetta.id}
+              gruppo={gruppo}
+              arrivo={arrivo}
+              onApriRicetta={onApriRicetta}
+              onAlterna={alterna}
+              onConta={conta}
+              onElimina={elimina}
+              onRinomina={rinomina}
+              onCambiaReparto={spostaInReparto}
+            />
+          ))}
+        </>
       ) : (
         <TuttoPreso />
       )}

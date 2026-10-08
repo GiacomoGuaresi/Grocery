@@ -1,0 +1,434 @@
+/* La sezione Ricette (doc/14-piano-ricette.md): in cima il link da incollare,
+   poi ricerca, categorie e l'elenco a card con la foto presa dal sito. Campi,
+   chip e bottoni riprendono quelli della lista e delle pagine di stagione. */
+.ricette {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ricette__incolla {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--bordo);
+  border-radius: calc(var(--raggio) + 4px);
+  background: var(--panna);
+}
+
+.ricette__etichetta {
+  padding: 2px 4px 0;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--terracotta-scura);
+}
+
+.ricette__suggerimento,
+.ricette__vuoto {
+  margin: 0;
+  padding: 0 4px;
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.ricette__vuoto {
+  padding: var(--spazio) 4px;
+  text-align: center;
+}
+
+.ricette__avviso {
+  margin: 0;
+  padding: 8px 11px;
+  border: 1px solid var(--terracotta);
+  border-radius: var(--raggio);
+  background: var(--crema);
+  color: var(--terracotta-scura);
+  font-weight: 600;
+}
+
+.ricette__cerca {
+  position: relative;
+  display: flex;
+}
+
+.ricette__cerca-icona {
+  position: absolute;
+  top: 50%;
+  left: 11px;
+  transform: translateY(-50%);
+  color: var(--inchiostro-tenue);
+  pointer-events: none;
+}
+
+.ricette__cerca-campo {
+  padding-left: 36px;
+}
+
+.ricette__categorie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Le card: righe attaccate come le voci della lista, un unico blocco. */
+.ricette__elenco {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ricetta {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 8px 6px 8px 8px;
+  border: 1px solid var(--bordo);
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+li + li > .ricetta {
+  border-top: none;
+}
+
+li:first-child > .ricetta {
+  border-top-left-radius: var(--raggio);
+  border-top-right-radius: var(--raggio);
+}
+
+li:last-child > .ricetta {
+  border-bottom-left-radius: var(--raggio);
+  border-bottom-right-radius: var(--raggio);
+}
+
+.ricetta:active {
+  background: var(--crema-scura);
+}
+
+.ricetta__foto {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--crema-scura);
+}
+
+.ricetta__foto--vuota {
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  color: var(--terracotta);
+}
+
+.ricetta__testo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ricetta__nome {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ricetta__dettagli {
+  overflow: hidden;
+  font-size: var(--testo-piccolo);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--inchiostro-tenue);
+}
+
+.ricetta__avanti {
+  flex: none;
+  color: var(--inchiostro-tenue);
+}
+
+/* La scheda di una ricetta. */
+.scheda {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scheda__indietro {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--tocco);
+  padding: 0 8px 0 0;
+  border: none;
+  background: none;
+  color: var(--terracotta-scura);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scheda__foto,
+.importa__foto {
+  width: 100%;
+  max-height: 240px;
+  border-radius: var(--raggio);
+  object-fit: cover;
+  background: var(--crema-scura);
+}
+
+.scheda__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.scheda__categorie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scheda__categoria {
+  padding: 2px 10px;
+  border: 1px solid var(--bordo);
+  border-radius: 999px;
+  background: var(--panna);
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.scheda__sito {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 6px;
+  color: var(--terracotta-scura);
+  font-weight: 600;
+}
+
+.scheda__sottotitolo {
+  margin: 6px 0 0;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--terracotta-scura);
+}
+
+.scheda__ingredienti {
+  margin: 0;
+  padding: 8px var(--spazio) 8px calc(var(--spazio) + 16px);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--panna);
+}
+
+.scheda__ingrediente {
+  padding: 3px 0;
+}
+
+.scheda__ingrediente--qb {
+  color: var(--inchiostro-tenue);
+}
+
+.scheda__errore {
+  margin: 0;
+  color: var(--pomodoro);
+  font-weight: 600;
+}
+
+.scheda__elimina {
+  min-height: var(--tocco);
+  border: none;
+  background: none;
+  color: var(--pomodoro);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scheda__conferma {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: var(--spazio);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--crema-scura);
+}
+
+.scheda__conferma-testo {
+  margin: 0;
+}
+
+.scheda__conferma-scelte {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.bottone--elimina {
+  background: var(--pomodoro);
+}
+
+.bottone--elimina:active {
+  background: var(--inchiostro);
+}
+
+/* L'import: l'attesa, l'errore o la domanda sugli ingredienti. */
+.importa {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.importa__attesa {
+  margin: 0;
+  padding: calc(var(--spazio) * 2) 0;
+  text-align: center;
+  color: var(--inchiostro-tenue);
+}
+
+.importa__salvata {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--terracotta-scura);
+}
+
+.importa__testo {
+  margin: 0;
+}
+
+/* "Cosa aggiungo alla lista?": caselle grandi, una per ingrediente. */
+.scegli {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scegli__titolo {
+  margin: 0;
+  font-size: var(--testo-grande);
+  font-weight: 600;
+}
+
+.scegli__testo {
+  margin: 0;
+  font-size: var(--testo-piccolo);
+  color: var(--inchiostro-tenue);
+}
+
+.scegli__tutti {
+  display: flex;
+  gap: 6px;
+}
+
+.scegli__tutti-bottone {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--bordo);
+  border-radius: 999px;
+  background: var(--panna);
+  color: var(--inchiostro-tenue);
+  font: inherit;
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.scegli__ingredienti {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scegli__ingrediente {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--tocco);
+  padding: 4px var(--spazio);
+  border: 1px solid var(--bordo);
+  background: var(--panna);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+li + li > .scegli__ingrediente {
+  border-top: none;
+}
+
+li:first-child > .scegli__ingrediente {
+  border-top-left-radius: var(--raggio);
+  border-top-right-radius: var(--raggio);
+}
+
+li:last-child > .scegli__ingrediente {
+  border-bottom-left-radius: var(--raggio);
+  border-bottom-right-radius: var(--raggio);
+}
+
+.scegli__segno {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--terracotta);
+  border-radius: 6px;
+  font-size: 14px;
+  color: transparent;
+}
+
+.scegli__ingrediente[aria-checked='true'] .scegli__segno {
+  background: var(--terracotta);
+  color: var(--panna);
+}
+
+.scegli__ingrediente[aria-checked='false'] .scegli__nome {
+  color: var(--inchiostro-tenue);
+}
+
+.scegli__nome {
+  flex: 1;
+  min-width: 0;
+}
+
+.scegli__gia {
+  flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--crema-scura);
+  font-size: var(--testo-piccolo);
+  font-weight: 600;
+  color: var(--terracotta-scura);
+}
+
+.scegli__azioni {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}

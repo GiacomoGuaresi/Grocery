@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { rinominabile, repartiSceglibili } from '../domain/modifica'
+import { rinominabile, repartiSceglibili, repartoSceglibile } from '../domain/modifica'
 import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
 import { useUscita } from './animazioni'
 import './AzioniVoce.css'
@@ -99,22 +99,23 @@ export function AzioniVoce({ voce, onElimina, onRinomina, onCambiaReparto, onChi
         ) : nomeInCorso === null ? (
           <>
             {rinominabile(voce) && (
-              <>
-                <button
-                  className="azioni-voce__bottone"
-                  type="button"
-                  onClick={() => setNomeInCorso(voce.nome)}
-                >
-                  Rinomina
-                </button>
-                <button
-                  className="azioni-voce__bottone"
-                  type="button"
-                  onClick={() => setSceltaReparto(true)}
-                >
-                  Scegli reparto
-                </button>
-              </>
+              <button
+                className="azioni-voce__bottone"
+                type="button"
+                onClick={() => setNomeInCorso(voce.nome)}
+              >
+                Rinomina
+              </button>
+            )}
+            {/* Gli ingredienti delle ricette stanno sotto la ricetta, non in un reparto. */}
+            {repartoSceglibile(voce) && (
+              <button
+                className="azioni-voce__bottone"
+                type="button"
+                onClick={() => setSceltaReparto(true)}
+              >
+                Scegli reparto
+              </button>
             )}
             <button
               className="azioni-voce__bottone azioni-voce__bottone--elimina"

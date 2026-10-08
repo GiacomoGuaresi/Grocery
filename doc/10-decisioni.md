@@ -123,3 +123,14 @@
 | 2026-09-12 | Al totale il popup **resta aperto**; la voce va tra i "Già presi" alla chiusura | deciso |
 | 2026-09-12 | Rivista la UI del popup dei consigli: contatore grande con barra a tacche, **schede** Di stagione / Fuori stagione e **gruppi di pillole** al posto di liste collassabili e chip, bottone fisso in fondo che al totale diventa "Fatto". Supera le due righe sulle liste collassabili | deciso |
 | 2026-09-12 | I tipi del **mese corrente** nel popup sono **in evidenza** (pillole piene); niente date né gruppi in più | deciso |
+| 2026-10-08 | **Ricette** (F16, [14](14-piano-ricette.md)): si condivide il link di una ricetta a Grocery, che la salva, ne estrae gli ingredienti e chiede quali aggiungere alla lista | deciso |
+| 2026-10-08 | Le pagine si scaricano da una **Edge Function di Supabase** (`importa-ricetta`), solo per la sessione autenticata: è la prima funzione serverless del progetto | deciso |
+| 2026-10-08 | Si legge lo **JSON-LD schema.org `Recipe`**: vale per **qualunque sito** che lo pubblica, GialloZafferano e Fatto in casa da Benedetta verificati | deciso |
+| 2026-10-08 | Della ricetta si salvano **nome, link, categorie del sito e ingredienti** col testo originale; la **foto solo come link** al sito, non copiata. Niente procedimento, porzioni né tempi | deciso |
+| 2026-10-08 | Condivisione verso l'app con il **Web Share Target** della PWA: **solo Android**. In app c'è anche il campo per incollare il link | deciso |
+| 2026-10-08 | Flusso: salva la ricetta → "Aggiungo gli ingredienti?" → scelta con caselle, **tutte spuntate tranne i q.b.** | deciso |
+| 2026-10-08 | In lista l'ingrediente tiene il **testo del sito**, quantità comprese, e sta in un **gruppo col nome della ricetta** (troncato coi "…"), **dopo i reparti**. Eccezione voluta a "nessuna quantità mostrata" | deciso |
+| 2026-10-08 | Un ingrediente già in lista **si aggiunge lo stesso** nel gruppo della ricetta, con l'etichetta "già in lista" nella scelta. Eccezione voluta a "le voci non si ripetono mai" | deciso |
+| 2026-10-08 | Al ciclo nuovo gli ingredienti non presi si comportano come le **voci manuali** (domanda "porto avanti?") | deciso |
+| 2026-10-08 | Il titolo del gruppo-ricetta **apre la scheda** della ricetta; gli ingredienti **non cambiano reparto** | deciso |
+| 2026-10-08 | Sezione Ricette con **ricerca**, **filtro per categoria**, **elimina** e **ri-aggiungi ingredienti**. Eliminare la ricetta lascia in lista i suoi ingredienti | deciso |

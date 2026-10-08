@@ -43,12 +43,27 @@ Un articolo della lista.
 | `presi` | number? | Quanti pasti sono già stati presi, da 0 a `quantita`. Solo voci generate |
 | `comprata` | bool | Spuntata durante la spesa; per le generate vale `presi = quantita` |
 | `modificata_il` | timestamp | *Last-write-wins* per voce, come oggi |
+| `ricetta` | `{ id, nome }`? | Ingrediente di una ricetta ([14](14-piano-ricette.md)): in lista sta sotto il nome della ricetta. Solo manuali. Sul database `ricetta_id` e `ricetta_nome`, senza chiave esterna: il nome è una copia, la voce resta se la ricetta si elimina |
 
 Via `alternative`: i consigli si leggono dal catalogo statico, non si copiano sulla
 voce.
 
 ### ~~`rotazione`~~
 Tolta con la v2, tabella e funzioni sul database comprese.
+
+### `ricetta`
+Una ricetta importata da un link ([14](14-piano-ricette.md)). Condivisa come la
+lista; sul dispositivo resta una copia dell'elenco, per sfogliarlo senza rete.
+
+| Campo | Tipo | Note |
+|---|---|---|
+| `id` | id | |
+| `nome` | string | Dal sito |
+| `url` | string | Link della ricetta (il canonical della pagina). **Unico**: reimportare aggiorna |
+| `immagine` | string? | Link alla foto sul sito: l'immagine non si copia |
+| `categorie` | string[] | Quelle del sito ("Primi piatti", "Dolci"…) |
+| `ingredienti` | string[] | Testo del sito, quantità comprese |
+| `creata_il` | timestamp | L'elenco va dalla più recente |
 
 ---
 

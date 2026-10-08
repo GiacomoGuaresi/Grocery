@@ -37,19 +37,28 @@ export function rinominaVoce(lista: Lista, id: string, nome: string): Lista {
   }
 }
 
+/**
+ * Vero se a questa voce si può scegliere il reparto: manuale, in "Altro" e non
+ * di una ricetta, che in lista sta sotto la ricetta e non in un reparto.
+ */
+export function repartoSceglibile(voce: Voce): boolean {
+  return rinominabile(voce) && !voce.ricetta
+}
+
 /** I reparti in cui si può mettere una voce senza reparto: tutti tranne "Altro". */
 export const repartiSceglibili = reparti.filter((reparto) => reparto.id !== 'altro')
 
 /**
  * Mette una voce manuale di "Altro" nel reparto scelto. Le altre voci restano
- * dove sono, e così la voce se il reparto è "Altro" o non esiste.
+ * dove sono, e così la voce se il reparto è "Altro" o non esiste, o se è
+ * l'ingrediente di una ricetta.
  */
 export function cambiaReparto(lista: Lista, id: string, reparto: IdReparto): Lista {
   if (!repartiSceglibili.some((r) => r.id === reparto)) return lista
   return {
     ...lista,
     voci: lista.voci.map((voce) =>
-      voce.id === id && rinominabile(voce) ? { ...voce, reparto } : voce,
+      voce.id === id && repartoSceglibile(voce) ? { ...voce, reparto } : voce,
     ),
   }
 }

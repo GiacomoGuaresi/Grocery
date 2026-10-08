@@ -83,6 +83,20 @@ export function verificaContratto(apriVuoto: () => Promise<Storage>): void {
       expect(pesce.categoria).toBe('pesce')
       expect(manuale).not.toHaveProperty('categoria')
       expect(manuale).not.toHaveProperty('quantita')
+      expect(manuale).not.toHaveProperty('ricetta')
+    })
+
+    // doc/14: l'ingrediente di una ricetta sta sotto il nome della ricetta.
+    it('rilegge la ricetta della voce, salvata intera o voce per voce', async () => {
+      const storage = await apriVuoto()
+      const ricetta = { id: 'ricetta-1', nome: 'Torta di mele' }
+      const burro: Voce = { id: 'ingrediente-1', nome: 'burro 100 g', reparto: 'altro', origine: 'manuale', comprata: false, ricetta }
+      const mele: Voce = { ...burro, id: 'ingrediente-2', nome: 'mele 4' }
+      await storage.salvaLista({ ...lista, voci: [...lista.voci, burro] })
+      await storage.salvaVoci(lista.id, { voci: [mele], eliminate: [] }, alle('10:00'))
+      const [, , , primo, secondo] = (await storage.leggiListaCorrente())!.voci
+      expect(primo).toEqual(burro)
+      expect(secondo).toEqual(mele)
     })
 
     it('salvando di nuovo aggiorna invece di duplicare', async () => {

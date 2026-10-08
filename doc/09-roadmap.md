@@ -21,6 +21,11 @@ Dopo il primo periodo di prova: lista generica per categoria con moltiplicatore 
 pasti (F15) e popup dei consigli (F14); tolti alternative (F6), rotazioni e archivio
 (F11). Piano in [13](13-piano-v2.md).
 
+## Ricette (in corso)
+Import di una ricetta da un link condiviso (GialloZafferano, Benedetta e gli altri
+siti con JSON-LD) e ingredienti scelti nella lista, sotto il nome della ricetta
+(F16). Piano in [14](14-piano-ricette.md).
+
 ## Futuro (non ora)
 - **Modalità demo** per il portfolio: mostrare l'app a chi la visita senza toccare i
   dati reali (F12).

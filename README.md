@@ -21,6 +21,9 @@ partire dalla routine alimentare seguita, e spuntarla al supermercato dal telefo
 - **Condivisa in tempo reale** tra due telefoni, dietro una passphrase.
 - **Funziona senza rete**: è una PWA installabile, la lista si genera anche offline
   e le modifiche partono quando la rete torna.
+- **Ricette da un link**: si condivide una ricetta (GialloZafferano, Fatto in casa
+  da Benedetta e gli altri siti che la descrivono per Google) e Grocery la salva e
+  chiede quali ingredienti aggiungere alla lista, raccolti sotto il nome della ricetta.
 - Piano settimanale, frutta e verdura di stagione.
 
 ## Com'è fatta
@@ -29,6 +32,8 @@ partire dalla routine alimentare seguita, e spuntarla al supermercato dal telefo
   a ogni push su `main` ([workflow](.github/workflows/pubblica.yml)).
 - Stato condiviso su **Supabase** (Postgres, realtime, policy per la sola sessione
   autenticata). Schema e funzioni in [supabase/migrations](supabase/migrations).
+- Una **Edge Function** ([supabase/functions](supabase/functions)) scarica le pagine
+  delle ricette e ne legge lo JSON-LD `Recipe`: il browser da solo non può.
 - Cataloghi, stagionalità e routine in **JSON versionato** ([src/data](src/data)):
   si aggiornano con un commit.
 - Test con **Vitest**, soprattutto su generazione, contatore e sincronizzazione
@@ -46,5 +51,6 @@ npm test
 ```
 
 Lo sviluppo gira su un progetto Supabase a parte (*Grocery DEV*), con lo stesso
-schema: `npm run dev` non tocca i dati veri. Una migrazione nuova va applicata a
-tutti e due i progetti.
+schema: `npm run dev` non tocca i dati veri. Una migrazione nuova, e la Edge
+Function (`supabase functions deploy importa-ricetta`), vanno applicate a tutti e
+due i progetti.

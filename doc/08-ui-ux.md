@@ -59,6 +59,7 @@ tutte le sezioni e le azioni. **Da desktop** (finestra larga almeno 1024px) il m
 senza X.
 - **Lista**
 - **Piano**
+- **Ricette** ([14](14-piano-ricette.md))
 - ~~**Archivio**~~ (tolto in v2)
 - **Frutta** (di stagione)
 - **Verdura** (di stagione)
@@ -158,6 +159,25 @@ la **frutta** e una per la **verdura**, fatte allo stesso modo.
   corrente**.
 - Quello che c'è **tutto l'anno** (mele, limoni, banane, ananas; carote, cipolle,
   funghi coltivati, patate, songino) sta a parte, in una riga sola in fondo.
+
+### 7. Ricette
+Le ricette importate da un link ([14](14-piano-ricette.md)).
+- **Elenco**: in cima il campo per **incollare un link** (con la PWA su Android si
+  arriva anche da *Condividi → Grocery*); sotto la **ricerca** per nome, i **chip
+  delle categorie** del sito e le card, dalla più recente, con la foto presa dal
+  sito, il nome, le categorie e quanti ingredienti.
+- **Import**: "Scarico la ricetta…", poi "Ricetta salvata" con la domanda
+  *Aggiungo gli ingredienti alla lista?* → **Sì, scelgo** / **No, solo salvata**. Gli
+  errori dicono cosa fare (niente link, pagina senza ricetta, sito che non
+  risponde, senza rete) e, dove ha senso, **Riprova**.
+- **Scelta degli ingredienti**: una casella per ingrediente, tutte spuntate tranne
+  i *q.b.*; "già in lista" accanto a quelli già da prendere; *Tutti* / *Nessuno*;
+  il bottone dice quanti ne aggiunge. Fatto, si torna alla lista.
+- **Scheda**: foto, nome, categorie, link al **procedimento sul sito**,
+  ingredienti (i *q.b.* più tenui), *Aggiungi ingredienti alla lista*, *Elimina
+  ricetta* con conferma.
+- Nella **lista** gli ingredienti stanno dopo i reparti, sotto il nome della
+  ricetta in maiuscolo, su una riga sola, troncato coi "…": toccarlo apre la scheda.
 
 ## Configurazione
 La routine, i cataloghi di rotazione e le regole **non sono modificabili

@@ -30,6 +30,14 @@ export default defineConfig({
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
           { src: 'maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
+        // Ricette (doc/14): con la PWA installata su Android, Grocery compare
+        // nel menu "Condividi". Il link arriva come parametri dell'URL, che
+        // App legge all'avvio per aprire l'import.
+        share_target: {
+          action: '/Grocery/',
+          method: 'GET',
+          params: { title: 'titolo', text: 'testo', url: 'link' },
+        },
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
@@ -38,6 +46,6 @@ export default defineConfig({
   ],
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'supabase/functions/_shared/**/*.test.ts'],
   },
 })
