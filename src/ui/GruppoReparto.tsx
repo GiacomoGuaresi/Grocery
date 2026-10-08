@@ -5,8 +5,10 @@ import './GruppoReparto.css'
 
 interface Props {
   gruppo: Gruppo
-  /** L'ultima voce arrivata nella lista, da far entrare con un'animazione. */
-  arrivo: Arrivo | null
+  /** Le ultime voci arrivate nella lista, da far entrare con un'animazione. */
+  arrivi: Arrivo[]
+  /** Le voci che se ne vanno per un annulla o un ripristina. */
+  escono: ReadonlySet<string>
   onAlterna: (id: string) => void
   onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
@@ -17,7 +19,8 @@ interface Props {
 /** Un reparto della lista, col suo titolo e le sue voci. */
 export function GruppoReparto({
   gruppo,
-  arrivo,
+  arrivi,
+  escono,
   onAlterna,
   onConta,
   onElimina,
@@ -34,7 +37,8 @@ export function GruppoReparto({
           <Voce
             key={voce.id}
             voce={voce}
-            arrivo={arrivo}
+            arrivi={arrivi}
+            esce={escono.has(voce.id)}
             onAlterna={onAlterna}
             onConta={onConta}
             onElimina={onElimina}

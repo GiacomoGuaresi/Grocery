@@ -52,6 +52,26 @@ colpo.
 - **Conferma di "Genera lista"**: entra con una dissolvenza e un lieve
   ingrandimento.
 
+## Gesture
+Scorciatoie per l'uso con una mano: i bottoni restano il modo principale.
+- **Pressione lunga sul nome** di una voce: apre il popup delle azioni (come il ⋯).
+- **Pressione lunga sul + / −** del contatore: completa / azzera la voce.
+- **Scorrere una riga verso destra**: spunta; le voci col contatore si completano.
+  Nei "Già presi" la riporta nella lista (le voci col contatore a zero).
+- **Scorrere una riga verso sinistra**: elimina. Vale per tutte le righe, anche gli
+  ingredienti delle ricette. Sotto la riga si scopre l'azione; oltre un terzo della
+  riga l'icona si ingrandisce e lasciando parte. Dai bordi dello schermo non si
+  scorre, per non rubare il gesto "indietro" di Android.
+- **Trascinare in giù** il popup delle azioni, o la testa di quello dei consigli:
+  lo chiude. La maniglia in cima lo suggerisce.
+
+## Annulla e ripristina
+Nell'intestazione, a destra, solo nella schermata della lista: **annulla** e
+**ripristina** le modifiche fatte su questo dispositivo (cronologia breve, ultime
+30, solo per la sessione, niente sul server). Generare una lista nuova la svuota.
+Le righe che spariscono o cambiano posto prima escono; poi le voci toccate
+lampeggiano color zucca dove sono tornate, e la lista ci scorre se serve.
+
 ## Navigazione
 Un **menu laterale a scomparsa**, aperto dal bottone ☰ nell'intestazione, contiene
 tutte le sezioni e le azioni. **Da desktop** (finestra larga almeno 1024px) il menu

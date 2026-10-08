@@ -62,6 +62,37 @@
   padding-bottom: calc(var(--spazio) + env(safe-area-inset-bottom));
 }
 
+/* Annulla e ripristina, in fondo a destra dell'intestazione. Spenti quando
+   non c'è niente da annullare o ripristinare. */
+.app__cronologia {
+  display: flex;
+  margin-left: auto;
+  margin-right: calc(var(--spazio) * -1 + 4px);
+}
+
+.app__cronologia-tasto {
+  display: grid;
+  place-items: center;
+  width: var(--tocco);
+  height: var(--tocco);
+  padding: 0;
+  border: none;
+  border-radius: var(--raggio);
+  background: none;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.app__cronologia-tasto:active:not(:disabled) {
+  background: var(--terracotta-scura);
+}
+
+.app__cronologia-tasto:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 /* Il bottone del menu: l'icona delle tre righe dentro un bersaglio pieno. */
 .app__menu-apri {
   flex: none;

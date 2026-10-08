@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { rinominabile, repartiSceglibili, repartoSceglibile } from '../domain/modifica'
 import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
 import { useUscita } from './animazioni'
+import { useTrascinaGiu } from './trascinaGiu'
 import './AzioniVoce.css'
 
 interface Props {
@@ -24,6 +25,8 @@ interface Props {
  * È un `<dialog>` modale: il browser si occupa del fuoco, di Esc e del velo
  * sopra la lista. Ogni chiusura passa da `close()`, che avvisa con `onChiudi`.
  *
+ * Si chiude anche trascinandolo in giù (trascinaGiu.ts).
+ *
  * Prima di chiudersi ridiscende verso il fondo. L'eliminazione aspetta che sia
  * sceso, così dopo si vede la riga che se ne va.
  */
@@ -44,6 +47,7 @@ export function AzioniVoce({ voce, onElimina, onRinomina, onCambiaReparto, onChi
     if (motivo === 'elimina') onElimina()
   })
   const chiudi = () => esci('chiudi')
+  const trascina = useTrascinaGiu(finestra, chiudi)
 
   return (
     <dialog
@@ -63,7 +67,8 @@ export function AzioniVoce({ voce, onElimina, onRinomina, onCambiaReparto, onChi
       // Il tocco sul velo arriva al dialog stesso: chiude, come fuori dal menu.
       onClick={(evento) => evento.target === evento.currentTarget && chiudi()}
     >
-      <div className="azioni-voce__corpo">
+      <div className="azioni-voce__corpo azioni-voce__afferra" {...trascina}>
+        <span className="azioni-voce__maniglia" aria-hidden="true" />
         <h2 className="azioni-voce__titolo" id={`azioni-${voce.id}`}>
           {voce.nome}
         </h2>

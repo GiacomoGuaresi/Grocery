@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { aggiungiVoce, nuovoId, voceGiaPresente } from '../domain/aggiunta'
 import { contaVoce, impostaPresi } from '../domain/contatore'
 import { raggruppaPerReparto, raggruppaPerRicetta, vociAttive, vociComprate } from '../domain/lista'
@@ -12,7 +11,7 @@ import { GruppoReparto } from './GruppoReparto'
 import { GruppoRicetta } from './GruppoRicetta'
 import { Icona } from './Icona'
 import type { ListaPersistita } from './useLista'
-import type { Arrivo } from './Voce'
+import type { Salti } from './useSalti'
 import './ListaSpesa.css'
 
 /**
@@ -22,16 +21,19 @@ import './ListaSpesa.css'
  * lista la tiene App (useLista), perché serve anche a "Genera lista": arriva
  * dallo storage e ogni modifica ci torna, così resta anche dopo un refresh.
  *
- * Tiene a mente l'ultima voce arrivata (aggiunta, spuntata o de-spuntata),
- * che entra nel suo posto nuovo con un'animazione.
+ * L'ultima voce arrivata (aggiunta, spuntata o de-spuntata) entra nel suo
+ * posto nuovo con un'animazione; le voci toccate da annulla e ripristina
+ * escono e lampeggiano dove tornano (useSalti, che sta in App perché i tasti
+ * sono nell'intestazione).
  */
 interface Props extends ListaPersistita {
   /** Il tocco sul titolo di un gruppo-ricetta: la sua scheda (doc/14). */
   onApriRicetta: (id: string) => void
+  salti: Salti
 }
 
-export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApriRicetta }: Props) {
-  const [arrivo, setArrivo] = useState<Arrivo | null>(null)
+export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApriRicetta, salti }: Props) {
+  const { arrivi, escono, segnaArrivo: setArrivo } = salti
 
   if (stato.fase === 'caricamento') return <Caricamento />
   if (stato.fase === 'errore') return <Errore />
@@ -99,7 +101,8 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApr
             <GruppoReparto
               key={gruppo.id}
               gruppo={gruppo}
-              arrivo={arrivo}
+              arrivi={arrivi}
+              escono={escono}
               onAlterna={alterna}
               onConta={conta}
               onElimina={elimina}
@@ -111,7 +114,8 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApr
             <GruppoRicetta
               key={gruppo.ricetta.id}
               gruppo={gruppo}
-              arrivo={arrivo}
+              arrivi={arrivi}
+              escono={escono}
               onApriRicetta={onApriRicetta}
               onAlterna={alterna}
               onConta={conta}
@@ -126,7 +130,8 @@ export function ListaSpesa({ stato, modifica, genera, inAttesa, senzaRete, onApr
       )}
       <GiaPresi
         voci={comprate}
-        arrivo={arrivo}
+        arrivi={arrivi}
+        escono={escono}
         onAlterna={alterna}
         onConta={conta}
         onElimina={elimina}

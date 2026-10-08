@@ -7,8 +7,10 @@ import './GiaPresi.css'
 
 interface Props {
   voci: VoceLista[]
-  /** L'ultima voce arrivata nella lista, da far entrare con un'animazione. */
-  arrivo: Arrivo | null
+  /** Le ultime voci arrivate nella lista, da far entrare con un'animazione. */
+  arrivi: Arrivo[]
+  /** Le voci che se ne vanno per un annulla o un ripristina. */
+  escono: ReadonlySet<string>
   onAlterna: (id: string) => void
   onConta: (id: string, presi: number) => void
   onElimina: (id: string) => void
@@ -26,7 +28,8 @@ interface Props {
  */
 export function GiaPresi({
   voci,
-  arrivo,
+  arrivi,
+  escono,
   onAlterna,
   onConta,
   onElimina,
@@ -73,7 +76,8 @@ export function GiaPresi({
             <Voce
               key={voce.id}
               voce={voce}
-              arrivo={arrivo}
+              arrivi={arrivi}
+              esce={escono.has(voce.id)}
               onAlterna={onAlterna}
               onConta={onConta}
               onElimina={onElimina}

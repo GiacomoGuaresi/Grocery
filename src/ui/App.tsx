@@ -12,6 +12,7 @@ import { MenuLaterale } from './MenuLaterale'
 import { PianoSettimanale } from './PianoSettimanale'
 import { Ricette, type VistaRicette } from './Ricette'
 import { useLista } from './useLista'
+import { useSalti } from './useSalti'
 import { useRicette } from './useRicette'
 
 /** Le sezioni raggiungibili dal menu laterale (doc/08-ui-ux.md). */
@@ -76,6 +77,7 @@ export function App() {
   // La lista sta qui e non dentro la sua schermata: la usano anche "Genera
   // lista" e le Ricette, che ci aggiungono gli ingredienti.
   const lista = useLista()
+  const salti = useSalti(lista)
   const ricette = useRicette()
   const statoInstallazione = useInstallazione()
 
@@ -114,6 +116,31 @@ export function App() {
           <Icona nome="cesto" className="app__logo" />
           <h1 className="app__titolo">Grocery</h1>
         </div>
+        {/* Annulla e ripristina: solo nella lista, dove si vede cosa cambia. */}
+        {schermata === 'lista' && (
+          <div className="app__cronologia">
+            <button
+              className="app__cronologia-tasto"
+              type="button"
+              aria-label="Annulla"
+              title="Annulla"
+              disabled={!salti.puoAnnullare}
+              onClick={salti.annulla}
+            >
+              <Icona nome="annulla" />
+            </button>
+            <button
+              className="app__cronologia-tasto"
+              type="button"
+              aria-label="Ripristina"
+              title="Ripristina"
+              disabled={!salti.puoRipristinare}
+              onClick={salti.ripristina}
+            >
+              <Icona nome="ripristina" />
+            </button>
+          </div>
+        )}
       </header>
       <MenuLaterale
         aperto={menuAperto}
@@ -125,7 +152,7 @@ export function App() {
         onChiudi={chiudiMenu}
       />
       <main className="app__contenuto">
-        {schermata === 'lista' && <ListaSpesa {...lista} onApriRicetta={apriRicetta} />}
+        {schermata === 'lista' && <ListaSpesa {...lista} onApriRicetta={apriRicetta} salti={salti} />}
         {schermata === 'piano' && <PianoSettimanale />}
         {schermata === 'frutta' && <DiStagione gruppo="frutta" />}
         {schermata === 'verdura' && <DiStagione gruppo="verdura" />}

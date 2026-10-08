@@ -7,8 +7,10 @@ import './GruppoRicetta.css'
 
 interface Props {
   gruppo: Gruppo
-  /** L'ultima voce arrivata nella lista, da far entrare con un'animazione. */
-  arrivo: Arrivo | null
+  /** Le ultime voci arrivate nella lista, da far entrare con un'animazione. */
+  arrivi: Arrivo[]
+  /** Le voci che se ne vanno per un annulla o un ripristina. */
+  escono: ReadonlySet<string>
   /** Tocco sul titolo: la scheda della ricetta. */
   onApriRicetta: (id: string) => void
   onAlterna: (id: string) => void
@@ -23,7 +25,7 @@ interface Props {
  * come un reparto, ma col nome della ricetta, che apre la sua scheda. Un nome
  * lungo si tronca coi puntini.
  */
-export function GruppoRicetta({ gruppo, arrivo, onApriRicetta, ...azioni }: Props) {
+export function GruppoRicetta({ gruppo, arrivi, escono, onApriRicetta, ...azioni }: Props) {
   const id = `ricetta-${gruppo.ricetta.id}`
   return (
     <section className="reparto reparto--ricetta" aria-labelledby={id}>
@@ -40,7 +42,13 @@ export function GruppoRicetta({ gruppo, arrivo, onApriRicetta, ...azioni }: Prop
       </h2>
       <ul className="reparto__voci">
         {gruppo.voci.map((voce) => (
-          <Voce key={voce.id} voce={voce} arrivo={arrivo} {...azioni} />
+          <Voce
+            key={voce.id}
+            voce={voce}
+            arrivi={arrivi}
+            esce={escono.has(voce.id)}
+            {...azioni}
+          />
         ))}
       </ul>
     </section>

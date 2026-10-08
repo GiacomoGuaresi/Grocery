@@ -4,6 +4,7 @@ import type { Voce as VoceLista } from '../domain/tipi'
 import { useUscita } from './animazioni'
 import { Contatore } from './Contatore'
 import { Icona } from './Icona'
+import { useTrascinaGiu } from './trascinaGiu'
 import './AzioniVoce.css'
 import './ConsigliVoce.css'
 
@@ -22,7 +23,8 @@ interface Props {
  * delle azioni. In cima, fermo, il contatore in grande con la barra dei pasti,
  * perché si tiene aperto nel reparto mentre si prende tutto. Sotto, i tipi da
  * guardare in sola lettura; in fondo, sempre allo stesso posto, il bottone per
- * chiudere, che a voce completa diventa "Fatto".
+ * chiudere, che a voce completa diventa "Fatto". Si chiude anche trascinandolo
+ * in giù dalla testa: sotto, i tipi scorrono.
  *
  * Arrivati al totale resta aperto: la voce va tra i "Già presi" solo quando si
  * chiude (lo decide Voce), così un tocco di troppo si corregge col −.
@@ -37,6 +39,7 @@ export function ConsigliVoce({ voce, presi, consigli, onConta, onChiudi }: Props
 
   const { uscita, esci, fine } = useUscita<'chiudi'>(() => finestra.current?.close())
   const chiudi = () => esci('chiudi')
+  const trascina = useTrascinaGiu(finestra, chiudi)
 
   const completa = presi >= voce.quantita
   const mancano = voce.quantita - presi
@@ -58,7 +61,8 @@ export function ConsigliVoce({ voce, presi, consigli, onConta, onChiudi }: Props
       onClick={(evento) => evento.target === evento.currentTarget && chiudi()}
     >
       <div className="consigli-voce">
-        <div className="consigli-voce__testa">
+        <div className="consigli-voce__testa azioni-voce__afferra" {...trascina}>
+          <span className="azioni-voce__maniglia" aria-hidden="true" />
           <h2 className="azioni-voce__titolo" id={`consigli-${voce.id}`}>
             {voce.nome}
           </h2>

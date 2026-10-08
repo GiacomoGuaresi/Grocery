@@ -5,6 +5,7 @@
 .voce {
   /* Una sola traccia di griglia: portandola da 1fr a 0fr la riga si chiude
      senza sapere quanto è alta (animazioni in fondo al file). */
+  position: relative;
   display: grid;
   grid-template-rows: 1fr;
   padding: 0 2px 0 var(--spazio);
@@ -26,11 +27,68 @@
   border-bottom-right-radius: var(--raggio);
 }
 
-/* La riga della spunta e, di lato, il tocco che apre le azioni. */
+/* La riga della spunta e, di lato, il tocco che apre le azioni. Si allarga
+   fin sotto il padding della riga, così quando la si scorre copre tutto. */
 .voce__testata {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
+  margin: 0 -2px 0 calc(var(--spazio) * -1);
+  padding: 0 2px 0 var(--spazio);
+}
+
+/* Scorrere la riga (scorrimento.ts): in verticale la lista scorre come sempre,
+   di lato la riga segue il dito e sotto si scopre l'azione. */
+.voce {
+  touch-action: pan-y;
+}
+
+.voce--scorre {
+  overflow: hidden;
+}
+
+.voce--scorre .voce__testata {
+  background: var(--panna);
+}
+
+.voce__testata--rientra {
+  transition: transform 180ms ease-out;
+}
+
+.voce__sotto {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  color: var(--panna);
+  font-size: 18px;
+  opacity: 0.55;
+  transition: opacity 120ms;
+}
+
+.voce__sotto--destra {
+  justify-content: flex-start;
+  background: var(--terracotta);
+}
+
+.voce__sotto--sinistra {
+  justify-content: flex-end;
+  background: var(--pomodoro);
+}
+
+/* Oltre la soglia: lasciando ora, l'azione parte. */
+.voce__sotto--pronto {
+  opacity: 1;
+}
+
+.voce__sotto-icona {
+  transition: transform 120ms ease-out;
+}
+
+.voce__sotto--pronto .voce__sotto-icona {
+  transform: scale(1.25);
 }
 
 /* Si spunta solo dalla casella. Il bersaglio del tocco è più largo del segno
@@ -211,6 +269,12 @@
   animation:
     voce-arriva var(--durata-voce) ease-out both,
     voce-lampo 1s ease-out var(--durata-voce) backwards;
+  scroll-margin-block: 64px 96px;
+}
+
+/* Cambiata da annulla o ripristina, rimasta al suo posto: solo il lampo. */
+.voce--ripresa {
+  animation: voce-lampo 1s ease-out;
   scroll-margin-block: 64px 96px;
 }
 
