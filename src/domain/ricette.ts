@@ -2,8 +2,9 @@
 // alle voci della lista, e la ricerca nella sezione Ricette. Funzioni pure,
 // come quelle della spunta: restituiscono una lista nuova.
 //
-// In lista l'ingrediente tiene il testo del sito ("burro 125 g fuso") e sta
-// sotto il nome della sua ricetta, non in un reparto.
+// In lista l'ingrediente tiene il testo dell'import, nome e quantità divisi
+// dal punto centrale ("burro fuso · 125 g", formattaIngrediente nel parser della
+// Edge Function), e sta sotto il nome della sua ricetta, non in un reparto.
 
 import { normalizza, nuovoId } from './aggiunta'
 import type { Lista, Ricetta, RiferimentoRicetta, Voce } from './tipi'
@@ -33,11 +34,13 @@ const UNITA = new Set([
 ])
 
 /**
- * Il nome dell'ingrediente, per confrontarlo con le voci della lista: senza
- * parentesi, quantità e unità. "Pecorino Romano DOP 50 g" → "pecorino romano dop".
+ * Il nome dell'ingrediente, per confrontarlo con le voci della lista: quello
+ * prima del punto centrale, senza parentesi, quantità e unità.
+ * "Pecorino Romano DOP · 50 g" → "pecorino romano dop". Regge anche il testo
+ * senza punto delle ricette importate prima ("Pecorino Romano DOP 50 g").
  */
 export function nomeIngrediente(testo: string): string {
-  return normalizza(testo.replace(/\([^)]*\)/g, ' '))
+  return normalizza(testo.split(' · ')[0].replace(/\([^)]*\)/g, ' '))
     .split(/[\s,.;:]+/)
     .filter((parola) => parola !== '' && !/^[\d/½¼¾.,-]+$/.test(parola) && !UNITA.has(parola))
     .join(' ')

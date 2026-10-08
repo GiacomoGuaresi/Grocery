@@ -169,7 +169,9 @@ Piano in [14](14-piano-ricette.md).
   schema.org `Recipe`): funziona con GialloZafferano, Fatto in casa da Benedetta e
   gli altri siti che la descrivono. Se la pagina non ne ha una lo dice.
 - Salva **nome, link, foto** (solo il link: l'immagine resta sul sito),
-  **categorie del sito** e **ingredienti** col testo originale. Niente procedimento:
+  **categorie del sito** e **ingredienti**, col nome prima e la quantità dopo un
+  punto centrale: "Farina 00 · 100 g", "Pepe nero · q.b.". I prodotti consigliati
+  dal sito dopo la quantità ("…(solo da PENNY)") si tolgono. Niente procedimento:
   si apre sul sito. Lo stesso link importato due volte aggiorna la ricetta, non la
   duplica.
 - Poi chiede se **aggiungere gli ingredienti alla lista** e **quali**: tutti

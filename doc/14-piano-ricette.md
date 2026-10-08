@@ -14,14 +14,23 @@ ingredienti vanno ricopiati a mano nella lista. Con le Ricette:
 3. chiede se **aggiungerli alla lista**;
 4. e **quali**: tutti spuntati, tranne i *q.b.*; si tolgono quelli che si hanno.
 
-In lista gli ingredienti tengono il **testo del sito** ("burro 125 g fuso") e
-stanno **dopo i reparti**, in un gruppo col **nome della ricetta**:
+In lista gli ingredienti hanno il **nome e la quantità divisi da un punto
+centrale** ("burro 125 g fuso" sul sito → "burro fuso · 125 g") e stanno **dopo i
+reparti**, in un gruppo col **nome della ricetta**:
 
 ```
 TORTA DI MELE …
-  ☐ mele 4
-  ☐ burro 100 g
+  ☐ Farina 00 · 100 g
+  ☐ burro fuso · 125 g
+  ☐ Sale fino · q.b.
 ```
+
+La divisione la fa `formattaIngrediente` all'import: la quantità è l'ultimo
+numero con la sua unità ("00" della farina non conta), quello che la segue resta
+nel nome, i prodotti consigliati dal sito si tolgono, con la quantità davanti
+cade il "di" ("150 gr di ricotta" → "ricotta · 150 gr"). Provata su 254
+ingredienti veri di GialloZafferano, Benedetta e Misya. Le ricette importate
+prima restano col testo del sito: reimportando il link si aggiornano.
 
 Le decisioni stanno in [10](10-decisioni.md); il dettaglio in
 [04](04-funzionalita.md) (F16), [06](06-modello-dati.md), [07](07-architettura-stack.md)

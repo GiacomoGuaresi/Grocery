@@ -49,6 +49,7 @@ describe('eQuantoBasta', () => {
     expect(eQuantoBasta('Pepe nero q.b.')).toBe(true)
     expect(eQuantoBasta('sale qb')).toBe(true)
     expect(eQuantoBasta('Olio extravergine Q.B.')).toBe(true)
+    expect(eQuantoBasta('Sale fino · q.b.')).toBe(true)
     expect(eQuantoBasta('prezzemolo quanto basta')).toBe(true)
   })
 
@@ -59,6 +60,12 @@ describe('eQuantoBasta', () => {
 })
 
 describe('nomeIngrediente', () => {
+  it('col punto centrale guarda solo il nome', () => {
+    expect(nomeIngrediente('Farina 00 · 100 g')).toBe('farina')
+    expect(nomeIngrediente('Burro (ammorbidito) · 125 g')).toBe('burro')
+    expect(nomeIngrediente('Pepe nero · q.b.')).toBe('pepe nero')
+  })
+
   it('toglie quantità, unità e parentesi', () => {
     expect(nomeIngrediente('Pecorino Romano DOP 50 g')).toBe('pecorino romano dop')
     expect(nomeIngrediente('Tuorli (di uova medie) 6')).toBe('tuorli')

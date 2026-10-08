@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { estraiRicetta, estraiUrl } from './estraiRicetta'
+import { estraiRicetta, estraiUrl, formattaIngrediente } from './estraiRicetta'
 
 /** Le pagine vere, ridotte a `<head>` e JSON-LD (senza procedimento né recensioni). */
 function fixture(nome: string): string {
@@ -29,11 +29,11 @@ describe('estraiRicetta sulle pagine vere', () => {
       immagine: 'https://www.giallozafferano.it/images/219-21928/Spaghetti-alla-Carbonara_650x433_wm.jpg',
       categorie: ['Primi piatti'],
       ingredienti: [
-        'Spaghetti 320 g',
-        'Guanciale 150 g',
-        'Tuorli (di uova medie) 6',
-        'Pecorino Romano DOP 50 g',
-        'Pepe nero q.b.',
+        'Spaghetti · 320 g',
+        'Guanciale · 150 g',
+        'Tuorli (di uova medie) · 6',
+        'Pecorino Romano DOP · 50 g',
+        'Pepe nero · q.b.',
       ],
     })
   })
@@ -48,15 +48,15 @@ describe('estraiRicetta sulle pagine vere', () => {
     })
     expect(ricetta?.immagine).toMatch(/^https:\/\/www\.fattoincasadabenedetta\.it\//)
     expect(ricetta?.ingredienti).toEqual([
-      'uova 2',
-      'caffè 60 ml',
-      'caffè solubile 1 cucchiaino',
-      'zucchero 200 g',
-      'amido di mais 100 g',
-      'burro 125 g fuso',
-      'lievito per dolci 1 cucchiaino',
-      'farina 420 g',
-      'gocce di cioccolato 80 g',
+      'uova · 2',
+      'caffè · 60 ml',
+      'caffè solubile · 1 cucchiaino',
+      'zucchero · 200 g',
+      'amido di mais · 100 g',
+      'burro fuso · 125 g',
+      'lievito per dolci · 1 cucchiaino',
+      'farina · 420 g',
+      'gocce di cioccolato · 80 g',
     ])
   })
 })
@@ -69,7 +69,7 @@ describe('estraiRicetta sulle forme dello JSON-LD', () => {
       nome: 'Torta di mele',
       url,
       categorie: [],
-      ingredienti: ['mele 4', 'zucchero 150 g'],
+      ingredienti: ['mele · 4', 'zucchero · 150 g'],
     })
   })
 
@@ -102,7 +102,7 @@ describe('estraiRicetta sulle forme dello JSON-LD', () => {
     }
     const estratta = estraiRicetta(pagina(ricetta), url)
     expect(estratta?.nome).toBe('Torta dell’orso')
-    expect(estratta?.ingredienti).toEqual(['burro 100 g', 'uova 2', 'latte 1/2 l', 'pane è raffermo'])
+    expect(estratta?.ingredienti).toEqual(['burro · 100 g', 'uova · 2', 'latte · 1/2 l', 'pane è raffermo'])
   })
 
   it('il canonical relativo si risolve sul link della pagina', () => {
@@ -114,6 +114,44 @@ describe('estraiRicetta sulle forme dello JSON-LD', () => {
     expect(estraiRicetta('<html><head><title>Niente</title></head></html>', url)).toBeNull()
     expect(estraiRicetta(pagina({ '@type': 'Article', name: 'Notizia' }), url)).toBeNull()
     expect(estraiRicetta(pagina({ ...ricettaMinima, recipeIngredient: [] }), url)).toBeNull()
+  })
+})
+
+describe('formattaIngrediente', () => {
+  // Casi presi dalle pagine vere di GialloZafferano, Benedetta e Misya.
+  it.each([
+    ['Farina 00 100 g', 'Farina 00 · 100 g'],
+    ['Pepe nero q.b.', 'Pepe nero · q.b.'],
+    ['Sale fino quanto basta', 'Sale fino · q.b.'],
+    ['Tuorli (di uova medie) 6', 'Tuorli (di uova medie) · 6'],
+    ['Lievito di birra fresco (oppure 1,5 se secco) 4 g', 'Lievito di birra fresco (oppure 1,5 se secco) · 4 g'],
+    ['caffè solubile 1 cucchiaino', 'caffè solubile · 1 cucchiaino'],
+    ['cannella in polvere 0,5 cucchiaino', 'cannella in polvere · 0,5 cucchiaino'],
+    ['Scorza di limone ½', 'Scorza di limone · ½'],
+    ['Aglio 2 spicchi', 'Aglio · 2 spicchi'],
+  ])('%s → %s', (testo, atteso) => {
+    expect(formattaIngrediente(testo)).toBe(atteso)
+  })
+
+  it('quello che segue la quantità resta nel nome', () => {
+    expect(formattaIngrediente('burro 125 g fuso')).toBe('burro fuso · 125 g')
+    expect(formattaIngrediente('zucchero 80 g oppure eritritolo')).toBe('zucchero oppure eritritolo · 80 g')
+  })
+
+  it('i prodotti consigliati dal sito dopo la quantità se ne vanno', () => {
+    expect(formattaIngrediente('zucca 200 g Zucca a cubetti surgelata Ortomio (solo da PENNY)')).toBe('zucca · 200 g')
+    expect(formattaIngrediente('vanillina 3 g Vanillina PANEANGELI')).toBe('vanillina · 3 g')
+  })
+
+  it('con la quantità davanti, come su Misya, cade il "di"', () => {
+    expect(formattaIngrediente('150 gr di ricotta salata')).toBe('ricotta salata · 150 gr')
+    expect(formattaIngrediente('2 spicchi di aglio')).toBe('aglio · 2 spicchi')
+    expect(formattaIngrediente('2 melanzane')).toBe('melanzane · 2')
+  })
+
+  it('senza quantità resta com’è', () => {
+    expect(formattaIngrediente('olio extravergine di oliva')).toBe('olio extravergine di oliva')
+    expect(formattaIngrediente('Farina 00')).toBe('Farina 00')
   })
 })
 
