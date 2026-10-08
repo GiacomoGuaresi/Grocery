@@ -85,32 +85,45 @@
 .ricetta {
   display: flex;
   align-items: center;
-  gap: 11px;
-  width: 100%;
-  padding: 8px 6px 8px 8px;
   border: 1px solid var(--bordo);
   background: var(--panna);
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
 }
 
-li + li > .ricetta {
+.ricetta + .ricetta {
   border-top: none;
 }
 
-li:first-child > .ricetta {
+.ricetta:first-child {
   border-top-left-radius: var(--raggio);
   border-top-right-radius: var(--raggio);
 }
 
-li:last-child > .ricetta {
+.ricetta:last-child {
   border-bottom-left-radius: var(--raggio);
   border-bottom-right-radius: var(--raggio);
 }
 
-.ricetta:active {
+/* Si tiene premuta per le azioni: niente selezione né menu della foto. */
+.ricetta__apri {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 8px 0 8px 8px;
+  border: none;
+  border-radius: inherit;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.ricetta__apri:active {
   background: var(--crema-scura);
 }
 
@@ -152,9 +165,28 @@ li:last-child > .ricetta {
   color: var(--inchiostro-tenue);
 }
 
-.ricetta__avanti {
+/* Il ⋯ delle azioni, come quello delle voci della lista. */
+.ricetta__azioni-apri {
+  display: grid;
+  place-items: center;
   flex: none;
+  align-self: stretch;
+  width: 40px;
+  min-height: var(--tocco);
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: none;
   color: var(--inchiostro-tenue);
+  font: inherit;
+  font-size: var(--testo-grande);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ricetta__azioni-apri:active {
+  background: var(--crema-scura);
+  color: var(--inchiostro);
 }
 
 /* La scheda di una ricetta. */
@@ -164,9 +196,14 @@ li:last-child > .ricetta {
   gap: 10px;
 }
 
+.scheda__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .scheda__indietro {
   display: inline-flex;
-  align-self: flex-start;
   align-items: center;
   gap: 4px;
   min-height: var(--tocco);
@@ -244,50 +281,6 @@ li:last-child > .ricetta {
 
 .scheda__ingrediente--qb {
   color: var(--inchiostro-tenue);
-}
-
-.scheda__errore {
-  margin: 0;
-  color: var(--pomodoro);
-  font-weight: 600;
-}
-
-.scheda__elimina {
-  min-height: var(--tocco);
-  border: none;
-  background: none;
-  color: var(--pomodoro);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.scheda__conferma {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: var(--spazio);
-  border: 1px solid var(--bordo);
-  border-radius: var(--raggio);
-  background: var(--crema-scura);
-}
-
-.scheda__conferma-testo {
-  margin: 0;
-}
-
-.scheda__conferma-scelte {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.bottone--elimina {
-  background: var(--pomodoro);
-}
-
-.bottone--elimina:active {
-  background: var(--inchiostro);
 }
 
 /* L'import: l'attesa, l'errore o la domanda sugli ingredienti. */

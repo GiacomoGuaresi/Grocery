@@ -161,6 +161,33 @@ body:has(.azioni-voce[open]) {
   font-weight: 600;
 }
 
+/* La conferma di ciò che non si annulla (eliminare una ricetta): pieno, rosso. */
+.azioni-voce__bottone--pericolo:not(:disabled) {
+  border-color: var(--pomodoro);
+  background: var(--pomodoro);
+  color: var(--panna);
+  font-weight: 600;
+}
+
+/* Un link che sembra uno dei bottoni del popup. */
+.azioni-voce__collegamento {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.azioni-voce__testo,
+.azioni-voce__errore {
+  margin: 0;
+}
+
+.azioni-voce__errore {
+  color: var(--pomodoro);
+  font-weight: 600;
+}
+
 .azioni-voce__reparti {
   display: grid;
   grid-template-columns: 1fr 1fr;

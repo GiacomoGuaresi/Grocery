@@ -1,17 +1,25 @@
 import { useState } from 'react'
 import { aggiungiIngredienti, categorieRicette, filtraRicette } from '../domain/ricette'
 import type { Ricetta } from '../domain/tipi'
+import { AzioniRicetta } from './AzioniRicetta'
 import { Icona } from './Icona'
 import { ImportaRicetta } from './ImportaRicetta'
+import { usePressioneLunga } from './pressioneLunga'
+import { ScegliIngredienti } from './ScegliIngredienti'
 import { SchedaRicetta } from './SchedaRicetta'
 import type { ListaPersistita } from './useLista'
 import type { RicettePersistite } from './useRicette'
 import './Ricette.css'
 
-/** Dove si è nella sezione: l'elenco, una ricetta, o l'import di un link. */
+/**
+ * Dove si è nella sezione: l'elenco, una ricetta, la scelta dei suoi
+ * ingredienti (aperta dalla scheda o dall'elenco, dove si torna annullando), o
+ * l'import di un link.
+ */
 export type VistaRicette =
   | { vista: 'elenco' }
   | { vista: 'scheda'; id: string }
+  | { vista: 'scelta'; id: string; da: 'elenco' | 'scheda' }
   | { vista: 'importa'; testo: string }
 
 interface Props {
@@ -49,15 +57,27 @@ export function Ricette({ ricette, lista, vista, onVista, onAggiunti }: Props) {
     )
   }
 
-  if (vista.vista === 'scheda') {
+  if (vista.vista === 'scheda' || vista.vista === 'scelta') {
     const ricetta = ricette.ricette.find((r) => r.id === vista.id)
+    if (ricetta && vista.vista === 'scelta') {
+      return (
+        <ScegliIngredienti
+          key={ricetta.id}
+          ricetta={ricetta}
+          lista={listaPronta}
+          onAggiungi={(testi) => aggiungi(ricetta, testi)}
+          onAnnulla={() =>
+            onVista(vista.da === 'scheda' ? { vista: 'scheda', id: ricetta.id } : { vista: 'elenco' })
+          }
+        />
+      )
+    }
     if (ricetta) {
       return (
         <SchedaRicetta
           key={ricetta.id}
           ricetta={ricetta}
-          lista={listaPronta}
-          onAggiungi={(testi) => aggiungi(ricetta, testi)}
+          onScegli={() => onVista({ vista: 'scelta', id: ricetta.id, da: 'scheda' })}
           elimina={ricette.elimina}
           onIndietro={() => onVista({ vista: 'elenco' })}
         />
@@ -73,7 +93,7 @@ export function Ricette({ ricette, lista, vista, onVista, onAggiunti }: Props) {
 }
 
 function Elenco({
-  ricette: { ricette, inLettura, nonAggiornate },
+  ricette: { ricette, inLettura, nonAggiornate, elimina },
   onVista,
   avviso,
 }: {
@@ -84,6 +104,9 @@ function Elenco({
   const [cercato, setCercato] = useState('')
   const [categoria, setCategoria] = useState<string | null>(null)
   const [link, setLink] = useState('')
+  // La ricetta di cui è aperto il popup delle azioni.
+  const [azioniDi, setAzioniDi] = useState<string | null>(null)
+  const ricettaAzioni = ricette.find((r) => r.id === azioniDi) ?? null
 
   const categorie = categorieRicette(ricette)
   const trovate = filtraRicette(ricette, cercato, categoria)
@@ -184,37 +207,77 @@ function Elenco({
       ) : (
         <ul className="ricette__elenco">
           {trovate.map((ricetta) => (
-            <li key={ricetta.id}>
-              <button
-                className="ricetta"
-                type="button"
-                onClick={() => onVista({ vista: 'scheda', id: ricetta.id })}
-              >
-                {ricetta.immagine ? (
-                  <img
-                    className="ricetta__foto"
-                    src={ricetta.immagine}
-                    alt=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <span className="ricetta__foto ricetta__foto--vuota" aria-hidden="true">
-                    <Icona nome="libro" />
-                  </span>
-                )}
-                <span className="ricetta__testo">
-                  <span className="ricetta__nome">{ricetta.nome}</span>
-                  <span className="ricetta__dettagli">
-                    {[...ricetta.categorie.slice(0, 2), `${ricetta.ingredienti.length} ingredienti`].join(' · ')}
-                  </span>
-                </span>
-                <Icona nome="avanti" className="ricetta__avanti" />
-              </button>
-            </li>
+            <CardRicetta
+              key={ricetta.id}
+              ricetta={ricetta}
+              onApri={() => onVista({ vista: 'scheda', id: ricetta.id })}
+              onAzioni={() => setAzioniDi(ricetta.id)}
+            />
           ))}
         </ul>
       )}
+
+      {ricettaAzioni && (
+        <AzioniRicetta
+          ricetta={ricettaAzioni}
+          elimina={elimina}
+          onAggiungi={() => onVista({ vista: 'scelta', id: ricettaAzioni.id, da: 'elenco' })}
+          onEliminata={() => {}}
+          onChiudi={() => setAzioniDi(null)}
+        />
+      )}
     </section>
+  )
+}
+
+/**
+ * Una card dell'elenco: il tocco apre la scheda; il ⋯ a lato, o la pressione
+ * lunga sulla card, il popup delle azioni, come per le voci della lista.
+ * Niente swipe: eliminare una ricetta non si annulla.
+ */
+function CardRicetta({
+  ricetta,
+  onApri,
+  onAzioni,
+}: {
+  ricetta: Ricetta
+  onApri: () => void
+  onAzioni: () => void
+}) {
+  const pressioneLunga = usePressioneLunga(onAzioni)
+
+  return (
+    <li className="ricetta">
+      <button className="ricetta__apri" type="button" onClick={onApri} {...pressioneLunga}>
+        {ricetta.immagine ? (
+          <img
+            className="ricetta__foto"
+            src={ricetta.immagine}
+            alt=""
+            loading="lazy"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <span className="ricetta__foto ricetta__foto--vuota" aria-hidden="true">
+            <Icona nome="libro" />
+          </span>
+        )}
+        <span className="ricetta__testo">
+          <span className="ricetta__nome">{ricetta.nome}</span>
+          <span className="ricetta__dettagli">
+            {[...ricetta.categorie.slice(0, 2), `${ricetta.ingredienti.length} ingredienti`].join(' · ')}
+          </span>
+        </span>
+      </button>
+      <button
+        className="ricetta__azioni-apri"
+        type="button"
+        aria-haspopup="dialog"
+        aria-label={`Azioni per ${ricetta.nome}`}
+        onClick={onAzioni}
+      >
+        <Icona nome="altro" />
+      </button>
+    </li>
   )
 }

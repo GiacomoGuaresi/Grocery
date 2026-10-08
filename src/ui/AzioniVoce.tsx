@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { rinominabile, repartiSceglibili, repartoSceglibile } from '../domain/modifica'
 import type { IdReparto, Voce as VoceLista } from '../domain/tipi'
-import { useUscita } from './animazioni'
-import { useTrascinaGiu } from './trascinaGiu'
-import './AzioniVoce.css'
+import { PopupDalFondo } from './PopupDalFondo'
 
 interface Props {
   voce: VoceLista
@@ -22,157 +20,129 @@ interface Props {
  * niente per sbaglio. I consigli delle voci generate hanno un popup loro
  * (ConsigliVoce), che si apre dal nome.
  *
- * È un `<dialog>` modale: il browser si occupa del fuoco, di Esc e del velo
- * sopra la lista. Ogni chiusura passa da `close()`, che avvisa con `onChiudi`.
- *
- * Si chiude anche trascinandolo in giù (trascinaGiu.ts).
- *
- * Prima di chiudersi ridiscende verso il fondo. L'eliminazione aspetta che sia
- * sceso, così dopo si vede la riga che se ne va.
+ * Sale dal fondo (PopupDalFondo). L'eliminazione aspetta che sia ridisceso,
+ * così dopo si vede la riga che se ne va.
  */
 export function AzioniVoce({ voce, onElimina, onRinomina, onCambiaReparto, onChiudi }: Props) {
-  const finestra = useRef<HTMLDialogElement>(null)
   // Non nullo solo mentre si sta scrivendo il nome nuovo.
   const [nomeInCorso, setNomeInCorso] = useState<string | null>(null)
   // Vero mentre si sceglie il reparto tra quelli esistenti.
   const [sceltaReparto, setSceltaReparto] = useState(false)
 
-  useEffect(() => {
-    const dialogo = finestra.current
-    if (dialogo && !dialogo.open) dialogo.showModal()
-  }, [])
-
-  const { uscita, esci, fine } = useUscita<'chiudi' | 'elimina'>((motivo) => {
-    finestra.current?.close()
-    if (motivo === 'elimina') onElimina()
-  })
-  const chiudi = () => esci('chiudi')
-  const trascina = useTrascinaGiu(finestra, chiudi)
-
   return (
-    <dialog
-      ref={finestra}
-      className={uscita ? 'azioni-voce azioni-voce--chiude' : 'azioni-voce'}
-      aria-labelledby={`azioni-${voce.id}`}
-      onClose={onChiudi}
-      // Anche Esc passa dall'animazione di chiusura.
-      onCancel={(evento) => {
-        evento.preventDefault()
-        chiudi()
-      }}
-      onAnimationEnd={(evento) => {
-        if (evento.target === evento.currentTarget && evento.animationName === 'azioni-voce-scende')
-          fine()
-      }}
-      // Il tocco sul velo arriva al dialog stesso: chiude, come fuori dal menu.
-      onClick={(evento) => evento.target === evento.currentTarget && chiudi()}
+    <PopupDalFondo<'elimina'>
+      etichetta={`azioni-${voce.id}`}
+      onUscito={(motivo) => motivo === 'elimina' && onElimina()}
+      onChiudi={onChiudi}
     >
-      <div className="azioni-voce__corpo azioni-voce__afferra" {...trascina}>
-        <span className="azioni-voce__maniglia" aria-hidden="true" />
-        <h2 className="azioni-voce__titolo" id={`azioni-${voce.id}`}>
-          {voce.nome}
-        </h2>
+      {({ chiudi, esci, trascina }) => (
+        <div className="azioni-voce__corpo azioni-voce__afferra" {...trascina}>
+          <span className="azioni-voce__maniglia" aria-hidden="true" />
+          <h2 className="azioni-voce__titolo" id={`azioni-${voce.id}`}>
+            {voce.nome}
+          </h2>
 
-        {sceltaReparto ? (
-          <div className="azioni-voce__campo">
-            <span className="azioni-voce__etichetta" id={`reparti-${voce.id}`}>
-              Reparto
-            </span>
-            <div className="azioni-voce__reparti" role="group" aria-labelledby={`reparti-${voce.id}`}>
-              {repartiSceglibili.map((reparto) => (
-                <button
-                  key={reparto.id}
-                  className="azioni-voce__bottone"
-                  type="button"
-                  onClick={() => {
-                    onCambiaReparto(reparto.id)
-                    chiudi()
-                  }}
-                >
-                  {reparto.nome}
-                </button>
-              ))}
-            </div>
-            <button
-              className="azioni-voce__bottone"
-              type="button"
-              onClick={() => setSceltaReparto(false)}
-            >
-              Indietro
-            </button>
-          </div>
-        ) : nomeInCorso === null ? (
-          <>
-            {rinominabile(voce) && (
+          {sceltaReparto ? (
+            <div className="azioni-voce__campo">
+              <span className="azioni-voce__etichetta" id={`reparti-${voce.id}`}>
+                Reparto
+              </span>
+              <div className="azioni-voce__reparti" role="group" aria-labelledby={`reparti-${voce.id}`}>
+                {repartiSceglibili.map((reparto) => (
+                  <button
+                    key={reparto.id}
+                    className="azioni-voce__bottone"
+                    type="button"
+                    onClick={() => {
+                      onCambiaReparto(reparto.id)
+                      chiudi()
+                    }}
+                  >
+                    {reparto.nome}
+                  </button>
+                ))}
+              </div>
               <button
                 className="azioni-voce__bottone"
                 type="button"
-                onClick={() => setNomeInCorso(voce.nome)}
-              >
-                Rinomina
-              </button>
-            )}
-            {/* Gli ingredienti delle ricette stanno sotto la ricetta, non in un reparto. */}
-            {repartoSceglibile(voce) && (
-              <button
-                className="azioni-voce__bottone"
-                type="button"
-                onClick={() => setSceltaReparto(true)}
-              >
-                Scegli reparto
-              </button>
-            )}
-            <button
-              className="azioni-voce__bottone azioni-voce__bottone--elimina"
-              type="button"
-              onClick={() => esci('elimina')}
-            >
-              Elimina
-            </button>
-          </>
-        ) : (
-          <form
-            className="azioni-voce__campo"
-            onSubmit={(evento) => {
-              evento.preventDefault()
-              if (nomeInCorso.trim() === '') return
-              onRinomina(nomeInCorso)
-              chiudi()
-            }}
-          >
-            <input
-              className="azioni-voce__scelta azioni-voce__scelta--testo"
-              type="text"
-              value={nomeInCorso}
-              onChange={(evento) => setNomeInCorso(evento.target.value)}
-              aria-label={`Nuovo nome per ${voce.nome}`}
-              autoComplete="off"
-              enterKeyHint="done"
-              autoFocus
-            />
-            <div className="azioni-voce__coppia">
-              <button
-                className="azioni-voce__bottone"
-                type="button"
-                onClick={() => setNomeInCorso(null)}
+                onClick={() => setSceltaReparto(false)}
               >
                 Indietro
               </button>
-              <button
-                className="azioni-voce__bottone azioni-voce__bottone--principale"
-                type="submit"
-                disabled={nomeInCorso.trim() === ''}
-              >
-                Salva
-              </button>
             </div>
-          </form>
-        )}
+          ) : nomeInCorso === null ? (
+            <>
+              {rinominabile(voce) && (
+                <button
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => setNomeInCorso(voce.nome)}
+                >
+                  Rinomina
+                </button>
+              )}
+              {/* Gli ingredienti delle ricette stanno sotto la ricetta, non in un reparto. */}
+              {repartoSceglibile(voce) && (
+                <button
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => setSceltaReparto(true)}
+                >
+                  Scegli reparto
+                </button>
+              )}
+              <button
+                className="azioni-voce__bottone azioni-voce__bottone--elimina"
+                type="button"
+                onClick={() => esci('elimina')}
+              >
+                Elimina
+              </button>
+            </>
+          ) : (
+            <form
+              className="azioni-voce__campo"
+              onSubmit={(evento) => {
+                evento.preventDefault()
+                if (nomeInCorso.trim() === '') return
+                onRinomina(nomeInCorso)
+                chiudi()
+              }}
+            >
+              <input
+                className="azioni-voce__scelta azioni-voce__scelta--testo"
+                type="text"
+                value={nomeInCorso}
+                onChange={(evento) => setNomeInCorso(evento.target.value)}
+                aria-label={`Nuovo nome per ${voce.nome}`}
+                autoComplete="off"
+                enterKeyHint="done"
+                autoFocus
+              />
+              <div className="azioni-voce__coppia">
+                <button
+                  className="azioni-voce__bottone"
+                  type="button"
+                  onClick={() => setNomeInCorso(null)}
+                >
+                  Indietro
+                </button>
+                <button
+                  className="azioni-voce__bottone azioni-voce__bottone--principale"
+                  type="submit"
+                  disabled={nomeInCorso.trim() === ''}
+                >
+                  Salva
+                </button>
+              </div>
+            </form>
+          )}
 
-        <button className="azioni-voce__chiudi" type="button" onClick={chiudi}>
-          Chiudi
-        </button>
-      </div>
-    </dialog>
+          <button className="azioni-voce__chiudi" type="button" onClick={chiudi}>
+            Chiudi
+          </button>
+        </div>
+      )}
+    </PopupDalFondo>
   )
 }

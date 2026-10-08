@@ -54,15 +54,17 @@ colpo.
 
 ## Gesture
 Scorciatoie per l'uso con una mano: i bottoni restano il modo principale.
-- **Pressione lunga sul nome** di una voce: apre il popup delle azioni (come il ⋯).
+- **Pressione lunga sul nome** di una voce, o su una card delle ricette: apre il
+  popup delle azioni (come il ⋯).
 - **Pressione lunga sul + / −** del contatore: completa / azzera la voce.
 - **Scorrere una riga verso destra**: spunta; le voci col contatore si completano.
   Nei "Già presi" la riporta nella lista (le voci col contatore a zero).
 - **Scorrere una riga verso sinistra**: elimina. Vale per tutte le righe, anche gli
   ingredienti delle ricette. Sotto la riga si scopre l'azione; oltre un terzo della
   riga l'icona si ingrandisce e lasciando parte. Dai bordi dello schermo non si
-  scorre, per non rubare il gesto "indietro" di Android.
-- **Trascinare in giù** il popup delle azioni, o la testa di quello dei consigli:
+  scorre, per non rubare il gesto "indietro" di Android. Le card delle ricette
+  invece non si scorrono: eliminare una ricetta non si annulla.
+- **Trascinare in giù** un popup delle azioni, o la testa di quello dei consigli:
   lo chiude. La maniglia in cima lo suggerisce.
 
 ## Annulla e ripristina
@@ -189,7 +191,8 @@ Le ricette importate da un link ([14](14-piano-ricette.md)).
 - **Elenco**: in cima il campo per **incollare un link** (con la PWA su Android si
   arriva anche da *Condividi → Grocery*); sotto la **ricerca** per nome, i **chip
   delle categorie** del sito e le card, dalla più recente, con la foto presa dal
-  sito, il nome, le categorie e quanti ingredienti.
+  sito, il nome, le categorie e quanti ingredienti. Toccare la card apre la
+  scheda; il **⋯** a lato, o la pressione lunga, il popup delle azioni.
 - **Import**: "Scarico la ricetta…", poi "Ricetta salvata" con la domanda
   *Aggiungo gli ingredienti alla lista?* → **Sì, scelgo** / **No, solo salvata**. Gli
   errori dicono cosa fare (niente link, pagina senza ricetta, sito che non
@@ -197,9 +200,14 @@ Le ricette importate da un link ([14](14-piano-ricette.md)).
 - **Scelta degli ingredienti**: una casella per ingrediente, tutte spuntate tranne
   i *q.b.*; "già in lista" accanto a quelli già da prendere; *Tutti* / *Nessuno*;
   il bottone dice quanti ne aggiunge. Fatto, si torna alla lista.
-- **Scheda**: foto, nome, categorie, link al **procedimento sul sito**,
-  ingredienti (i *q.b.* più tenui), *Aggiungi ingredienti alla lista*, *Elimina
-  ricetta* con conferma.
+- **Scheda**: in cima *‹ Ricette* e il **⋯**; foto, nome, categorie, link al
+  **procedimento sul sito**, ingredienti (i *q.b.* più tenui), *Aggiungi
+  ingredienti alla lista*.
+- **Popup delle azioni** di una ricetta, come quello delle voci (sale dal fondo):
+  *Aggiungi ingredienti alla lista* (solo dall'elenco), *Procedimento sul sito*,
+  *Elimina*. Eliminare chiede conferma **dentro il popup** (*Indietro* /
+  *Elimina*, rosso pieno), che resta aperto finché il database non risponde e
+  mostra lì l'eventuale errore.
 - Nella **lista** gli ingredienti stanno dopo i reparti, sotto il nome della
   ricetta in maiuscolo, su una riga sola, troncato coi "…": toccarlo apre la scheda.
 

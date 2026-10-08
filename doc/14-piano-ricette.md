@@ -103,7 +103,9 @@ Android "Condividi" ──► /Grocery/?titolo=…&testo=…&link=…   (share_t
       categoria, card con la foto del sito
 - [x] Import: attesa → errore o "Aggiungo gli ingredienti?" → scelta
 - [x] Scheda: foto, categorie, ingredienti, link al procedimento sul sito,
-      ri-aggiungi alla lista, elimina con conferma
+      ri-aggiungi alla lista
+- [x] Azioni di una ricetta nel popup dal fondo, come le voci della lista: ⋯ o
+      pressione lunga sulla card, ⋯ nella scheda; elimina con conferma nel popup
 - [x] Nella lista i gruppi-ricetta, col titolo che apre la scheda
 
 ### Step R6 — Messa in linea

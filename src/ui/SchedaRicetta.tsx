@@ -1,62 +1,43 @@
 import { useState } from 'react'
 import { eQuantoBasta } from '../domain/ricette'
-import type { Lista, Ricetta } from '../domain/tipi'
-import { ErroreRete } from '../storage'
+import type { Ricetta } from '../domain/tipi'
+import { AzioniRicetta } from './AzioniRicetta'
 import { Icona } from './Icona'
-import { ScegliIngredienti } from './ScegliIngredienti'
 
 interface Props {
   ricetta: Ricetta
-  lista: Lista | null
-  onAggiungi: (testi: string[]) => void
+  /** Apre la scelta degli ingredienti da aggiungere alla lista. */
+  onScegli: () => void
   elimina: (id: string) => Promise<void>
   onIndietro: () => void
 }
 
-type Fase = 'scheda' | 'scelta' | 'conferma-elimina' | 'elimino'
-
 /**
  * La scheda di una ricetta salvata (doc/14-piano-ricette.md): foto, categorie
  * e ingredienti; il procedimento sta sul sito, a un tocco. Da qui si
- * aggiungono gli ingredienti alla lista, anche più volte, e si elimina.
+ * aggiungono gli ingredienti alla lista, anche più volte. Le altre azioni,
+ * eliminare compreso, stanno nel popup che si apre col ⋯ (AzioniRicetta),
+ * come per le voci della lista.
  */
-export function SchedaRicetta({ ricetta, lista, onAggiungi, elimina, onIndietro }: Props) {
-  const [fase, setFase] = useState<Fase>('scheda')
-  const [errore, setErrore] = useState<string | null>(null)
-
-  if (fase === 'scelta') {
-    return (
-      <ScegliIngredienti
-        ricetta={ricetta}
-        lista={lista}
-        onAggiungi={onAggiungi}
-        onAnnulla={() => setFase('scheda')}
-      />
-    )
-  }
-
-  const eliminaDavvero = async () => {
-    setFase('elimino')
-    setErrore(null)
-    try {
-      await elimina(ricetta.id)
-      onIndietro()
-    } catch (motivo) {
-      console.error('Ricetta non eliminata', motivo)
-      setErrore(
-        motivo instanceof ErroreRete
-          ? 'Senza rete non posso eliminarla. Riprova quando torna.'
-          : 'Non sono riuscito a eliminarla. Riprova tra poco.',
-      )
-      setFase('scheda')
-    }
-  }
+export function SchedaRicetta({ ricetta, onScegli, elimina, onIndietro }: Props) {
+  const [azioniAperte, setAzioniAperte] = useState(false)
 
   return (
     <article className="scheda" aria-labelledby="scheda-titolo">
-      <button className="scheda__indietro" type="button" onClick={onIndietro}>
-        <Icona nome="indietro" /> Ricette
-      </button>
+      <div className="scheda__barra">
+        <button className="scheda__indietro" type="button" onClick={onIndietro}>
+          <Icona nome="indietro" /> Ricette
+        </button>
+        <button
+          className="ricetta__azioni-apri"
+          type="button"
+          aria-haspopup="dialog"
+          aria-label={`Azioni per ${ricetta.nome}`}
+          onClick={() => setAzioniAperte(true)}
+        >
+          <Icona nome="altro" />
+        </button>
+      </div>
 
       {ricetta.immagine && (
         <img className="scheda__foto" src={ricetta.immagine} alt="" referrerPolicy="no-referrer" />
@@ -92,36 +73,20 @@ export function SchedaRicetta({ ricetta, lista, onAggiungi, elimina, onIndietro 
         ))}
       </ul>
 
-      {errore && (
-        <p className="scheda__errore" role="alert">
-          {errore}
-        </p>
-      )}
-
       <div className="genera__scelte">
-        <button className="bottone" type="button" onClick={() => setFase('scelta')}>
+        <button className="bottone" type="button" onClick={onScegli}>
           Aggiungi ingredienti alla lista
         </button>
-        {fase === 'conferma-elimina' || fase === 'elimino' ? (
-          <div className="scheda__conferma" role="group" aria-label="Conferma eliminazione">
-            <p className="scheda__conferma-testo">
-              Elimino la ricetta? Gli ingredienti già in lista restano.
-            </p>
-            <div className="scheda__conferma-scelte">
-              <button className="bottone bottone--discreto" type="button" onClick={() => setFase('scheda')} disabled={fase === 'elimino'}>
-                Annulla
-              </button>
-              <button className="bottone bottone--elimina" type="button" onClick={eliminaDavvero} disabled={fase === 'elimino'}>
-                {fase === 'elimino' ? 'Elimino…' : 'Elimina'}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button className="scheda__elimina" type="button" onClick={() => setFase('conferma-elimina')}>
-            Elimina ricetta
-          </button>
-        )}
       </div>
+
+      {azioniAperte && (
+        <AzioniRicetta
+          ricetta={ricetta}
+          elimina={elimina}
+          onEliminata={onIndietro}
+          onChiudi={() => setAzioniAperte(false)}
+        />
+      )}
     </article>
   )
 }

@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { Chip, Consigli, TipoConsigliato } from '../domain/consigli'
 import type { Voce as VoceLista } from '../domain/tipi'
-import { useUscita } from './animazioni'
 import { Contatore } from './Contatore'
 import { Icona } from './Icona'
-import { useTrascinaGiu } from './trascinaGiu'
-import './AzioniVoce.css'
+import { PopupDalFondo } from './PopupDalFondo'
 import './ConsigliVoce.css'
 
 interface Props {
@@ -30,88 +28,65 @@ interface Props {
  * chiude (lo decide Voce), così un tocco di troppo si corregge col −.
  */
 export function ConsigliVoce({ voce, presi, consigli, onConta, onChiudi }: Props) {
-  const finestra = useRef<HTMLDialogElement>(null)
-
-  useEffect(() => {
-    const dialogo = finestra.current
-    if (dialogo && !dialogo.open) dialogo.showModal()
-  }, [])
-
-  const { uscita, esci, fine } = useUscita<'chiudi'>(() => finestra.current?.close())
-  const chiudi = () => esci('chiudi')
-  const trascina = useTrascinaGiu(finestra, chiudi)
-
   const completa = presi >= voce.quantita
   const mancano = voce.quantita - presi
 
   return (
-    <dialog
-      ref={finestra}
-      className={uscita ? 'azioni-voce azioni-voce--chiude' : 'azioni-voce'}
-      aria-labelledby={`consigli-${voce.id}`}
-      onClose={onChiudi}
-      onCancel={(evento) => {
-        evento.preventDefault()
-        chiudi()
-      }}
-      onAnimationEnd={(evento) => {
-        if (evento.target === evento.currentTarget && evento.animationName === 'azioni-voce-scende')
-          fine()
-      }}
-      onClick={(evento) => evento.target === evento.currentTarget && chiudi()}
-    >
-      <div className="consigli-voce">
-        <div className="consigli-voce__testa azioni-voce__afferra" {...trascina}>
-          <span className="azioni-voce__maniglia" aria-hidden="true" />
-          <h2 className="azioni-voce__titolo" id={`consigli-${voce.id}`}>
-            {voce.nome}
-          </h2>
+    <PopupDalFondo etichetta={`consigli-${voce.id}`} onChiudi={onChiudi}>
+      {({ chiudi, trascina }) => (
+        <div className="consigli-voce">
+          <div className="consigli-voce__testa azioni-voce__afferra" {...trascina}>
+            <span className="azioni-voce__maniglia" aria-hidden="true" />
+            <h2 className="azioni-voce__titolo" id={`consigli-${voce.id}`}>
+              {voce.nome}
+            </h2>
 
-          <div className={completa ? 'consigli-voce__conta consigli-voce__conta--completa' : 'consigli-voce__conta'}>
-            <Contatore nome={voce.nome} presi={presi} quantita={voce.quantita} onCambia={onConta} grande />
-            <div className="consigli-voce__barra" aria-hidden="true">
-              {Array.from({ length: voce.quantita }, (_, indice) => (
-                <span
-                  key={indice}
-                  className={indice < presi ? 'consigli-voce__tacca consigli-voce__tacca--presa' : 'consigli-voce__tacca'}
-                />
-              ))}
+            <div className={completa ? 'consigli-voce__conta consigli-voce__conta--completa' : 'consigli-voce__conta'}>
+              <Contatore nome={voce.nome} presi={presi} quantita={voce.quantita} onCambia={onConta} grande />
+              <div className="consigli-voce__barra" aria-hidden="true">
+                {Array.from({ length: voce.quantita }, (_, indice) => (
+                  <span
+                    key={indice}
+                    className={indice < presi ? 'consigli-voce__tacca consigli-voce__tacca--presa' : 'consigli-voce__tacca'}
+                  />
+                ))}
+              </div>
+              <p className="consigli-voce__stato" aria-live="polite">
+                {completa ? (
+                  <>
+                    <Icona nome="spunta" /> Tutto preso: chiudendo va tra i Già presi
+                  </>
+                ) : mancano === 1 ? (
+                  'Manca 1 pasto'
+                ) : (
+                  `Mancano ${mancano} pasti`
+                )}
+              </p>
             </div>
-            <p className="consigli-voce__stato" aria-live="polite">
-              {completa ? (
-                <>
-                  <Icona nome="spunta" /> Tutto preso: chiudendo va tra i Già presi
-                </>
-              ) : mancano === 1 ? (
-                'Manca 1 pasto'
-              ) : (
-                `Mancano ${mancano} pasti`
-              )}
-            </p>
+          </div>
+
+          <div className="consigli-voce__scorre">
+            {consigli.tipo === 'elenco' ? (
+              <Gruppo titolo="Cosa prendere" tipi={consigli.tipi.map((nome) => ({ nome }))} />
+            ) : (
+              <Stagioni id={voce.id} diStagione={consigli.diStagione} fuoriStagione={consigli.fuoriStagione} />
+            )}
+          </div>
+
+          <div className="consigli-voce__piede">
+            <button
+              className={
+                completa ? 'azioni-voce__bottone azioni-voce__bottone--principale' : 'azioni-voce__bottone'
+              }
+              type="button"
+              onClick={chiudi}
+            >
+              {completa ? 'Fatto' : 'Chiudi'}
+            </button>
           </div>
         </div>
-
-        <div className="consigli-voce__scorre">
-          {consigli.tipo === 'elenco' ? (
-            <Gruppo titolo="Cosa prendere" tipi={consigli.tipi.map((nome) => ({ nome }))} />
-          ) : (
-            <Stagioni id={voce.id} diStagione={consigli.diStagione} fuoriStagione={consigli.fuoriStagione} />
-          )}
-        </div>
-
-        <div className="consigli-voce__piede">
-          <button
-            className={
-              completa ? 'azioni-voce__bottone azioni-voce__bottone--principale' : 'azioni-voce__bottone'
-            }
-            type="button"
-            onClick={chiudi}
-          >
-            {completa ? 'Fatto' : 'Chiudi'}
-          </button>
-        </div>
-      </div>
-    </dialog>
+      )}
+    </PopupDalFondo>
   )
 }
 
