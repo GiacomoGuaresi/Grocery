@@ -110,6 +110,8 @@
   color: inherit;
   font: inherit;
   text-align: left;
+  /* "Tutte le app" è un link: senza sottolineatura, come i bottoni. */
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -142,7 +144,7 @@
   border-top: 1px solid var(--bordo);
 }
 
-/* Le voci di servizio ("Installa l'app") stanno in fondo, lontane dall'uso di
+/* Le voci di servizio ("Tutte le app", "Installa l'app") stanno in fondo, lontane dall'uso di
    tutti i giorni. */
 .menu__gruppo--piede {
   margin-top: auto;
