@@ -135,3 +135,4 @@
 | 2026-10-08 | Il titolo del gruppo-ricetta **apre la scheda** della ricetta; gli ingredienti **non cambiano reparto** | deciso |
 | 2026-10-08 | Sezione Ricette con **ricerca**, **filtro per categoria**, **elimina** e **ri-aggiungi ingredienti**. Eliminare la ricetta lascia in lista i suoi ingredienti | deciso |
 | 2026-10-08 | Negli ingredienti delle ricette **nome e quantità divisi da un punto centrale**: "Farina 00 · 100 g". Scelto tra trattino, parentesi (doppie coi nomi che le hanno già) e quantità a destra in un campo a parte (voleva una migrazione). Le ricette già importate non si convertono | deciso |
+| 2026-10-12 | **Accento color grano** (`#f6d9a0`, scuro `#9c6a1c`), l'oro delle altre app di casa: manici dell'icona, cesto dell'intestazione, barretta del menu, cesto dell'accesso ([08](08-ui-ux.md)) | deciso |

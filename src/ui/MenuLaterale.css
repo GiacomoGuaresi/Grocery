@@ -119,10 +119,10 @@
   background: var(--bordo);
 }
 
-/* La sezione in cui ci si trova: evidenziata con la barretta color terracotta. */
+/* La sezione in cui ci si trova: evidenziata con la barretta color grano. */
 .menu__voce[aria-current='page'] {
   background: var(--crema-scura);
-  box-shadow: inset 3px 0 0 var(--terracotta-scura);
+  box-shadow: inset 3px 0 0 var(--grano-scuro);
   font-weight: 600;
 }
 

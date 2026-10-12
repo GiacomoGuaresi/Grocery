@@ -1,4 +1,5 @@
-/* Palette calda a tema culinario: panna chiara, terracotta, zucca, pomodoro.
+/* Palette calda a tema culinario: panna chiara, terracotta, zucca, pomodoro,
+   con il grano come accento.
    Solo tema chiaro, come da doc/08-ui-ux.md. */
 :root {
   --crema: #fbf4ec;
@@ -8,6 +9,9 @@
   --terracotta: #b05a3c;
   --terracotta-scura: #8f4630;
   --zucca: #e9a878;
+  /* Accento: il chiaro sta sul terracotta, lo scuro sui fondi chiari. */
+  --grano: #f6d9a0;
+  --grano-scuro: #9c6a1c;
   /* Più rosso e freddo del terracotta, così "elimina" non si confonde con le
      azioni principali. */
   --pomodoro: #a8333a;

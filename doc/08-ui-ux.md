@@ -11,6 +11,10 @@ ampi, testo leggibile, poche schermate, nessun passaggio inutile.
 - **Intestazione terracotta** piena con le **scritte bianche**; la barra di stato
   del telefono (theme-color) è dello stesso terracotta. Nell'intestazione solo
   il **cesto dell'icona dell'app** e il titolo **Grocery**, nessun sottotitolo.
+- **Accento color grano**, l'oro delle altre app di casa: chiaro (`--grano`) sul
+  terracotta, per il cesto dell'intestazione e i manici nell'icona dell'app;
+  scuro (`--grano-scuro`) sui fondi chiari, per la barretta della voce corrente
+  nel menu e il cesto della schermata di accesso.
 - **Fondo della schermata panna** (`--crema`), **sidebar bianca**.
 - **Sfondo a tema cucina**: sul panna, poche icone grandi e bianche, sparse e
   ruotate, ripetute senza giunture (stile doodle di WhatsApp). Sono le icone
