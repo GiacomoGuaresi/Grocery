@@ -2,9 +2,6 @@ import { useEffect, useRef } from 'react'
 import { Icona, type NomeIcona } from './Icona'
 import './MenuLaterale.css'
 
-/** Il launcher con tutte le app di casa: da lì si passa da un'app all'altra. */
-const ELENCO_APP = 'https://giacomoguaresi.github.io/Casa/'
-
 /** Da questa larghezza il menu è sempre aperto: la stessa soglia dei CSS. */
 const SEMPRE_APERTO = '(min-width: 1024px)'
 
@@ -116,12 +113,6 @@ export function MenuLaterale<Id extends string>({
             <Icona nome="chiudi" />
           </button>
         </div>
-        {/* Sempre la prima voce, staccata dalle altre: si torna al launcher. */}
-        <a className="menu__voce menu__voce--ritorno" href={ELENCO_APP} onClick={onChiudi}>
-          <Icona nome="freccia" className="menu__icona" />
-          Torna all'elenco app
-        </a>
-        <hr className="menu__separatore" />
         <ul className="menu__gruppo">{sezioni.map((v) => voce(v))}</ul>
         <hr className="menu__separatore" />
         <ul className="menu__gruppo">{azioni.map((v) => voce(v, true))}</ul>
