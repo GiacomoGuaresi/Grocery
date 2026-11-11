@@ -54,3 +54,20 @@ Lo sviluppo gira su un progetto Supabase a parte (*Grocery DEV*), con lo stesso
 schema: `npm run dev` non tocca i dati veri. Una migrazione nuova, e la Edge
 Function (`supabase functions deploy importa-ricetta`), vanno applicate a tutti e
 due i progetti.
+
+## Le app di casa
+
+Grocery è una di quattro app nate per casa mia. Usano lo stesso progetto Supabase e lo stesso account: una sola passphrase vale per tutte.
+
+- **Grocery** (questa): la lista della spesa di due settimane, generata dalla routine dei pasti.
+- **[Projects](https://github.com/GiacomoGuaresi/Projects)**: le attività di casa raggruppate per progetto, ognuna col suo diario.
+- **[Adventures](https://github.com/GiacomoGuaresi/Adventures)**: trekking e avventure da fare, su elenco e mappa.
+- **[Logger](https://github.com/GiacomoGuaresi/Logger)**: un diario minimo di qualunque cosa valga la pena tenere a mente.
+
+## Uso dell'IA
+
+Sviluppata con Claude Code come assistente: 8 commit su 55 sono co-firmati. Le scelte di prodotto, l'architettura e la revisione di ogni modifica sono mie.
+
+## Licenza
+
+[MIT](LICENSE).

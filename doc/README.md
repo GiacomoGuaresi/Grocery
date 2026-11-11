@@ -20,4 +20,4 @@
 | 13 | [Piano v2](13-piano-v2.md) | Lista per categorie, moltiplicatore e popup dei consigli |
 | 14 | [Piano Ricette](14-piano-ricette.md) | Ricette importate da un link, ingredienti in lista |
 
-Le domande ancora aperte vivono in [../Q&A.md](../Q&A.md).
+Le domande ancora aperte vivono in [Q&A.md](Q&A.md).

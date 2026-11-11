@@ -3,8 +3,9 @@
 ```
 Grocery/
 ├── doc/                 documentazione (questi file)
+│   ├── Q&A.md           domande aperte in corso
 │   └── immagini/        gli screenshot del README
-├── Q&A.md               domande aperte in corso
+├── LICENSE              licenza MIT
 ├── .github/workflows/
 │   └── pubblica.yml     test, build e deploy su GitHub Pages a ogni push su main
 ├── .env.example         variabili d'ambiente: URL, chiave ed email di Supabase

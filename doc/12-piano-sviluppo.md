@@ -277,7 +277,7 @@ Test e documentazione:
 - [ ] Screenshot della lista piena nel README, appena c'è una lista corrente
 - [x] [07](07-architettura-stack.md) e [10](10-decisioni.md) allineati allo stack
       reale: CSS a mano accanto ai componenti, niente Tailwind né Testing Library
-- [ ] [Q&A.md](../Q&A.md): le domande sulla rotazione e sul prossimo passo sono
+- [ ] [Q&A.md](Q&A.md): le domande sulla rotazione e sul prossimo passo sono
       segnate come superate; restano senza risposta quelle sui cataloghi (Q1)
 
 ---
