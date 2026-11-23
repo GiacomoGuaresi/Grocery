@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Icona, type NomeIcona } from './Icona'
 import './MenuLaterale.css'
+import { testoVersione } from './versione'
 
 /** Da questa larghezza il menu è sempre aperto: la stessa soglia dei CSS. */
 const SEMPRE_APERTO = '(min-width: 1024px)'
@@ -119,6 +120,7 @@ export function MenuLaterale<Id extends string>({
         {piede.length > 0 && (
           <ul className="menu__gruppo menu__gruppo--piede">{piede.map((v) => voce(v))}</ul>
         )}
+        <p className="menu__versione">{testoVersione()}</p>
       </nav>
     </>
   )

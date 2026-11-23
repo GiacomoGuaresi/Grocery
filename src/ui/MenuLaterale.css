@@ -149,6 +149,20 @@
   padding-top: 8px;
 }
 
+/* Il commit in esecuzione, sotto a tutto (src/ui/versione.ts). In fondo da
+   solo, oppure subito sotto le voci di servizio quando ci sono. */
+.menu__versione {
+  margin: auto 0 0;
+  padding: 8px 12px 0;
+  color: var(--inchiostro-tenue);
+  font-size: var(--testo-piccolo);
+  font-variant-numeric: tabular-nums;
+}
+
+.menu__gruppo--piede + .menu__versione {
+  margin-top: 0;
+}
+
 .menu__voce--azione {
   color: var(--terracotta-scura);
   font-weight: 600;
